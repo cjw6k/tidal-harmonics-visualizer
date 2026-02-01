@@ -42,16 +42,17 @@ export const ROTATION_SPEEDS = {
   MOON: 2.6617e-6,   // Moon's rotation rate (synchronized with orbit)
 } as const;
 
-// Texture URLs - using local paths for reliability
+// Texture URLs - using base path for GitHub Pages compatibility
+const BASE = import.meta.env.BASE_URL;
 export const TEXTURE_URLS = {
   earth: {
-    day2k: '/textures/earth/earth_day_2k.jpg',
+    day2k: `${BASE}textures/earth/earth_day_2k.jpg`,
   },
   moon: {
-    surface2k: '/textures/moon/moon_2k.jpg',
+    surface2k: `${BASE}textures/moon/moon_2k.jpg`,
   },
   sun: {
-    surface2k: '/textures/sun/sun_2k.jpg',
+    surface2k: `${BASE}textures/sun/sun_2k.jpg`,
   },
 } as const;
 
