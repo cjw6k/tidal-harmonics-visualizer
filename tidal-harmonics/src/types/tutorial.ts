@@ -25,7 +25,10 @@ export interface TutorialStep {
   highlightConstituents?: string[];
   showForceVectors?: boolean;
   showTidalBulge?: boolean;
+  tidalExaggeration?: number;
   timeSpeed?: number;
+  pauseTime?: boolean;
+  showOrbits?: boolean;
 }
 
 export interface TutorialChapter {

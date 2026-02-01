@@ -4,6 +4,7 @@ import { HarmonicsPanel } from '@/components/harmonics/HarmonicsPanel';
 import { TutorialOverlay } from '@/components/tutorial/TutorialOverlay';
 import { TutorialButton } from '@/components/tutorial/TutorialButton';
 import { ChapterNavigation } from '@/components/tutorial/ChapterNavigation';
+import { TutorialController } from '@/components/tutorial/TutorialController';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <TutorialButton />
       <ChapterNavigation />
       <TutorialOverlay />
+      <TutorialController />
     </div>
   );
 }
