@@ -20,7 +20,11 @@ const FAMILY_COLORS: Record<string, string> = {
   'shallow-water': '#a855f7',
 };
 
-export function PhasorDiagram() {
+interface PhasorDiagramProps {
+  onConstituentClick?: (symbol: string) => void;
+}
+
+export function PhasorDiagram({ onConstituentClick }: PhasorDiagramProps) {
   const epoch = useTimeStore((s) => s.epoch);
   const station = useHarmonicsStore((s) => s.selectedStation);
   const visibleConstituents = useHarmonicsStore((s) => s.visibleConstituents);
@@ -108,7 +112,11 @@ export function PhasorDiagram() {
 
         {/* Phasor vectors */}
         {phasors.map((p) => (
-          <g key={p.symbol}>
+          <g
+            key={p.symbol}
+            className={onConstituentClick ? 'cursor-pointer' : ''}
+            onClick={() => onConstituentClick?.(p.symbol)}
+          >
             <line
               x1={cx}
               y1={cy}
@@ -125,6 +133,7 @@ export function PhasorDiagram() {
               fill={p.color}
               fontSize={9}
               textAnchor="middle"
+              className={onConstituentClick ? 'hover:fill-white transition-colors' : ''}
             >
               {p.symbol}
             </text>

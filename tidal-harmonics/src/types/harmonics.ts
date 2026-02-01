@@ -10,6 +10,25 @@ export interface Constituent {
   description: string;
 }
 
+// Extended constituent information for educational purposes
+export interface ConstituentDetail {
+  symbol: string;
+  // Physical cause
+  physicalCause: string;
+  // Detailed explanation
+  explanation: string;
+  // Mathematical relationship to other constituents
+  mathematicalNotes?: string;
+  // Why it matters for predictions
+  practicalSignificance: string;
+  // Typical relative amplitude (percent of M2)
+  typicalAmplitudePercent?: number;
+  // Related constituents
+  relatedConstituents?: string[];
+  // Historical notes
+  historicalNotes?: string;
+}
+
 export interface ConstituentValue {
   symbol: string;
   amplitude: number; // meters

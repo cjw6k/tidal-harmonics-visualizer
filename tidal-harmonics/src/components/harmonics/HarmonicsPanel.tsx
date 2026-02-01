@@ -1,14 +1,17 @@
+import { useState } from 'react';
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
 import { StationSelector } from './StationSelector';
 import { ConstituentToggles } from './ConstituentToggles';
 import { PhasorDiagram } from './PhasorDiagram';
 import { TideCurve } from './TideCurve';
+import { ConstituentInfoPanel } from './ConstituentInfoPanel';
 
 export function HarmonicsPanel() {
   const showPhasorDiagram = useHarmonicsStore((s) => s.showPhasorDiagram);
   const showTideCurve = useHarmonicsStore((s) => s.showTideCurve);
   const togglePhasorDiagram = useHarmonicsStore((s) => s.togglePhasorDiagram);
   const toggleTideCurve = useHarmonicsStore((s) => s.toggleTideCurve);
+  const [selectedConstituent, setSelectedConstituent] = useState<string | null>(null);
 
   return (
     <div className="absolute bottom-4 right-4 flex flex-col gap-3 z-10 max-w-[380px]">
@@ -37,8 +40,14 @@ export function HarmonicsPanel() {
       </div>
 
       {/* Visualizations */}
-      {showPhasorDiagram && <PhasorDiagram />}
+      {showPhasorDiagram && <PhasorDiagram onConstituentClick={setSelectedConstituent} />}
       {showTideCurve && <TideCurve />}
+
+      {/* Info Panel */}
+      <ConstituentInfoPanel
+        symbol={selectedConstituent}
+        onClose={() => setSelectedConstituent(null)}
+      />
     </div>
   );
 }
