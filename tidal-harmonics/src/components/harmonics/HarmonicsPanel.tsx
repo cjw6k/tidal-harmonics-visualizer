@@ -38,6 +38,7 @@ const BarometricPressure = lazy(() => import('./BarometricPressure').then(m => (
 const KeyboardShortcuts = lazy(() => import('./KeyboardShortcuts').then(m => ({ default: m.KeyboardShortcuts })));
 const ConstituentFamilies = lazy(() => import('./ConstituentFamilies').then(m => ({ default: m.ConstituentFamilies })));
 const TideAlerts = lazy(() => import('./TideAlerts').then(m => ({ default: m.TideAlerts })));
+const LunarPhaseDisplay = lazy(() => import('./LunarPhaseDisplay').then(m => ({ default: m.LunarPhaseDisplay })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -85,6 +86,7 @@ export function HarmonicsPanel() {
   const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
   const [showFamilies, setShowFamilies] = useState(false);
   const [showAlerts, setShowAlerts] = useState(false);
+  const [showLunar, setShowLunar] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -115,6 +117,7 @@ export function HarmonicsPanel() {
     setShowBarometric,
     setShowFamilies,
     setShowAlerts,
+    setShowLunar,
   });
 
   return (
@@ -287,6 +290,15 @@ export function HarmonicsPanel() {
           Calendar
         </button>
         <button
+          onClick={() => setShowLunar(!showLunar)}
+          aria-pressed={showLunar}
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 focus:ring-offset-slate-900
+            ${showLunar ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="Lunar phase"
+        >
+          Moon
+        </button>
+        <button
           onClick={() => setShowTable(!showTable)}
           aria-pressed={showTable}
           className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1 focus:ring-offset-slate-900
@@ -432,6 +444,7 @@ export function HarmonicsPanel() {
         {showBarometric && <BarometricPressure />}
         {showFamilies && <ConstituentFamilies />}
         {showAlerts && <TideAlerts />}
+        {showLunar && <LunarPhaseDisplay />}
       </Suspense>
 
       {/* Info Panel */}
