@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:capture": "playwright test tutorial-capture",
+    "test:capture:single": "playwright test -g 'capture single step'"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
@@ -34,7 +38,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
-    "playwright": "^1.58.1",
+    "@playwright/test": "^1.58.1",
     "postcss": "^8.4.0",
     "tailwindcss": "^3.4.0",
     "typescript": "~5.9.3",
