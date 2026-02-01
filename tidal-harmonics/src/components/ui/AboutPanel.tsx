@@ -203,7 +203,17 @@ export function AboutPanel() {
             </button>
           </div>
           <div className="flex items-center gap-3 text-xs text-slate-500">
-            <span className="font-mono text-slate-600">{__GIT_SHA__}</span>
+            <span>
+              Version:{' '}
+              <a
+                href={`https://github.com/cjw6k/tidal-harmonics-visualizer/commit/${__GIT_SHA__}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-slate-600 hover:text-slate-400 transition-colors"
+              >
+                {__GIT_SHA__}
+              </a>
+            </span>
             <span>
               Made by{' '}
               <a
