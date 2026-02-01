@@ -460,10 +460,12 @@ export function HarmonicsPanel() {
           ))}
         </div>
         <div
+          key={activeTab}
           role="tabpanel"
           id={`tabpanel-${activeTab}`}
           aria-labelledby={`tab-${activeTab}`}
           className="p-3"
+          style={{ animation: 'fadeIn 150ms ease-out' }}
         >
           <p className="text-xs text-slate-500 mb-2">
             {TABS.find(t => t.id === activeTab)?.desc}
