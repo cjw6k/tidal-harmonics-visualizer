@@ -51,6 +51,7 @@ const PortTimingComparison = lazy(() => import('./PortTimingComparison').then(m 
 const WeatherEffectSimulator = lazy(() => import('./WeatherEffectSimulator').then(m => ({ default: m.WeatherEffectSimulator })));
 const EstuaryDynamics = lazy(() => import('./EstuaryDynamics').then(m => ({ default: m.EstuaryDynamics })));
 const NavigationSafety = lazy(() => import('./NavigationSafety').then(m => ({ default: m.NavigationSafety })));
+const TidalResonance = lazy(() => import('./TidalResonance').then(m => ({ default: m.TidalResonance })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -111,6 +112,7 @@ export function HarmonicsPanel() {
   const [showWeatherSim, setShowWeatherSim] = useState(false);
   const [showEstuary, setShowEstuary] = useState(false);
   const [showNavSafety, setShowNavSafety] = useState(false);
+  const [showResonance, setShowResonance] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -372,6 +374,14 @@ export function HarmonicsPanel() {
           title="Navigation safety"
         >
           ⚓
+        </button>
+        <button
+          onClick={() => setShowResonance(true)}
+          aria-label="Tidal resonance explainer"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Why some bays have giant tides"
+        >
+          📢
         </button>
       </div>
 
@@ -644,6 +654,10 @@ export function HarmonicsPanel() {
 
         {showNavSafety && (
           <NavigationSafety onClose={() => setShowNavSafety(false)} />
+        )}
+
+        {showResonance && (
+          <TidalResonance onClose={() => setShowResonance(false)} />
         )}
       </Suspense>
     </div>
