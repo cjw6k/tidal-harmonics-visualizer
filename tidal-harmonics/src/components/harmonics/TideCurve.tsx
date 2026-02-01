@@ -32,10 +32,19 @@ const CONSTITUENT_COLORS = {
   total: '#ef4444', // red
 };
 
+const TIME_RANGES = [
+  { label: '12h', hours: 12 },
+  { label: '24h', hours: 24 },
+  { label: '48h', hours: 48 },
+  { label: '7d', hours: 168 },
+  { label: '30d', hours: 720 },
+];
+
 export function TideCurve() {
   const epoch = useTimeStore((s) => s.epoch);
   const station = useHarmonicsStore((s) => s.selectedStation);
   const hoursRange = useHarmonicsStore((s) => s.chartHoursRange);
+  const setChartHoursRange = useHarmonicsStore((s) => s.setChartHoursRange);
   const [viewMode, setViewMode] = useState<ViewMode>('total');
 
   const { data, extremes, nowLabel, minHeight, maxHeight } = useMemo(() => {
@@ -47,19 +56,40 @@ export function TideCurve() {
     const start = new Date(now.getTime() - (hoursRange / 2) * 3600000);
     const end = new Date(now.getTime() + (hoursRange / 2) * 3600000);
 
+    // Adjust interval based on range to keep reasonable data point count
+    // Target ~200-300 points for smooth curves without performance issues
+    let intervalMinutes = 6;
+    if (hoursRange > 48) intervalMinutes = 15;
+    if (hoursRange > 168) intervalMinutes = 30;
+    if (hoursRange > 360) intervalMinutes = 60;
+
+    // Format label based on range
+    const formatLabel = (date: Date) => {
+      if (hoursRange <= 48) {
+        return format(date, 'HH:mm');
+      } else if (hoursRange <= 168) {
+        return format(date, 'EEE HH:mm');
+      } else {
+        return format(date, 'MMM d');
+      }
+    };
+
     let chartData: ConstituentSeriesData[];
 
     if (viewMode === 'total') {
       // Simple mode - just total
-      const series = predictTideSeries(station, start, end, 6);
+      const series = predictTideSeries(station, start, end, intervalMinutes);
       chartData = series.map((d) => ({
         time: d.time.getTime(),
         total: d.height,
-        label: format(d.time, 'HH:mm'),
+        label: formatLabel(d.time),
       }));
     } else {
       // Detailed mode with constituent breakdown
-      chartData = predictTideSeriesWithConstituents(station, start, end, 6);
+      chartData = predictTideSeriesWithConstituents(station, start, end, intervalMinutes).map((d) => ({
+        ...d,
+        label: formatLabel(new Date(d.time)),
+      }));
     }
 
     const extremeList = findExtremes(
@@ -95,31 +125,50 @@ export function TideCurve() {
     <div className="bg-slate-900 rounded-lg p-3">
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-xs text-slate-400">Tide Prediction</h3>
-        <div className="flex gap-1">
-          <button
-            onClick={() => setViewMode('total')}
-            className={`px-2 py-0.5 text-xs rounded transition-colors ${
-              viewMode === 'total' ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400'
-            }`}
-          >
-            Total
-          </button>
-          <button
-            onClick={() => setViewMode('constituents')}
-            className={`px-2 py-0.5 text-xs rounded transition-colors ${
-              viewMode === 'constituents' ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400'
-            }`}
-          >
-            M2+S2+K1+O1
-          </button>
-          <button
-            onClick={() => setViewMode('groups')}
-            className={`px-2 py-0.5 text-xs rounded transition-colors ${
-              viewMode === 'groups' ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400'
-            }`}
-          >
-            Semi/Di
-          </button>
+        <div className="flex gap-2">
+          {/* Time range selector */}
+          <div className="flex gap-0.5 bg-slate-800 rounded p-0.5">
+            {TIME_RANGES.map((range) => (
+              <button
+                key={range.hours}
+                onClick={() => setChartHoursRange(range.hours)}
+                className={`px-1.5 py-0.5 text-xs rounded transition-colors ${
+                  hoursRange === range.hours
+                    ? 'bg-cyan-600 text-white'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                {range.label}
+              </button>
+            ))}
+          </div>
+          {/* View mode selector */}
+          <div className="flex gap-0.5 bg-slate-800 rounded p-0.5">
+            <button
+              onClick={() => setViewMode('total')}
+              className={`px-2 py-0.5 text-xs rounded transition-colors ${
+                viewMode === 'total' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Total
+            </button>
+            <button
+              onClick={() => setViewMode('constituents')}
+              className={`px-2 py-0.5 text-xs rounded transition-colors ${
+                viewMode === 'constituents' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              M2+S2+K1+O1
+            </button>
+            <button
+              onClick={() => setViewMode('groups')}
+              className={`px-2 py-0.5 text-xs rounded transition-colors ${
+                viewMode === 'groups' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Semi/Di
+            </button>
+          </div>
         </div>
       </div>
       <div className="w-full h-48">
