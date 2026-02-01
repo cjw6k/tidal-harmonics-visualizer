@@ -7,6 +7,7 @@ import { TideCurve } from './TideCurve';
 import { TidalStatistics } from './TidalStatistics';
 import { ConstituentInfoPanel } from './ConstituentInfoPanel';
 import { DoodsonExplorer } from './DoodsonExplorer';
+import { AccuracyComparison } from './AccuracyComparison';
 
 export function HarmonicsPanel() {
   const showPhasorDiagram = useHarmonicsStore((s) => s.showPhasorDiagram);
@@ -15,6 +16,7 @@ export function HarmonicsPanel() {
   const toggleTideCurve = useHarmonicsStore((s) => s.toggleTideCurve);
   const [selectedConstituent, setSelectedConstituent] = useState<string | null>(null);
   const [showDoodsonExplorer, setShowDoodsonExplorer] = useState(false);
+  const [showAccuracyComparison, setShowAccuracyComparison] = useState(false);
 
   return (
     <div className="absolute bottom-4 right-4 flex flex-col gap-3 z-10 max-w-[380px]">
@@ -39,7 +41,15 @@ export function HarmonicsPanel() {
           className={`flex-1 px-3 py-1 rounded text-xs transition-colors
             ${showTideCurve ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400'}`}
         >
-          Tide Curve
+          Curve
+        </button>
+        <button
+          onClick={() => setShowAccuracyComparison(!showAccuracyComparison)}
+          className={`flex-1 px-3 py-1 rounded text-xs transition-colors
+            ${showAccuracyComparison ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="Compare prediction accuracy"
+        >
+          Accuracy
         </button>
         <button
           onClick={() => setShowDoodsonExplorer(true)}
@@ -53,6 +63,7 @@ export function HarmonicsPanel() {
       {/* Visualizations */}
       {showPhasorDiagram && <PhasorDiagram onConstituentClick={setSelectedConstituent} />}
       {showTideCurve && <TideCurve />}
+      {showAccuracyComparison && <AccuracyComparison />}
 
       {/* Info Panel */}
       <ConstituentInfoPanel
