@@ -31,6 +31,7 @@ const HistoricalExtremes = lazy(() => import('./HistoricalExtremes').then(m => (
 const WaterSurfaceShader = lazy(() => import('./WaterSurfaceShader').then(m => ({ default: m.WaterSurfaceShader })));
 const TidalEnergyCalculator = lazy(() => import('./TidalEnergyCalculator').then(m => ({ default: m.TidalEnergyCalculator })));
 const TideClock = lazy(() => import('./TideClock').then(m => ({ default: m.TideClock })));
+const TideTimeline = lazy(() => import('./TideTimeline').then(m => ({ default: m.TideTimeline })));
 
 // Loading fallback for lazy components
 function LoadingFallback() {
@@ -68,6 +69,7 @@ export function HarmonicsPanel() {
   const [showWaterShader, setShowWaterShader] = useState(false);
   const [showEnergy, setShowEnergy] = useState(false);
   const [showClock, setShowClock] = useState(false);
+  const [showTimeline, setShowTimeline] = useState(false);
 
   return (
     <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 flex flex-col gap-2 sm:gap-3 z-10 max-w-[320px] sm:max-w-[380px]">
@@ -294,6 +296,15 @@ export function HarmonicsPanel() {
         >
           Clock
         </button>
+        <button
+          onClick={() => setShowTimeline(!showTimeline)}
+          aria-pressed={showTimeline}
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1 focus:ring-offset-slate-900
+            ${showTimeline ? 'bg-teal-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="24-hour tide timeline"
+        >
+          Timeline
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -318,6 +329,7 @@ export function HarmonicsPanel() {
         {showWaterShader && <WaterSurfaceShader />}
         {showEnergy && <TidalEnergyCalculator />}
         {showClock && <TideClock />}
+        {showTimeline && <TideTimeline />}
       </Suspense>
 
       {/* Info Panel */}
