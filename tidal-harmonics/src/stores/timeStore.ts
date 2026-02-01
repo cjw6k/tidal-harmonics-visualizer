@@ -9,6 +9,7 @@ interface TimeState {
   toggle: () => void;
   setSpeed: (speed: number) => void;
   setDate: (date: Date) => void;
+  resetToNow: () => void;
   tick: (deltaMs: number) => void;
 }
 
@@ -24,6 +25,8 @@ export const useTimeStore = create<TimeState>((set) => ({
   setSpeed: (speed) => set({ speed }),
 
   setDate: (date) => set({ epoch: date.getTime() }),
+
+  resetToNow: () => set({ epoch: Date.now(), playing: false }),
 
   tick: (deltaMs) =>
     set((state) => ({
