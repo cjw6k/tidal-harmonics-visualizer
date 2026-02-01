@@ -30,6 +30,7 @@ const SeaLevelRisePanel = lazy(() => import('./SeaLevelRisePanel').then(m => ({ 
 const HistoricalExtremes = lazy(() => import('./HistoricalExtremes').then(m => ({ default: m.HistoricalExtremes })));
 const WaterSurfaceShader = lazy(() => import('./WaterSurfaceShader').then(m => ({ default: m.WaterSurfaceShader })));
 const TidalEnergyCalculator = lazy(() => import('./TidalEnergyCalculator').then(m => ({ default: m.TidalEnergyCalculator })));
+const TideClock = lazy(() => import('./TideClock').then(m => ({ default: m.TideClock })));
 
 // Loading fallback for lazy components
 function LoadingFallback() {
@@ -66,6 +67,7 @@ export function HarmonicsPanel() {
   const [showHistorical, setShowHistorical] = useState(false);
   const [showWaterShader, setShowWaterShader] = useState(false);
   const [showEnergy, setShowEnergy] = useState(false);
+  const [showClock, setShowClock] = useState(false);
 
   return (
     <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 flex flex-col gap-2 sm:gap-3 z-10 max-w-[320px] sm:max-w-[380px]">
@@ -283,6 +285,15 @@ export function HarmonicsPanel() {
         >
           Energy
         </button>
+        <button
+          onClick={() => setShowClock(!showClock)}
+          aria-pressed={showClock}
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-1 focus:ring-offset-slate-900
+            ${showClock ? 'bg-slate-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="Tide clock visualization"
+        >
+          Clock
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -306,6 +317,7 @@ export function HarmonicsPanel() {
         {showHistorical && <HistoricalExtremes />}
         {showWaterShader && <WaterSurfaceShader />}
         {showEnergy && <TidalEnergyCalculator />}
+        {showClock && <TideClock />}
       </Suspense>
 
       {/* Info Panel */}
