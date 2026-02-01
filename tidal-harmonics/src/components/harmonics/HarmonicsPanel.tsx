@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
 import { StationSelector } from './StationSelector';
 import { ConstituentToggles } from './ConstituentToggles';
@@ -6,20 +6,31 @@ import { PhasorDiagram } from './PhasorDiagram';
 import { TideCurve } from './TideCurve';
 import { TidalStatistics } from './TidalStatistics';
 import { ConstituentInfoPanel } from './ConstituentInfoPanel';
-import { DoodsonExplorer } from './DoodsonExplorer';
-import { AccuracyComparison } from './AccuracyComparison';
-import { KingTidePredictor } from './KingTidePredictor';
-import { StationComparison } from './StationComparison';
-import { TidalRangeChart } from './TidalRangeChart';
-import { ConstituentPieChart } from './ConstituentPieChart';
-import { WaveformDecomposition } from './WaveformDecomposition';
-import { SpringNeapCalendar } from './SpringNeapCalendar';
-import { ConstituentTable } from './ConstituentTable';
-import { TideExtremesPanel } from './TideExtremesPanel';
-import { NodalCorrectionPanel } from './NodalCorrectionPanel';
-import { FrequencySpectrum } from './FrequencySpectrum';
-import { PhaseAnimation } from './PhaseAnimation';
-import { DataExport } from './DataExport';
+
+// Lazy load modal/panel components that aren't immediately visible
+const DoodsonExplorer = lazy(() => import('./DoodsonExplorer').then(m => ({ default: m.DoodsonExplorer })));
+const AccuracyComparison = lazy(() => import('./AccuracyComparison').then(m => ({ default: m.AccuracyComparison })));
+const KingTidePredictor = lazy(() => import('./KingTidePredictor').then(m => ({ default: m.KingTidePredictor })));
+const StationComparison = lazy(() => import('./StationComparison').then(m => ({ default: m.StationComparison })));
+const TidalRangeChart = lazy(() => import('./TidalRangeChart').then(m => ({ default: m.TidalRangeChart })));
+const ConstituentPieChart = lazy(() => import('./ConstituentPieChart').then(m => ({ default: m.ConstituentPieChart })));
+const WaveformDecomposition = lazy(() => import('./WaveformDecomposition').then(m => ({ default: m.WaveformDecomposition })));
+const SpringNeapCalendar = lazy(() => import('./SpringNeapCalendar').then(m => ({ default: m.SpringNeapCalendar })));
+const ConstituentTable = lazy(() => import('./ConstituentTable').then(m => ({ default: m.ConstituentTable })));
+const TideExtremesPanel = lazy(() => import('./TideExtremesPanel').then(m => ({ default: m.TideExtremesPanel })));
+const NodalCorrectionPanel = lazy(() => import('./NodalCorrectionPanel').then(m => ({ default: m.NodalCorrectionPanel })));
+const FrequencySpectrum = lazy(() => import('./FrequencySpectrum').then(m => ({ default: m.FrequencySpectrum })));
+const PhaseAnimation = lazy(() => import('./PhaseAnimation').then(m => ({ default: m.PhaseAnimation })));
+const DataExport = lazy(() => import('./DataExport').then(m => ({ default: m.DataExport })));
+
+// Loading fallback for lazy components
+function LoadingFallback() {
+  return (
+    <div className="bg-slate-900 rounded-lg p-4 text-center text-slate-400">
+      <div className="animate-pulse">Loading...</div>
+    </div>
+  );
+}
 
 export function HarmonicsPanel() {
   const showPhasorDiagram = useHarmonicsStore((s) => s.showPhasorDiagram);
@@ -186,20 +197,24 @@ export function HarmonicsPanel() {
         </button>
       </div>
 
-      {/* Visualizations */}
+      {/* Core visualizations (not lazy) */}
       {showPhasorDiagram && <PhasorDiagram onConstituentClick={setSelectedConstituent} />}
       {showTideCurve && <TideCurve />}
-      {showAccuracyComparison && <AccuracyComparison />}
-      {showKingTidePredictor && <KingTidePredictor />}
-      {showStationComparison && <StationComparison />}
-      {showRangeChart && <TidalRangeChart />}
-      {showPieChart && <ConstituentPieChart />}
-      {showWaveform && <WaveformDecomposition />}
-      {showCalendar && <SpringNeapCalendar />}
-      {showTable && <ConstituentTable />}
-      {showExtremes && <TideExtremesPanel />}
-      {showNodal && <NodalCorrectionPanel />}
-      {showSpectrum && <FrequencySpectrum />}
+
+      {/* Lazy-loaded visualizations */}
+      <Suspense fallback={<LoadingFallback />}>
+        {showAccuracyComparison && <AccuracyComparison />}
+        {showKingTidePredictor && <KingTidePredictor />}
+        {showStationComparison && <StationComparison />}
+        {showRangeChart && <TidalRangeChart />}
+        {showPieChart && <ConstituentPieChart />}
+        {showWaveform && <WaveformDecomposition />}
+        {showCalendar && <SpringNeapCalendar />}
+        {showTable && <ConstituentTable />}
+        {showExtremes && <TideExtremesPanel />}
+        {showNodal && <NodalCorrectionPanel />}
+        {showSpectrum && <FrequencySpectrum />}
+      </Suspense>
 
       {/* Info Panel */}
       <ConstituentInfoPanel
@@ -207,20 +222,20 @@ export function HarmonicsPanel() {
         onClose={() => setSelectedConstituent(null)}
       />
 
-      {/* Doodson Explorer */}
-      {showDoodsonExplorer && (
-        <DoodsonExplorer onClose={() => setShowDoodsonExplorer(false)} />
-      )}
+      {/* Lazy-loaded modals */}
+      <Suspense fallback={null}>
+        {showDoodsonExplorer && (
+          <DoodsonExplorer onClose={() => setShowDoodsonExplorer(false)} />
+        )}
 
-      {/* Phase Animation */}
-      {showPhaseAnimation && (
-        <PhaseAnimation onClose={() => setShowPhaseAnimation(false)} />
-      )}
+        {showPhaseAnimation && (
+          <PhaseAnimation onClose={() => setShowPhaseAnimation(false)} />
+        )}
 
-      {/* Data Export */}
-      {showExport && (
-        <DataExport onClose={() => setShowExport(false)} />
-      )}
+        {showExport && (
+          <DataExport onClose={() => setShowExport(false)} />
+        )}
+      </Suspense>
     </div>
   );
 }
