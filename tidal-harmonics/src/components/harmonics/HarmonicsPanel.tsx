@@ -73,6 +73,7 @@ const AnchorScopeCalculator = lazy(() => import('./AnchorScopeCalculator').then(
 const TidalPrismCalculator = lazy(() => import('./TidalPrismCalculator').then(m => ({ default: m.TidalPrismCalculator })));
 const MarinaAccessPlanner = lazy(() => import('./MarinaAccessPlanner').then(m => ({ default: m.MarinaAccessPlanner })));
 const BridgeClearanceCalculator = lazy(() => import('./BridgeClearanceCalculator').then(m => ({ default: m.BridgeClearanceCalculator })));
+const TidalStreamAtlas = lazy(() => import('./TidalStreamAtlas').then(m => ({ default: m.TidalStreamAtlas })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -155,6 +156,7 @@ export function HarmonicsPanel() {
   const [showTidalPrism, setShowTidalPrism] = useState(false);
   const [showMarinaAccess, setShowMarinaAccess] = useState(false);
   const [showBridgeClearance, setShowBridgeClearance] = useState(false);
+  const [showStreamAtlas, setShowStreamAtlas] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -759,6 +761,14 @@ export function HarmonicsPanel() {
         >
           🌉
         </button>
+        <button
+          onClick={() => setShowStreamAtlas(true)}
+          aria-label="Tidal stream atlas"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="View tidal stream patterns throughout the tidal cycle"
+        >
+          🔄
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -952,6 +962,10 @@ export function HarmonicsPanel() {
 
         {showBridgeClearance && (
           <BridgeClearanceCalculator onClose={() => setShowBridgeClearance(false)} />
+        )}
+
+        {showStreamAtlas && (
+          <TidalStreamAtlas onClose={() => setShowStreamAtlas(false)} />
         )}
       </Suspense>
     </div>
