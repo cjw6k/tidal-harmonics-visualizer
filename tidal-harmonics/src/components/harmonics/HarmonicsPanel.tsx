@@ -55,6 +55,7 @@ const TidalResonance = lazy(() => import('./TidalResonance').then(m => ({ defaul
 const MoonPhaseCalendar = lazy(() => import('./MoonPhaseCalendar').then(m => ({ default: m.MoonPhaseCalendar })));
 const EmbeddableTideWidget = lazy(() => import('./EmbeddableTideWidget').then(m => ({ default: m.EmbeddableTideWidget })));
 const TidalDatumConverter = lazy(() => import('./TidalDatumConverter').then(m => ({ default: m.TidalDatumConverter })));
+const BeatPatternVisualizer = lazy(() => import('./BeatPatternVisualizer').then(m => ({ default: m.BeatPatternVisualizer })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -119,6 +120,7 @@ export function HarmonicsPanel() {
   const [showMoonCalendar, setShowMoonCalendar] = useState(false);
   const [showEmbedWidget, setShowEmbedWidget] = useState(false);
   const [showDatumConverter, setShowDatumConverter] = useState(false);
+  const [showBeatPattern, setShowBeatPattern] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -413,6 +415,14 @@ export function HarmonicsPanel() {
         >
           🔄
         </button>
+        <button
+          onClick={() => setShowBeatPattern(true)}
+          aria-label="Beat pattern visualizer"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Constituent beat patterns"
+        >
+          〰️
+        </button>
       </div>
 
       {/* Toggle buttons - row 3 */}
@@ -700,6 +710,10 @@ export function HarmonicsPanel() {
 
         {showDatumConverter && (
           <TidalDatumConverter onClose={() => setShowDatumConverter(false)} />
+        )}
+
+        {showBeatPattern && (
+          <BeatPatternVisualizer onClose={() => setShowBeatPattern(false)} />
         )}
       </Suspense>
     </div>
