@@ -58,6 +58,21 @@ function groupStationsByCountry(stations: TideStation[]): Map<string, TideStatio
   return sorted;
 }
 
+// Calculate distance between two coordinates using Haversine formula
+function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371; // Earth's radius in km
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
 export function StationSelector() {
   const stations = useHarmonicsStore((s) => s.stations);
   const selectedStation = useHarmonicsStore((s) => s.selectedStation);
@@ -66,6 +81,8 @@ export function StationSelector() {
   const toggleFavorite = useHarmonicsStore((s) => s.toggleFavorite);
   const [searchQuery, setSearchQuery] = useState('');
   const [showCopied, setShowCopied] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
   const handleShare = useCallback(async () => {
     const success = await copyStationUrl();
@@ -74,6 +91,58 @@ export function StationSelector() {
       setTimeout(() => setShowCopied(false), 2000);
     }
   }, []);
+
+  const findNearest = useCallback(() => {
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation not supported');
+      setTimeout(() => setLocationError(null), 3000);
+      return;
+    }
+
+    setLocating(true);
+    setLocationError(null);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+
+        // Find nearest station using reduce
+        const nearest = stations.reduce<{ station: typeof stations[0] | null; distance: number }>(
+          (acc, station) => {
+            const distance = haversineDistance(latitude, longitude, station.lat, station.lon);
+            if (acc.station === null || distance < acc.distance) {
+              return { station, distance };
+            }
+            return acc;
+          },
+          { station: null, distance: Infinity }
+        );
+
+        if (nearest.station) {
+          selectStation(nearest.station.id);
+        }
+        setLocating(false);
+      },
+      (error) => {
+        setLocating(false);
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            setLocationError('Location permission denied');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            setLocationError('Location unavailable');
+            break;
+          case error.TIMEOUT:
+            setLocationError('Location request timed out');
+            break;
+          default:
+            setLocationError('Could not get location');
+        }
+        setTimeout(() => setLocationError(null), 3000);
+      },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+    );
+  }, [stations, selectStation]);
 
   const tidalType = selectedStation ? getTidalType(selectedStation) : null;
   const isCurrentFavorite = selectedStation ? favoriteStations.includes(selectedStation.id) : false;
@@ -173,6 +242,30 @@ export function StationSelector() {
             </>
           )}
         </select>
+        <button
+          onClick={findNearest}
+          disabled={locating}
+          className="px-2 py-2 rounded border bg-slate-700 border-slate-600 text-slate-400 hover:text-green-400 transition-colors focus:outline-none focus:ring-2 focus:ring-green-400 relative disabled:opacity-50"
+          title="Find nearest station"
+          aria-label="Find nearest station"
+        >
+          {locating ? (
+            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+          ) : (
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          )}
+          {locationError && (
+            <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-red-600 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+              {locationError}
+            </span>
+          )}
+        </button>
         {selectedStation && (
           <>
             <button
