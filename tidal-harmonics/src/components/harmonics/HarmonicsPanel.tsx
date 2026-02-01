@@ -416,10 +416,15 @@ export function HarmonicsPanel() {
           setActiveTab(tab.id);
         }
       }
+
+      // Backtick to toggle panel minimize/expand
+      if (e.key === '`' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        togglePanelMinimized();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [searchQuery]);
+  }, [searchQuery, togglePanelMinimized]);
 
   // All modal/panel states
   const [showAccuracyComparison, setShowAccuracyComparison] = useState(false);
@@ -840,7 +845,7 @@ export function HarmonicsPanel() {
         {/* Expand button */}
         <button
           onClick={togglePanelMinimized}
-          title="Expand control panel"
+          title="Expand control panel (press `)"
           className="bg-slate-800/95 backdrop-blur rounded-lg p-3 shadow-lg hover:bg-slate-700/95 transition-colors flex items-center gap-2 text-slate-200"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -906,7 +911,7 @@ export function HarmonicsPanel() {
           <UnitToggle />
           <button
             onClick={togglePanelMinimized}
-            title="Minimize control panel"
+            title="Minimize control panel (press `)"
             className="p-1.5 rounded bg-slate-700 text-slate-400 hover:text-slate-200 hover:bg-slate-600 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
