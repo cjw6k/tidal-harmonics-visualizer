@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTimeStore } from '@/stores/timeStore';
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
 import { predictTide, getTidalRange, findExtremes, predictTideSeries } from '@/lib/harmonics';
 import { getTidalType, getTidalTypeLabel } from '@/data/stations';
+import { TidalTypeExplainer } from './TidalTypeExplainer';
 import { format, formatDistanceToNow } from 'date-fns';
 
 /**
@@ -18,6 +19,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 export function TidalStatistics() {
   const epoch = useTimeStore((s) => s.epoch);
   const station = useHarmonicsStore((s) => s.selectedStation);
+  const [showTypeExplainer, setShowTypeExplainer] = useState(false);
 
   const stats = useMemo(() => {
     if (!station) return null;
@@ -110,16 +112,21 @@ export function TidalStatistics() {
       {/* Tidal type */}
       <div className="flex justify-between text-xs mb-2">
         <span className="text-slate-500">Type:</span>
-        <span className={`px-1.5 py-0.5 rounded text-xs ${
-          stats.tidalType === 'semidiurnal' ? 'bg-blue-500/20 text-blue-400' :
-          stats.tidalType === 'mixed-semidiurnal' ? 'bg-cyan-500/20 text-cyan-400' :
-          stats.tidalType === 'mixed-diurnal' ? 'bg-green-500/20 text-green-400' :
-          'bg-amber-500/20 text-amber-400'
-        }`}>
+        <button
+          onClick={() => setShowTypeExplainer(true)}
+          className={`px-1.5 py-0.5 rounded text-xs cursor-pointer hover:opacity-80 transition-opacity ${
+            stats.tidalType === 'semidiurnal' ? 'bg-blue-500/20 text-blue-400' :
+            stats.tidalType === 'mixed-semidiurnal' ? 'bg-cyan-500/20 text-cyan-400' :
+            stats.tidalType === 'mixed-diurnal' ? 'bg-green-500/20 text-green-400' :
+            'bg-amber-500/20 text-amber-400'
+          }`}
+          title="Click to learn about tidal types"
+        >
           {stats.tidalType === 'semidiurnal' ? 'Semidiurnal' :
            stats.tidalType === 'mixed-semidiurnal' ? 'Mixed (Semi)' :
            stats.tidalType === 'mixed-diurnal' ? 'Mixed (Di)' : 'Diurnal'}
-        </span>
+          <span className="ml-1 opacity-60">?</span>
+        </button>
       </div>
 
       {/* Dominant constituents */}
@@ -137,6 +144,11 @@ export function TidalStatistics() {
           ))}
         </div>
       </div>
+
+      {/* Tidal Type Explainer Modal */}
+      {showTypeExplainer && (
+        <TidalTypeExplainer onClose={() => setShowTypeExplainer(false)} />
+      )}
     </div>
   );
 }
