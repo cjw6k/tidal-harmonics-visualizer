@@ -1,5 +1,9 @@
-import { useState, lazy, Suspense, useMemo, useRef, useEffect } from 'react';
+import { useState, lazy, Suspense, useMemo, useRef, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
+
+// LocalStorage key for recent tools
+const RECENT_TOOLS_KEY = 'tidal-harmonics-recent-tools';
+const MAX_RECENT_TOOLS = 6;
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
 import { StationSelector } from './StationSelector';
 import { ConstituentToggles } from './ConstituentToggles';
@@ -279,6 +283,37 @@ export function HarmonicsPanel() {
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
 
+  // Recently used tools
+  const [recentTools, setRecentTools] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem(RECENT_TOOLS_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Add tool to recent list
+  const addToRecent = useCallback((toolId: string) => {
+    setRecentTools(prev => {
+      const filtered = prev.filter(id => id !== toolId);
+      const updated = [toolId, ...filtered].slice(0, MAX_RECENT_TOOLS);
+      try {
+        localStorage.setItem(RECENT_TOOLS_KEY, JSON.stringify(updated));
+      } catch {
+        // Ignore storage errors
+      }
+      return updated;
+    });
+  }, []);
+
+  // Get recent tool objects
+  const recentToolObjects = useMemo(() => {
+    return recentTools
+      .map(id => TOOLS.find(t => t.id === id))
+      .filter((t): t is ToolDef => t !== undefined);
+  }, [recentTools]);
+
   // Filter tools based on search query
   const filteredTools = useMemo(() => {
     if (!searchQuery.trim()) return [];
@@ -511,7 +546,11 @@ export function HarmonicsPanel() {
       estuary: () => setShowEstuary(true),
       drying: () => setShowDryingHeights(true),
     };
-    toolActions[toolId]?.();
+    const action = toolActions[toolId];
+    if (action) {
+      action();
+      addToRecent(toolId);
+    }
   };
 
   // Render tools for the active tab
@@ -716,6 +755,30 @@ export function HarmonicsPanel() {
         )}
         {searchQuery && filteredTools.length === 0 && (
           <div className="mt-2 text-xs text-slate-500">No tools found</div>
+        )}
+        {/* Recent Tools */}
+        {!searchQuery && recentToolObjects.length > 0 && (
+          <div className="mt-2 border-t border-slate-700 pt-2">
+            <div className="text-[10px] text-slate-500 mb-1 flex items-center gap-1">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Recent
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {recentToolObjects.map((tool) => (
+                <button
+                  key={tool.id}
+                  onClick={() => handleToolClick(tool.id)}
+                  title={tool.tooltip}
+                  className="px-2 py-1 rounded text-xs bg-slate-600 text-slate-200 hover:bg-slate-500 transition-colors flex items-center gap-1"
+                >
+                  <span className="text-[10px] text-slate-400">{TABS.find(t => t.id === tool.tab)?.icon}</span>
+                  {tool.label}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
       </div>
 
