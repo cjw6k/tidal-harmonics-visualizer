@@ -462,27 +462,39 @@ export function HarmonicsPanel() {
   const [showPhotoPlanner, setShowPhotoPlanner] = useState(false);
   const [showSolunar, setShowSolunar] = useState(false);
 
-  // Count open panels
-  const openPanelCount = useMemo(() => {
-    const panels = [
-      showPhasorDiagram, showTideCurve, showAccuracyComparison, showWaveform,
-      showSpectrum, showTimeline, showClock, showBeatPattern, showWaterShader,
-      showLiveTide, showTideRate, showStationComparison, showRangeChart,
-      showPieChart, showFamilies, showTable, showMap, showExtremes,
-      showKingTidePredictor, showCalendar, showNodal, showAlerts, showLunar,
-      showCoefficient, showSeaLevelRise, showHistorical, showEnergy, showBarometric,
-      showSolunar,
-    ];
-    return panels.filter(Boolean).length;
+  // Count active toggle panels per tab
+  const activeCountByTab = useMemo((): Record<TabId, number> => {
+    return {
+      charts: [
+        showPhasorDiagram, showTideCurve, showAccuracyComparison, showWaveform,
+        showSpectrum, showTimeline, showClock, showWaterShader,
+        showLiveTide, showTideRate, showStationComparison, showRangeChart,
+        showPieChart, showFamilies, showTable, showMap,
+      ].filter(Boolean).length,
+      predict: [
+        showExtremes, showKingTidePredictor, showCalendar, showNodal,
+        showAlerts, showLunar, showCoefficient,
+      ].filter(Boolean).length,
+      learn: 0,  // Learn tools are mostly modals, not toggles
+      nav: 0,    // Nav tools are mostly modals, not toggles
+      plan: [
+        showBarometric, showSeaLevelRise, showHistorical, showEnergy, showSolunar,
+      ].filter(Boolean).length,
+    };
   }, [
     showPhasorDiagram, showTideCurve, showAccuracyComparison, showWaveform,
-    showSpectrum, showTimeline, showClock, showBeatPattern, showWaterShader,
+    showSpectrum, showTimeline, showClock, showWaterShader,
     showLiveTide, showTideRate, showStationComparison, showRangeChart,
     showPieChart, showFamilies, showTable, showMap, showExtremes,
     showKingTidePredictor, showCalendar, showNodal, showAlerts, showLunar,
-    showCoefficient, showSeaLevelRise, showHistorical, showEnergy, showBarometric,
-    showSolunar,
+    showCoefficient, showBarometric, showSeaLevelRise, showHistorical,
+    showEnergy, showSolunar,
   ]);
+
+  // Count open panels (total)
+  const openPanelCount = useMemo(() => {
+    return Object.values(activeCountByTab).reduce((sum, count) => sum + (typeof count === 'number' ? count : 0), 0);
+  }, [activeCountByTab]);
 
   // Close all toggle panels
   const closeAllPanels = useCallback(() => {
@@ -989,7 +1001,14 @@ export function HarmonicsPanel() {
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
               }`}
             >
-              <span className="block" aria-hidden="true">{tab.icon}</span>
+              <span className="block relative" aria-hidden="true">
+                {tab.icon}
+                {activeCountByTab[tab.id] > 0 && (
+                  <span className="absolute -top-1 -right-2 bg-blue-500 text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold">
+                    {activeCountByTab[tab.id]}
+                  </span>
+                )}
+              </span>
               <span className="block mt-0.5">{tab.label}</span>
               <span className={`block text-[10px] ${activeTab === tab.id ? 'text-slate-300' : 'text-slate-500'}`}>
                 {tab.count}
