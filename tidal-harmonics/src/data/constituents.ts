@@ -14,7 +14,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 28.984104,
     period: 12.4206012,
     family: 'semidiurnal',
-    description: 'Largest tidal constituent, caused by the Moon',
+    description: 'The dominant tidal constituent, responsible for roughly 70% of total tidal range at most locations. Caused by the gravitational attraction of the Moon as it orbits Earth, producing two high tides per lunar day (24h 50m). The slightly longer period than 12 hours causes tides to shift ~50 minutes later each day.',
   },
   S2: {
     symbol: 'S2',
@@ -23,7 +23,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 30.0,
     period: 12.0,
     family: 'semidiurnal',
-    description: 'Caused by the Sun, creates spring/neap cycle with M2',
+    description: 'The principal solar tide, caused by the Sun gravitational pull. Though the Sun is more massive than the Moon, its greater distance makes S2 only about 46% as strong as M2. When S2 aligns with M2 (new/full moon), spring tides occur; when 90° out of phase (quarter moons), neap tides result.',
   },
   N2: {
     symbol: 'N2',
@@ -32,7 +32,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 28.439730,
     period: 12.6583,
     family: 'semidiurnal',
-    description: 'Due to variation in Moon distance (elliptic orbit)',
+    description: 'Caused by the elliptical shape of the Moon orbit. As the Moon approaches perigee (closest to Earth), tidal forces strengthen. N2 accounts for this ~13% variation in lunar distance. When perigee coincides with spring tides, exceptionally high "king tides" (perigean spring tides) occur.',
   },
   K2: {
     symbol: 'K2',
@@ -41,7 +41,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 30.082138,
     period: 11.9672,
     family: 'semidiurnal',
-    description: 'Due to changes in declination of Sun and Moon',
+    description: 'Results from the changing declination (north-south position) of both Sun and Moon as they move above and below the equator. K2 modulates the daily inequality of tides—the difference between successive high tides or low tides. Strongest when Sun or Moon is at maximum declination (~23.5°).',
   },
   NU2: {
     symbol: 'NU2',
@@ -115,7 +115,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 15.041069,
     period: 23.9345,
     family: 'diurnal',
-    description: 'Due to declination of Sun and Moon',
+    description: 'The largest diurnal constituent, caused by declination of both Sun and Moon. When the Moon or Sun is north or south of the equator, it creates an asymmetry in tidal bulges, producing one high tide larger than the other. K1 is particularly important at higher latitudes and in areas with mixed tidal patterns.',
   },
   O1: {
     symbol: 'O1',
@@ -124,7 +124,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 13.943035,
     period: 25.8193,
     family: 'diurnal',
-    description: 'Main lunar diurnal constituent',
+    description: 'The principal diurnal tide from the Moon, arising from lunar declination changes over the tropical month (27.3 days). Together with K1, O1 determines the diurnal inequality—why consecutive high (or low) tides differ in height. Dominant in regions with "diurnal" tidal patterns like the Gulf of Mexico.',
   },
   P1: {
     symbol: 'P1',
@@ -133,7 +133,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 14.958931,
     period: 24.0659,
     family: 'diurnal',
-    description: 'Main solar diurnal constituent',
+    description: 'The solar counterpart to O1, caused by the Sun declination variation over the year. P1 amplitude peaks at the solstices when the Sun reaches maximum declination (±23.5°). Its exact 24-hour period (nearly) makes it nearly indistinguishable from K1 in short records, requiring year-long observations to separate.',
   },
   Q1: {
     symbol: 'Q1',
@@ -142,7 +142,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 13.398661,
     period: 26.8684,
     family: 'diurnal',
-    description: 'Due to Moon elliptic orbit',
+    description: 'The diurnal equivalent of N2—caused by the Moon elliptical orbit modulating the lunar diurnal tide. Q1 varies the diurnal inequality as the Moon moves between perigee and apogee. Most noticeable in regions with strong diurnal tides.',
   },
   J1: {
     symbol: 'J1',
@@ -207,7 +207,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 1.098033,
     period: 327.8599,
     family: 'long-period',
-    description: 'Fortnightly tide due to Moon declination',
+    description: 'A fortnightly (~13.7 day) oscillation caused by the Moon crossing the equator twice per month. As the Moon moves from maximum north declination to maximum south and back, it creates a slow rise and fall in mean sea level. Mf contributes to the fortnightly modulation of tidal range.',
   },
   Mm: {
     symbol: 'Mm',
@@ -216,7 +216,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 0.544375,
     period: 661.3092,
     family: 'long-period',
-    description: 'Monthly tide due to Moon distance variation',
+    description: 'A monthly (~27.6 day) tide caused by the Moon elliptical orbit. As the Moon moves between perigee (closest) and apogee (farthest), the average tidal force changes, creating a monthly oscillation in mean water level. Mm has a small amplitude but can be detected in long tide records.',
   },
   Ssa: {
     symbol: 'Ssa',
@@ -225,7 +225,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 0.082137,
     period: 4383.0521,
     family: 'long-period',
-    description: 'Semiannual tide due to Sun declination',
+    description: 'A semiannual (~182.6 day) oscillation caused by the Sun declination cycle. Sea level is slightly higher at the equinoxes when the Sun is over the equator. Also includes effects from seasonal changes in water density, wind patterns, and atmospheric pressure.',
   },
   Sa: {
     symbol: 'Sa',
@@ -234,7 +234,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 0.041069,
     period: 8766.1527,
     family: 'long-period',
-    description: 'Annual tide due to solar heating and Earth orbit',
+    description: 'The annual (~365.25 day) tide, primarily caused by seasonal heating/cooling of ocean water, changes in prevailing winds, and the elliptical shape of Earth orbit around the Sun. Sa is often the largest long-period constituent, with amplitudes of 10-30 cm at many locations.',
   },
   MSf: {
     symbol: 'MSf',
@@ -254,7 +254,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 57.968208,
     period: 6.2103,
     family: 'shallow-water',
-    description: 'First harmonic of M2 in shallow water',
+    description: 'The first overtide of M2, generated when the tidal wave encounters shallow water and bottom friction. As water depth decreases, the wave becomes nonlinear: the crest speeds up (shorter under water) and the trough slows down, distorting the sinusoidal shape. M4 is the dominant "quarter-diurnal" constituent in estuaries and harbors.',
   },
   MS4: {
     symbol: 'MS4',
@@ -263,7 +263,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 58.984104,
     period: 6.1033,
     family: 'shallow-water',
-    description: 'Compound of M2 and S2',
+    description: 'A compound tide arising from the nonlinear interaction between M2 and S2 in shallow water. MS4 varies with the spring-neap cycle, being largest during spring tides. It causes the flood-ebb asymmetry to change throughout the month, important for sediment transport in estuaries.',
   },
   M6: {
     symbol: 'M6',
@@ -272,7 +272,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 86.952313,
     period: 4.1402,
     family: 'shallow-water',
-    description: 'Second harmonic of M2 in shallow water',
+    description: 'The second overtide of M2 (~4.14 hour period), generated in very shallow water where nonlinear effects become even more pronounced. M6 indicates strongly distorted tides with steep flood currents and prolonged slack water periods. Important in upper estuaries and tidal flats.',
   },
   MN4: {
     symbol: 'MN4',
