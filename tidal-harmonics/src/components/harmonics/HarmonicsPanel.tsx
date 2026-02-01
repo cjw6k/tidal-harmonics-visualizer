@@ -100,6 +100,7 @@ const TidalGlossary = lazy(() => import('./TidalGlossary').then(m => ({ default:
 const MarineWeatherPanel = lazy(() => import('./MarineWeatherPanel').then(m => ({ default: m.MarineWeatherPanel })));
 const LiveTideDisplay = lazy(() => import('./LiveTideDisplay').then(m => ({ default: m.LiveTideDisplay })));
 const PhotoTimingPlanner = lazy(() => import('./PhotoTimingPlanner').then(m => ({ default: m.PhotoTimingPlanner })));
+const ShellfishHarvestPlanner = lazy(() => import('./ShellfishHarvestPlanner').then(m => ({ default: m.ShellfishHarvestPlanner })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -209,6 +210,7 @@ export function HarmonicsPanel() {
   const [showMarineWeather, setShowMarineWeather] = useState(false);
   const [showLiveTide, setShowLiveTide] = useState(false);
   const [showPhotoPlanner, setShowPhotoPlanner] = useState(false);
+  const [showShellfishPlanner, setShowShellfishPlanner] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -1029,6 +1031,14 @@ export function HarmonicsPanel() {
         >
           📷
         </button>
+        <button
+          onClick={() => setShowShellfishPlanner(true)}
+          aria-label="Shellfish harvest planner"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Find optimal shellfish harvesting windows"
+        >
+          🦪
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -1330,6 +1340,10 @@ export function HarmonicsPanel() {
 
         {showPhotoPlanner && (
           <PhotoTimingPlanner onClose={() => setShowPhotoPlanner(false)} />
+        )}
+
+        {showShellfishPlanner && (
+          <ShellfishHarvestPlanner onClose={() => setShowShellfishPlanner(false)} />
         )}
       </Suspense>
     </div>
