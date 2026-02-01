@@ -94,6 +94,7 @@ const StormSurgeEstimator = lazy(() => import('./StormSurgeEstimator').then(m =>
 const TidalGateScheduler = lazy(() => import('./TidalGateScheduler').then(m => ({ default: m.TidalGateScheduler })));
 const CoriolisEffectPanel = lazy(() => import('./CoriolisEffectPanel').then(m => ({ default: m.CoriolisEffectPanel })));
 const MeanSeaLevelTracker = lazy(() => import('./MeanSeaLevelTracker').then(m => ({ default: m.MeanSeaLevelTracker })));
+const TidalRaceWarning = lazy(() => import('./TidalRaceWarning').then(m => ({ default: m.TidalRaceWarning })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -197,6 +198,7 @@ export function HarmonicsPanel() {
   const [showTidalGate, setShowTidalGate] = useState(false);
   const [showCoriolis, setShowCoriolis] = useState(false);
   const [showMSLTracker, setShowMSLTracker] = useState(false);
+  const [showTidalRace, setShowTidalRace] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -969,6 +971,14 @@ export function HarmonicsPanel() {
         >
           📈
         </button>
+        <button
+          onClick={() => setShowTidalRace(true)}
+          aria-label="Tidal race warning"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Dangerous tidal races and overfalls"
+        >
+          ⚡
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -1246,6 +1256,10 @@ export function HarmonicsPanel() {
 
         {showMSLTracker && (
           <MeanSeaLevelTracker onClose={() => setShowMSLTracker(false)} />
+        )}
+
+        {showTidalRace && (
+          <TidalRaceWarning onClose={() => setShowTidalRace(false)} />
         )}
       </Suspense>
     </div>
