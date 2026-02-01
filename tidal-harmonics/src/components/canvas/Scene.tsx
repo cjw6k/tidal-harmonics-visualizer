@@ -11,6 +11,8 @@ import { Lighting } from './Lighting';
 import { CameraController } from './CameraController';
 import { MoonOrbitPath } from './OrbitPath';
 import { ForceField } from './ForceField';
+import { AnnotationLayer } from '../tutorial/AnnotationLayer';
+import { useTutorialCamera } from '@/hooks/useTutorialCamera';
 
 function TimeUpdater() {
   const tick = useTimeStore((s) => s.tick);
@@ -39,6 +41,11 @@ function EarthWithTides() {
   return showTidalBulge ? <TidalEarth /> : <Earth />;
 }
 
+function TutorialCameraController() {
+  useTutorialCamera();
+  return null;
+}
+
 function SceneContent() {
   const showOrbits = useSceneStore((s) => s.showOrbits);
   const showForceVectors = useSceneStore((s) => s.showForceVectors);
@@ -46,6 +53,7 @@ function SceneContent() {
   return (
     <>
       <TimeUpdater />
+      <TutorialCameraController />
       <Lighting />
       <CameraController />
       <Suspense fallback={<Loader />}>
@@ -54,6 +62,7 @@ function SceneContent() {
         <Sun />
         {showOrbits && <MoonOrbitPath />}
         {showForceVectors && <ForceField />}
+        <AnnotationLayer />
       </Suspense>
     </>
   );
