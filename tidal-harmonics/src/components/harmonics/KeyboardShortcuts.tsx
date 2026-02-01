@@ -8,23 +8,58 @@ interface ShortcutDefinition {
   modifiers?: ('ctrl' | 'shift' | 'alt')[];
 }
 
-const SHORTCUTS: ShortcutDefinition[] = [
-  { key: 'p', description: 'Toggle phasor diagram' },
-  { key: 'c', description: 'Toggle tide curve' },
-  { key: 'u', description: 'Toggle units (metric/imperial)' },
-  { key: 'Space', description: 'Pause/resume time' },
-  { key: '←', description: 'Step back 1 hour' },
-  { key: '→', description: 'Step forward 1 hour' },
-  { key: '↑', description: 'Speed up time' },
-  { key: '↓', description: 'Slow down time' },
-  { key: '0', description: 'Reset to current time' },
-  { key: '1-9', description: 'Select station 1-9' },
-  { key: 'a', description: 'Enable all constituents' },
-  { key: 'n', description: 'Disable all (none)' },
-  { key: 'm', description: 'Major constituents only' },
-  { key: '?', description: 'Show this help' },
-  { key: 'Esc', description: 'Close panels/modals' },
+interface ShortcutGroup {
+  title: string;
+  shortcuts: ShortcutDefinition[];
+}
+
+const SHORTCUT_GROUPS: ShortcutGroup[] = [
+  {
+    title: 'Visualization',
+    shortcuts: [
+      { key: 'p', description: 'Toggle phasor diagram' },
+      { key: 'c', description: 'Toggle tide curve' },
+      { key: 'u', description: 'Toggle units (metric/imperial)' },
+    ]
+  },
+  {
+    title: 'Time Control',
+    shortcuts: [
+      { key: 'Space', description: 'Pause/resume time' },
+      { key: '←', description: 'Step back 1 hour' },
+      { key: '→', description: 'Step forward 1 hour' },
+      { key: '↑', description: 'Speed up time' },
+      { key: '↓', description: 'Slow down time' },
+      { key: '0', description: 'Reset to current time' },
+    ]
+  },
+  {
+    title: 'Constituents',
+    shortcuts: [
+      { key: 'a', description: 'Enable all constituents' },
+      { key: 'n', description: 'Disable all (none)' },
+      { key: 'm', description: 'Major constituents only' },
+    ]
+  },
+  {
+    title: 'Control Panel',
+    shortcuts: [
+      { key: '`', description: 'Toggle panel minimize/expand' },
+      { key: '1-5', description: 'Switch to tab 1-5' },
+      { key: 'K', description: 'Focus search', modifiers: ['ctrl'] },
+      { key: 'Esc', description: 'Clear search / close panels' },
+    ]
+  },
+  {
+    title: 'General',
+    shortcuts: [
+      { key: '?', description: 'Show this help' },
+    ]
+  },
 ];
+
+// Flat list for external use (e.g., detecting shortcut keys)
+export const ALL_SHORTCUTS: ShortcutDefinition[] = SHORTCUT_GROUPS.flatMap(g => g.shortcuts);
 
 interface KeyboardShortcutsProps {
   onClose: () => void;
@@ -45,17 +80,24 @@ export function KeyboardShortcuts({ onClose }: KeyboardShortcutsProps) {
           </button>
         </div>
 
-        <div className="space-y-1">
-          {SHORTCUTS.map((shortcut) => (
-            <div
-              key={shortcut.key}
-              className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-slate-800/50"
-            >
-              <span className="text-slate-300 text-sm">{shortcut.description}</span>
-              <kbd className="bg-slate-700 px-2 py-1 rounded text-xs font-mono text-slate-200 min-w-[2rem] text-center">
-                {shortcut.modifiers?.map(m => m === 'ctrl' ? '⌘/' : m === 'shift' ? '⇧' : '⌥').join('')}
-                {shortcut.key}
-              </kbd>
+        <div className="space-y-4">
+          {SHORTCUT_GROUPS.map((group) => (
+            <div key={group.title}>
+              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">{group.title}</h3>
+              <div className="space-y-0.5">
+                {group.shortcuts.map((shortcut) => (
+                  <div
+                    key={shortcut.key}
+                    className="flex items-center justify-between py-1 px-2 rounded hover:bg-slate-800/50"
+                  >
+                    <span className="text-slate-300 text-sm">{shortcut.description}</span>
+                    <kbd className="bg-slate-700 px-2 py-0.5 rounded text-xs font-mono text-slate-200 min-w-[2rem] text-center">
+                      {shortcut.modifiers?.map(m => m === 'ctrl' ? '⌘/' : m === 'shift' ? '⇧' : '⌥').join('')}
+                      {shortcut.key}
+                    </kbd>
+                  </div>
+                ))}
+              </div>
             </div>
           ))}
         </div>
