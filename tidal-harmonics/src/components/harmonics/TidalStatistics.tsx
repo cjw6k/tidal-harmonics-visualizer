@@ -5,6 +5,7 @@ import { predictTide, getTidalRange, findExtremes, predictTideSeries } from '@/l
 import { getTidalType, getTidalTypeLabel } from '@/data/stations';
 import { TidalTypeExplainer } from './TidalTypeExplainer';
 import { format, formatDistanceToNow } from 'date-fns';
+import { formatHeight, getHeightUnit } from '@/lib/units';
 
 /**
  * Tidal Statistics Panel
@@ -19,7 +20,9 @@ import { format, formatDistanceToNow } from 'date-fns';
 export function TidalStatistics() {
   const epoch = useTimeStore((s) => s.epoch);
   const station = useHarmonicsStore((s) => s.selectedStation);
+  const unitSystem = useHarmonicsStore((s) => s.unitSystem);
   const [showTypeExplainer, setShowTypeExplainer] = useState(false);
+  const unit = getHeightUnit(unitSystem);
 
   const stats = useMemo(() => {
     if (!station) return null;
@@ -69,9 +72,9 @@ export function TidalStatistics() {
       <div className="flex items-center justify-between mb-3">
         <div>
           <span className="text-2xl font-bold text-white">
-            {stats.currentHeight.toFixed(2)}
+            {formatHeight(stats.currentHeight, unitSystem, { showUnit: false })}
           </span>
-          <span className="text-slate-400 text-sm ml-1">m</span>
+          <span className="text-slate-400 text-sm ml-1">{unit}</span>
         </div>
         <div className={`flex items-center gap-1 px-2 py-1 rounded ${
           stats.isRising ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'
@@ -85,9 +88,9 @@ export function TidalStatistics() {
       <div className="flex justify-between text-xs mb-2">
         <span className="text-slate-500">Today's Range:</span>
         <span className="text-white">
-          {stats.range.minHeight.toFixed(2)}m to {stats.range.maxHeight.toFixed(2)}m
+          {formatHeight(stats.range.minHeight, unitSystem)} to {formatHeight(stats.range.maxHeight, unitSystem)}
           <span className="text-slate-400 ml-1">
-            ({(stats.range.maxHeight - stats.range.minHeight).toFixed(2)}m)
+            ({formatHeight(stats.range.maxHeight - stats.range.minHeight, unitSystem)})
           </span>
         </span>
       </div>
@@ -100,7 +103,7 @@ export function TidalStatistics() {
               {extreme.type === 'high' ? '▲ High' : '▼ Low'}:
             </span>
             <span className="text-white">
-              {extreme.height.toFixed(2)}m at {format(extreme.time, 'HH:mm')}
+              {formatHeight(extreme.height, unitSystem)} at {format(extreme.time, 'HH:mm')}
               <span className="text-slate-500 ml-1">
                 ({formatDistanceToNow(extreme.time, { addSuffix: true })})
               </span>
@@ -137,7 +140,7 @@ export function TidalStatistics() {
             <span
               key={c.symbol}
               className="px-1.5 py-0.5 bg-slate-700 text-slate-300 rounded text-xs"
-              title={`${c.amplitude.toFixed(3)}m`}
+              title={formatHeight(c.amplitude, unitSystem, { precision: 3 })}
             >
               {c.symbol}
             </span>

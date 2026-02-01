@@ -3,6 +3,8 @@ import type { TideStation } from '@/types/harmonics';
 import { STATIONS } from '@/data/stations';
 import { MAJOR_CONSTITUENTS } from '@/data/constituents';
 
+export type UnitSystem = 'metric' | 'imperial';
+
 interface HarmonicsState {
   stations: TideStation[];
   selectedStation: TideStation | null;
@@ -10,6 +12,7 @@ interface HarmonicsState {
   chartHoursRange: number;
   showPhasorDiagram: boolean;
   showTideCurve: boolean;
+  unitSystem: UnitSystem;
 
   selectStation: (id: string) => void;
   toggleConstituent: (symbol: string) => void;
@@ -17,6 +20,8 @@ interface HarmonicsState {
   setChartHoursRange: (hours: number) => void;
   togglePhasorDiagram: () => void;
   toggleTideCurve: () => void;
+  setUnitSystem: (system: UnitSystem) => void;
+  toggleUnitSystem: () => void;
 }
 
 export const useHarmonicsStore = create<HarmonicsState>((set, get) => ({
@@ -26,6 +31,7 @@ export const useHarmonicsStore = create<HarmonicsState>((set, get) => ({
   chartHoursRange: 24,
   showPhasorDiagram: true,
   showTideCurve: true,
+  unitSystem: 'metric',
 
   selectStation: (id) => {
     const station = get().stations.find((s) => s.id === id);
@@ -55,5 +61,15 @@ export const useHarmonicsStore = create<HarmonicsState>((set, get) => ({
 
   toggleTideCurve: () => {
     set((state) => ({ showTideCurve: !state.showTideCurve }));
+  },
+
+  setUnitSystem: (system) => {
+    set({ unitSystem: system });
+  },
+
+  toggleUnitSystem: () => {
+    set((state) => ({
+      unitSystem: state.unitSystem === 'metric' ? 'imperial' : 'metric',
+    }));
   },
 }));

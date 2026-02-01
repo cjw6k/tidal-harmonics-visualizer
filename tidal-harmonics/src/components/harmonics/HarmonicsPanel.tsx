@@ -6,6 +6,7 @@ import { PhasorDiagram } from './PhasorDiagram';
 import { TideCurve } from './TideCurve';
 import { TidalStatistics } from './TidalStatistics';
 import { ConstituentInfoPanel } from './ConstituentInfoPanel';
+import { UnitToggle } from './UnitToggle';
 
 // Lazy load modal/panel components that aren't immediately visible
 const DoodsonExplorer = lazy(() => import('./DoodsonExplorer').then(m => ({ default: m.DoodsonExplorer })));
@@ -61,7 +62,12 @@ export function HarmonicsPanel() {
     <div className="absolute bottom-4 right-4 flex flex-col gap-3 z-10 max-w-[380px]">
       {/* Controls */}
       <div className="flex flex-col gap-2">
-        <StationSelector />
+        <div className="flex gap-2 items-center">
+          <div className="flex-1">
+            <StationSelector />
+          </div>
+          <UnitToggle />
+        </div>
         <TidalStatistics />
         <ConstituentToggles />
       </div>
