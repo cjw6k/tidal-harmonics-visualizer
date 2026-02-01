@@ -57,6 +57,7 @@ const EmbeddableTideWidget = lazy(() => import('./EmbeddableTideWidget').then(m 
 const TidalDatumConverter = lazy(() => import('./TidalDatumConverter').then(m => ({ default: m.TidalDatumConverter })));
 const BeatPatternVisualizer = lazy(() => import('./BeatPatternVisualizer').then(m => ({ default: m.BeatPatternVisualizer })));
 const UnderKeelClearance = lazy(() => import('./UnderKeelClearance').then(m => ({ default: m.UnderKeelClearance })));
+const IntertidalZoneExplorer = lazy(() => import('./IntertidalZoneExplorer').then(m => ({ default: m.IntertidalZoneExplorer })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -123,6 +124,7 @@ export function HarmonicsPanel() {
   const [showDatumConverter, setShowDatumConverter] = useState(false);
   const [showBeatPattern, setShowBeatPattern] = useState(false);
   const [showUKC, setShowUKC] = useState(false);
+  const [showIntertidal, setShowIntertidal] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -599,6 +601,14 @@ export function HarmonicsPanel() {
         >
           Alerts
         </button>
+        <button
+          onClick={() => setShowIntertidal(true)}
+          aria-label="Intertidal zone explorer"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Explore intertidal zones and tidepooling"
+        >
+          🦀
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -728,6 +738,10 @@ export function HarmonicsPanel() {
 
         {showUKC && (
           <UnderKeelClearance onClose={() => setShowUKC(false)} />
+        )}
+
+        {showIntertidal && (
+          <IntertidalZoneExplorer onClose={() => setShowIntertidal(false)} />
         )}
       </Suspense>
     </div>
