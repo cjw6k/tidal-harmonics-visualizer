@@ -13,6 +13,7 @@ import { useTimeStore } from '@/stores/timeStore';
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
 import { STATIONS, getTidalType } from '@/data/stations';
 import { getTidalRange } from '@/lib/harmonics';
+import { formatHeight, convertHeight, getHeightUnit } from '@/lib/units';
 import type { TidalType } from '@/data/stations';
 
 const TIDAL_TYPE_COLORS: Record<TidalType, string> = {
@@ -41,6 +42,8 @@ export function TidalRangeChart() {
   const epoch = useTimeStore((s) => s.epoch);
   const selectedStation = useHarmonicsStore((s) => s.selectedStation);
   const selectStation = useHarmonicsStore((s) => s.selectStation);
+  const unitSystem = useHarmonicsStore((s) => s.unitSystem);
+  const unit = getHeightUnit(unitSystem);
 
   const data = useMemo(() => {
     const now = new Date(epoch);
@@ -106,7 +109,7 @@ export function TidalRangeChart() {
               type="number"
               stroke="#64748b"
               tick={{ fontSize: 10 }}
-              tickFormatter={(v: number) => `${v.toFixed(1)}m`}
+              tickFormatter={(v: number) => `${convertHeight(v, unitSystem).toFixed(1)}${unit}`}
             />
             <YAxis
               type="category"
@@ -122,7 +125,7 @@ export function TidalRangeChart() {
                 borderRadius: '4px',
                 fontSize: '11px',
               }}
-              formatter={(value) => [`${Number(value).toFixed(2)}m`, 'Range']}
+              formatter={(value) => [formatHeight(Number(value), unitSystem), 'Range']}
               labelFormatter={(label) => String(label)}
             />
             <Bar
@@ -152,14 +155,14 @@ export function TidalRangeChart() {
         <div className="p-2 bg-slate-800/50 rounded">
           <span className="text-slate-500">Largest range:</span>
           <div className="text-white">
-            {data[0]?.name.split(',')[0]} ({data[0]?.range.toFixed(2)}m)
+            {data[0]?.name.split(',')[0]} ({data[0] ? formatHeight(data[0].range, unitSystem) : '-'})
           </div>
         </div>
         <div className="p-2 bg-slate-800/50 rounded">
           <span className="text-slate-500">Smallest range:</span>
           <div className="text-white">
             {data[data.length - 1]?.name.split(',')[0]} (
-            {data[data.length - 1]?.range.toFixed(2)}m)
+            {data.at(-1) ? formatHeight(data.at(-1)!.range, unitSystem) : '-'})
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { useTimeStore } from '@/stores/timeStore';
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
 import { findExtremes, predictTideSeries } from '@/lib/harmonics';
 import { format, formatDistanceToNow, isFuture, addHours } from 'date-fns';
+import { formatHeight } from '@/lib/units';
 
 interface TideExtremeDisplay {
   time: Date;
@@ -21,6 +22,7 @@ interface TideExtremeDisplay {
 export function TideExtremesPanel() {
   const epoch = useTimeStore((s) => s.epoch);
   const station = useHarmonicsStore((s) => s.selectedStation);
+  const unitSystem = useHarmonicsStore((s) => s.unitSystem);
 
   const extremes = useMemo(() => {
     if (!station) return [];
@@ -94,7 +96,7 @@ export function TideExtremesPanel() {
             </div>
             <div className="text-right">
               <div className="text-white text-lg font-mono">
-                {nextExtreme.height.toFixed(2)}m
+                {formatHeight(nextExtreme.height, unitSystem)}
               </div>
             </div>
           </div>
@@ -131,8 +133,8 @@ export function TideExtremesPanel() {
             <div className="text-slate-400 text-xs">
               {format(extreme.time, 'EEE h:mm a')}
             </div>
-            <div className="text-white font-mono w-16 text-right">
-              {extreme.height.toFixed(2)}m
+            <div className="text-white font-mono w-20 text-right">
+              {formatHeight(extreme.height, unitSystem)}
             </div>
           </div>
         ))}
@@ -143,11 +145,11 @@ export function TideExtremesPanel() {
         <div className="mt-3 p-2 bg-slate-800/50 rounded flex items-center justify-between text-xs">
           <span className="text-slate-500">Daily range:</span>
           <span className="text-white">
-            {(
+            {formatHeight(
               Math.max(...extremes.slice(0, 4).map((e) => e.height)) -
-              Math.min(...extremes.slice(0, 4).map((e) => e.height))
-            ).toFixed(2)}
-            m
+              Math.min(...extremes.slice(0, 4).map((e) => e.height)),
+              unitSystem
+            )}
           </span>
         </div>
       )}
