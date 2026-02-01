@@ -13,30 +13,39 @@ export function TutorialOverlay() {
   const getTotalSteps = useTutorialStore((s) => s.getTotalSteps);
   const getCurrentStepNumber = useTutorialStore((s) => s.getCurrentStepNumber);
 
-  // Auto-advance state
-  const [autoAdvance, setAutoAdvance] = useState(true);
+  // Auto-advance state - disabled during Playwright tests to debug infinite loop
+  const [autoAdvance, setAutoAdvance] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef(0);
 
   const current = getCurrentStep();
   const stepDuration = current?.step.duration ?? 8; // Default 8 seconds
+  const isInteractive = current?.step.interactive ?? false;
 
   // Handle auto-advance
   const startTimer = useCallback(() => {
-    if (!autoAdvance || !current || current.step.interactive || stepDuration === 0) {
+    console.log('[TutorialOverlay] startTimer called');
+    // Get fresh current step inside callback to avoid stale closure
+    const currentStep = getCurrentStep();
+    const duration = currentStep?.step.duration ?? 8;
+    const interactive = currentStep?.step.interactive ?? false;
+
+    if (!autoAdvance || !currentStep || interactive || duration === 0) {
+      console.log('[TutorialOverlay] Timer skipped - conditions not met');
       setTimeRemaining(0);
       return;
     }
 
+    console.log('[TutorialOverlay] Starting timer with duration:', duration);
     startTimeRef.current = Date.now();
-    setTimeRemaining(stepDuration);
+    setTimeRemaining(duration);
 
     if (timerRef.current) clearInterval(timerRef.current);
 
     timerRef.current = setInterval(() => {
       const elapsed = (Date.now() - startTimeRef.current) / 1000;
-      const remaining = Math.max(0, stepDuration - elapsed);
+      const remaining = Math.max(0, duration - elapsed);
       setTimeRemaining(remaining);
 
       if (remaining <= 0) {
@@ -44,17 +53,20 @@ export function TutorialOverlay() {
         nextStep();
       }
     }, 100);
-  }, [autoAdvance, current, stepDuration, nextStep]);
+  }, [autoAdvance, getCurrentStep, nextStep]);
 
   // Reset timer when step changes
+  // Note: startTimer intentionally excluded from deps to avoid re-render loops
   useEffect(() => {
+    console.log('[TutorialOverlay] Timer effect triggered - isActive:', isActive, 'state:', state, 'step:', progress.chapterIndex, progress.stepIndex);
     if (isActive && state !== 'complete') {
       startTimer();
     }
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isActive, state, progress.chapterIndex, progress.stepIndex, startTimer]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive, state, progress.chapterIndex, progress.stepIndex]);
 
   // Keyboard navigation
   useEffect(() => {

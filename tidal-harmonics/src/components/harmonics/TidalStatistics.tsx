@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTimeStore } from '@/stores/timeStore';
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
+import { useTutorialStore } from '@/stores/tutorialStore';
 import { predictTide, getTidalRange, findExtremes, predictTideSeries } from '@/lib/harmonics';
 import { getTidalType, getTidalTypeLabel } from '@/data/stations';
 import { TidalTypeExplainer } from './TidalTypeExplainer';
@@ -18,14 +19,18 @@ import { formatHeight, getHeightUnit } from '@/lib/units';
  * - Dominant constituents
  */
 export function TidalStatistics() {
-  const epoch = useTimeStore((s) => s.epoch);
+  const tutorialActive = useTutorialStore((s) => s.isActive);
+  // Conditionally subscribe to epoch only when tutorial is not active
+  // to avoid expensive re-renders during tutorial playback
+  const epoch = useTimeStore((s) => tutorialActive ? 0 : s.epoch);
   const station = useHarmonicsStore((s) => s.selectedStation);
   const unitSystem = useHarmonicsStore((s) => s.unitSystem);
   const [showTypeExplainer, setShowTypeExplainer] = useState(false);
   const unit = getHeightUnit(unitSystem);
 
+  // Compute stats (all hooks must be called before any return)
   const stats = useMemo(() => {
-    if (!station) return null;
+    if (!station || tutorialActive) return null;
 
     const now = new Date(epoch);
     const currentHeight = predictTide(station, now);
@@ -58,7 +63,12 @@ export function TidalStatistics() {
       tidalType,
       tidalTypeLabel: getTidalTypeLabel(tidalType),
     };
-  }, [epoch, station]);
+  }, [epoch, station, tutorialActive]);
+
+  // During tutorial, hide this panel
+  if (tutorialActive) {
+    return null;
+  }
 
   if (!station || !stats) {
     return null;

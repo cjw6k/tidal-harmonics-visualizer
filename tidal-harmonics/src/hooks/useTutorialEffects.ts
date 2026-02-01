@@ -18,135 +18,148 @@ interface SceneSnapshot {
   pulseEffect: boolean;
 }
 
+/**
+ * Manages tutorial step effects (scene settings, camera, time).
+ * Uses getState() for direct store access to avoid subscription-based re-render loops.
+ */
 export function useTutorialEffects() {
   const isActive = useTutorialStore((s) => s.isActive);
-  const getCurrentStep = useTutorialStore((s) => s.getCurrentStep);
-
-  // Scene store actions
-  const setTidalExaggeration = useSceneStore((s) => s.setTidalExaggeration);
-  const toggleTidalBulge = useSceneStore((s) => s.toggleTidalBulge);
-  const toggleForceVectors = useSceneStore((s) => s.toggleForceVectors);
-  const toggleOrbits = useSceneStore((s) => s.toggleOrbits);
-  const showTidalBulge = useSceneStore((s) => s.showTidalBulge);
-  const showForceVectors = useSceneStore((s) => s.showForceVectors);
-  const showOrbits = useSceneStore((s) => s.showOrbits);
-  const tidalExaggeration = useSceneStore((s) => s.tidalExaggeration);
-  const highlightMoon = useSceneStore((s) => s.highlightMoon);
-  const highlightSun = useSceneStore((s) => s.highlightSun);
-  const highlightEarth = useSceneStore((s) => s.highlightEarth);
-  const pulseEffect = useSceneStore((s) => s.pulseEffect);
-  const setHighlightMoon = useSceneStore((s) => s.setHighlightMoon);
-  const setHighlightSun = useSceneStore((s) => s.setHighlightSun);
-  const setHighlightEarth = useSceneStore((s) => s.setHighlightEarth);
-  const setPulseEffect = useSceneStore((s) => s.setPulseEffect);
-
-  // Time store actions
-  const play = useTimeStore((s) => s.play);
-  const pause = useTimeStore((s) => s.pause);
-  const setSpeed = useTimeStore((s) => s.setSpeed);
-  const playing = useTimeStore((s) => s.playing);
-  const speed = useTimeStore((s) => s.speed);
-
-  // Harmonics store
-  const visibleConstituents = useHarmonicsStore((s) => s.visibleConstituents);
-  const setAllConstituentsVisible = useHarmonicsStore((s) => s.setAllConstituentsVisible);
+  const progress = useTutorialStore((s) => s.progress);
 
   // Store original settings when tutorial starts
   const originalSettings = useRef<SceneSnapshot | null>(null);
 
-  // Capture original settings when tutorial starts
+  // Track applied step to avoid duplicate runs
+  const appliedStep = useRef<string | null>(null);
+
+  // Capture original settings when tutorial starts, restore when it ends
   useEffect(() => {
     if (isActive && !originalSettings.current) {
+      // Capture current state without subscribing
+      const scene = useSceneStore.getState();
+      const time = useTimeStore.getState();
+      const harmonics = useHarmonicsStore.getState();
+
       originalSettings.current = {
-        showTidalBulge,
-        tidalExaggeration,
-        showForceVectors,
-        showOrbits,
-        playing,
-        speed,
-        visibleConstituents: [...visibleConstituents],
-        highlightMoon,
-        highlightSun,
-        highlightEarth,
-        pulseEffect,
+        showTidalBulge: scene.showTidalBulge,
+        tidalExaggeration: scene.tidalExaggeration,
+        showForceVectors: scene.showForceVectors,
+        showOrbits: scene.showOrbits,
+        playing: time.playing,
+        speed: time.speed,
+        visibleConstituents: [...harmonics.visibleConstituents],
+        highlightMoon: scene.highlightMoon,
+        highlightSun: scene.highlightSun,
+        highlightEarth: scene.highlightEarth,
+        pulseEffect: scene.pulseEffect,
       };
     }
 
     // Restore settings when tutorial ends
     if (!isActive && originalSettings.current) {
       const orig = originalSettings.current;
+      const scene = useSceneStore.getState();
+      const time = useTimeStore.getState();
 
-      if (showTidalBulge !== orig.showTidalBulge) toggleTidalBulge();
-      setTidalExaggeration(orig.tidalExaggeration);
-      if (showForceVectors !== orig.showForceVectors) toggleForceVectors();
-      if (showOrbits !== orig.showOrbits) toggleOrbits();
-      if (orig.playing) play();
-      else pause();
-      setSpeed(orig.speed);
-      setAllConstituentsVisible(orig.visibleConstituents);
-      setHighlightMoon(orig.highlightMoon);
-      setHighlightSun(orig.highlightSun);
-      setHighlightEarth(orig.highlightEarth);
-      setPulseEffect(orig.pulseEffect);
+      // Restore scene settings
+      if (scene.showTidalBulge !== orig.showTidalBulge) {
+        useSceneStore.getState().toggleTidalBulge();
+      }
+      useSceneStore.getState().setTidalExaggeration(orig.tidalExaggeration);
+      if (scene.showForceVectors !== orig.showForceVectors) {
+        useSceneStore.getState().toggleForceVectors();
+      }
+      if (scene.showOrbits !== orig.showOrbits) {
+        useSceneStore.getState().toggleOrbits();
+      }
+      useSceneStore.getState().setHighlightMoon(orig.highlightMoon);
+      useSceneStore.getState().setHighlightSun(orig.highlightSun);
+      useSceneStore.getState().setHighlightEarth(orig.highlightEarth);
+      useSceneStore.getState().setPulseEffect(orig.pulseEffect);
+
+      // Restore time settings
+      if (orig.playing) {
+        useTimeStore.getState().play();
+      } else {
+        useTimeStore.getState().pause();
+      }
+      useTimeStore.getState().setSpeed(orig.speed);
+
+      // Restore harmonics
+      useHarmonicsStore.getState().setAllConstituentsVisible(orig.visibleConstituents);
 
       originalSettings.current = null;
     }
   }, [isActive]);
 
-  // Get current step info for dependency
-  const progress = useTutorialStore((s) => s.progress);
-
-  // Apply step-specific settings
+  // Apply step-specific settings when step changes
   useEffect(() => {
-    if (!isActive) return;
+    console.log('[useTutorialEffects] Effect triggered, isActive:', isActive, 'progress:', progress.chapterIndex, progress.stepIndex);
 
-    const current = getCurrentStep();
+    if (!isActive) {
+      appliedStep.current = null;
+      return;
+    }
+
+    const stepId = `${progress.chapterIndex}-${progress.stepIndex}`;
+    if (stepId === appliedStep.current) {
+      console.log('[useTutorialEffects] Skipping - already applied:', stepId);
+      return; // Already applied
+    }
+    console.log('[useTutorialEffects] Applying step:', stepId);
+    appliedStep.current = stepId;
+
+    const current = useTutorialStore.getState().getCurrentStep();
     if (!current) return;
 
     const { step } = current;
 
+    // Get store actions via getState() to avoid subscription loops
+    const sceneActions = useSceneStore.getState();
+    const timeActions = useTimeStore.getState();
+    const harmonicsActions = useHarmonicsStore.getState();
+
     // Apply tidal bulge visibility
     if (step.showTidalBulge !== undefined) {
-      if (step.showTidalBulge && !showTidalBulge) toggleTidalBulge();
-      if (!step.showTidalBulge && showTidalBulge) toggleTidalBulge();
+      sceneActions.setShowTidalBulge(step.showTidalBulge);
     }
 
     // Apply force vectors visibility
     if (step.showForceVectors !== undefined) {
-      if (step.showForceVectors && !showForceVectors) toggleForceVectors();
-      if (!step.showForceVectors && showForceVectors) toggleForceVectors();
+      sceneActions.setShowForceVectors(step.showForceVectors);
     }
 
     // Apply orbit visibility
     if (step.showOrbits !== undefined) {
-      if (step.showOrbits && !showOrbits) toggleOrbits();
-      if (!step.showOrbits && showOrbits) toggleOrbits();
+      sceneActions.setShowOrbits(step.showOrbits);
     }
 
     // Apply time speed (0 means pause)
     if (step.timeSpeed !== undefined) {
+      console.log('[useTutorialEffects] Setting time speed:', step.timeSpeed);
       if (step.timeSpeed === 0) {
-        pause();
+        timeActions.pause();
       } else {
-        setSpeed(step.timeSpeed);
-        play();
+        timeActions.setSpeed(step.timeSpeed);
+        timeActions.play();
       }
+      console.log('[useTutorialEffects] Time speed applied');
     }
 
     // Apply tidal exaggeration
     if (step.tidalExaggeration !== undefined) {
-      setTidalExaggeration(step.tidalExaggeration);
+      sceneActions.setTidalExaggeration(step.tidalExaggeration);
     }
 
     // Apply constituent visibility
     if (step.highlightConstituents) {
-      setAllConstituentsVisible(step.highlightConstituents);
+      harmonicsActions.setAllConstituentsVisible(step.highlightConstituents);
     }
 
     // Apply highlight effects
-    setHighlightMoon(step.highlightMoon ?? false);
-    setHighlightSun(step.highlightSun ?? false);
-    setHighlightEarth(step.highlightEarth ?? false);
-    setPulseEffect(step.pulseEffect ?? false);
+    sceneActions.setHighlightMoon(step.highlightMoon ?? false);
+    sceneActions.setHighlightSun(step.highlightSun ?? false);
+    sceneActions.setHighlightEarth(step.highlightEarth ?? false);
+    sceneActions.setPulseEffect(step.pulseEffect ?? false);
   }, [isActive, progress.chapterIndex, progress.stepIndex]);
 }

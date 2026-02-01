@@ -24,9 +24,12 @@ interface SceneState {
   togglePlanets: () => void;
   toggleStarfield: () => void;
   toggleTidalBulge: () => void;
+  setShowTidalBulge: (value: boolean) => void;
   setTidalExaggeration: (factor: number) => void;
   toggleForceVectors: () => void;
+  setShowForceVectors: (value: boolean) => void;
   setForceVectorCount: (count: number) => void;
+  setShowOrbits: (value: boolean) => void;
   setHighlightMoon: (value: boolean) => void;
   setHighlightSun: (value: boolean) => void;
   setHighlightEarth: (value: boolean) => void;
@@ -56,9 +59,12 @@ export const useSceneStore = create<SceneState>((set) => ({
   togglePlanets: () => set((state) => ({ showPlanets: !state.showPlanets })),
   toggleStarfield: () => set((state) => ({ showStarfield: !state.showStarfield })),
   toggleTidalBulge: () => set((state) => ({ showTidalBulge: !state.showTidalBulge })),
+  setShowTidalBulge: (value) => set({ showTidalBulge: value }),
   setTidalExaggeration: (factor) => set({ tidalExaggeration: factor }),
   toggleForceVectors: () => set((state) => ({ showForceVectors: !state.showForceVectors })),
+  setShowForceVectors: (value) => set({ showForceVectors: value }),
   setForceVectorCount: (count) => set({ forceVectorCount: count }),
+  setShowOrbits: (value) => set({ showOrbits: value }),
   setHighlightMoon: (value) => set({ highlightMoon: value }),
   setHighlightSun: (value) => set({ highlightSun: value }),
   setHighlightEarth: (value) => set({ highlightEarth: value }),

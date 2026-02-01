@@ -12,7 +12,6 @@ export function useSmoothCamera() {
   const { camera } = useThree();
   const isActive = useTutorialStore((s) => s.isActive);
   const progress = useTutorialStore((s) => s.progress);
-  const getCurrentStep = useTutorialStore((s) => s.getCurrentStep);
 
   // Animation state
   const animating = useRef(false);
@@ -33,7 +32,8 @@ export function useSmoothCamera() {
       return;
     }
 
-    const current = getCurrentStep();
+    // Use getState() to avoid dependency on getCurrentStep which might change
+    const current = useTutorialStore.getState().getCurrentStep();
     if (!current?.step.camera) return;
 
     const stepId = `${progress.chapterIndex}-${progress.stepIndex}`;
@@ -42,7 +42,7 @@ export function useSmoothCamera() {
 
     const { position, target, duration: dur } = current.step.camera;
 
-    // Set up animation
+    // Set up animation (camera is a stable ref from Three.js)
     startPos.current.copy(camera.position);
     endPos.current.set(position[0], position[1], position[2]);
     startTarget.current.copy(currentTarget.current);
@@ -50,7 +50,9 @@ export function useSmoothCamera() {
     startTime.current = performance.now();
     duration.current = dur * 1000;
     animating.current = true;
-  }, [isActive, progress.chapterIndex, progress.stepIndex, camera, getCurrentStep]);
+    // Note: camera excluded from deps - it's a stable ref from useThree()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive, progress.chapterIndex, progress.stepIndex]);
 
   useFrame(() => {
     if (!animating.current) {

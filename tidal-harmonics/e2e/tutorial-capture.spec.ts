@@ -258,6 +258,7 @@ async function captureFullStep(
     steadyStateDuration?: number;
     frameInterval?: number;
     cameraDuration?: number;
+    skipNavigation?: boolean;
   } = {}
 ): Promise<{
   in: string[];
@@ -266,8 +267,10 @@ async function captureFullStep(
 }> {
   const cameraDuration = options.cameraDuration ?? 2500;
 
-  // Navigate to step
-  await goToStep(page, chapterIndex, stepIndex);
+  // Navigate to step (unless already there)
+  if (!options.skipNavigation) {
+    await goToStep(page, chapterIndex, stepIndex);
+  }
 
   // Phase 1: Capture transition in (during camera animation)
   const inFrames = await captureTransitionIn(page, chapterIndex, stepIndex, {
@@ -337,16 +340,42 @@ test.describe('Tutorial Animation Capture', () => {
   test('capture single step (dev/debug)', async ({ page }) => {
     // Use this test for debugging a specific step
     const CHAPTER = 0; // Chapter 1
-    const STEP = 0; // Step 1
+    const STEP = 1; // Step 2 (Zooming In) - debug blank screen
+
+    // Capture all console messages to debug infinite loop
+    page.on('console', msg => {
+      const text = msg.text();
+      if (msg.type() === 'error') {
+        console.log('BROWSER ERROR:', text);
+      } else if (text.includes('[useTutorialEffects]') || text.includes('[TutorialOverlay]')) {
+        console.log('DEBUG:', text);
+      }
+    });
+    page.on('pageerror', err => {
+      console.log('PAGE ERROR:', err.message);
+    });
 
     await startTutorial(page);
-    await goToStep(page, CHAPTER, STEP);
-    await waitForCameraAnimation(page);
+
+    // For step 0, no navigation needed
+    if (STEP > 0) {
+      // Navigate to step by using nextStep() repeatedly
+      for (let i = 0; i < STEP; i++) {
+        console.log(`Navigating to step ${i + 1}...`);
+        await nextStep(page);
+        await waitForCameraAnimation(page);
+        console.log(`Arrived at step ${i + 1}, waiting for render...`);
+      }
+      // Extra wait for scene to fully render after navigation
+      await page.waitForTimeout(3000);
+      console.log('Starting capture...');
+    }
 
     const result = await captureFullStep(page, CHAPTER, STEP, {
       transitionFrames: 10,
       steadyStateDuration: 2000,
-      frameInterval: 150,
+      frameInterval: 150, // Original interval restored
+      skipNavigation: true,
     });
 
     console.log(`Captured step ${CHAPTER + 1}.${STEP + 1}:`);
