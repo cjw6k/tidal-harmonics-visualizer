@@ -58,6 +58,7 @@ const TidalDatumConverter = lazy(() => import('./TidalDatumConverter').then(m =>
 const BeatPatternVisualizer = lazy(() => import('./BeatPatternVisualizer').then(m => ({ default: m.BeatPatternVisualizer })));
 const UnderKeelClearance = lazy(() => import('./UnderKeelClearance').then(m => ({ default: m.UnderKeelClearance })));
 const IntertidalZoneExplorer = lazy(() => import('./IntertidalZoneExplorer').then(m => ({ default: m.IntertidalZoneExplorer })));
+const PrintableTideTable = lazy(() => import('./PrintableTideTable').then(m => ({ default: m.PrintableTideTable })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -125,6 +126,7 @@ export function HarmonicsPanel() {
   const [showBeatPattern, setShowBeatPattern] = useState(false);
   const [showUKC, setShowUKC] = useState(false);
   const [showIntertidal, setShowIntertidal] = useState(false);
+  const [showPrintTable, setShowPrintTable] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -609,6 +611,14 @@ export function HarmonicsPanel() {
         >
           🦀
         </button>
+        <button
+          onClick={() => setShowPrintTable(true)}
+          aria-label="Printable tide table"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Print-friendly tide table"
+        >
+          🖨️
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -742,6 +752,10 @@ export function HarmonicsPanel() {
 
         {showIntertidal && (
           <IntertidalZoneExplorer onClose={() => setShowIntertidal(false)} />
+        )}
+
+        {showPrintTable && (
+          <PrintableTideTable onClose={() => setShowPrintTable(false)} />
         )}
       </Suspense>
     </div>
