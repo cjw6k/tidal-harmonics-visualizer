@@ -76,6 +76,7 @@ const BridgeClearanceCalculator = lazy(() => import('./BridgeClearanceCalculator
 const TidalStreamAtlas = lazy(() => import('./TidalStreamAtlas').then(m => ({ default: m.TidalStreamAtlas })));
 const PassagePlannerTide = lazy(() => import('./PassagePlannerTide').then(m => ({ default: m.PassagePlannerTide })));
 const FuelConsumptionEstimator = lazy(() => import('./FuelConsumptionEstimator').then(m => ({ default: m.FuelConsumptionEstimator })));
+const CrewWatchScheduler = lazy(() => import('./CrewWatchScheduler').then(m => ({ default: m.CrewWatchScheduler })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -161,6 +162,7 @@ export function HarmonicsPanel() {
   const [showStreamAtlas, setShowStreamAtlas] = useState(false);
   const [showPassagePlanner, setShowPassagePlanner] = useState(false);
   const [showFuelEstimator, setShowFuelEstimator] = useState(false);
+  const [showCrewWatch, setShowCrewWatch] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -789,6 +791,14 @@ export function HarmonicsPanel() {
         >
           ⛽
         </button>
+        <button
+          onClick={() => setShowCrewWatch(true)}
+          aria-label="Crew watch scheduler"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Schedule crew watches around tidal events"
+        >
+          👥
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -994,6 +1004,10 @@ export function HarmonicsPanel() {
 
         {showFuelEstimator && (
           <FuelConsumptionEstimator onClose={() => setShowFuelEstimator(false)} />
+        )}
+
+        {showCrewWatch && (
+          <CrewWatchScheduler onClose={() => setShowCrewWatch(false)} />
         )}
       </Suspense>
     </div>
