@@ -14,7 +14,6 @@ import { TideCurve } from './TideCurve';
 import { TidalStatistics } from './TidalStatistics';
 import { TidalCurrentIndicator } from './TidalCurrentIndicator';
 import { ConstituentInfoPanel } from './ConstituentInfoPanel';
-import { UnitToggle } from './UnitToggle';
 
 // Lazy load modal/panel components that aren't immediately visible
 const DoodsonExplorer = lazy(() => import('./DoodsonExplorer').then(m => ({ default: m.DoodsonExplorer })));
@@ -907,21 +906,7 @@ export function HarmonicsPanel() {
     <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 flex flex-col gap-2 z-10 w-[320px] sm:w-[360px] max-h-[90vh] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent pr-1">
       {/* Station & Current Conditions */}
       <div className="bg-slate-800/90 backdrop-blur rounded-lg p-3 space-y-2">
-        <div className="flex gap-2 items-center">
-          <div className="flex-1 min-w-0">
-            <StationSelector />
-          </div>
-          <UnitToggle />
-          <button
-            onClick={togglePanelMinimized}
-            title="Minimize control panel (press `)"
-            className="p-1.5 rounded bg-slate-700 text-slate-400 hover:text-slate-200 hover:bg-slate-600 transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-        </div>
+        <StationSelector />
         <TidalStatistics />
         <TidalCurrentIndicator />
       </div>
@@ -929,8 +914,10 @@ export function HarmonicsPanel() {
       {/* Constituents */}
       <ConstituentToggles />
 
-      {/* Search Tools */}
-      <div className="bg-slate-800/90 backdrop-blur rounded-lg p-2">
+      {/* Tools Section - Search + Tabbed Tools grouped together */}
+      <div className="bg-slate-800/90 backdrop-blur rounded-lg">
+        {/* Search Tools */}
+        <div className="p-2">
         <div className="flex gap-2">
           <div className="relative flex-1">
             <input
@@ -1082,8 +1069,8 @@ export function HarmonicsPanel() {
         )}
       </div>
 
-      {/* Tab Navigation */}
-      <div className="bg-slate-800/90 backdrop-blur rounded-lg flex flex-col max-h-[280px] sticky bottom-0">
+        {/* Tab Navigation */}
+        <div className="flex flex-col max-h-[280px] border-t border-slate-700">
         <div
           className="flex shrink-0 overflow-x-auto scrollbar-none border-b border-slate-700"
           role="tablist"
@@ -1156,6 +1143,7 @@ export function HarmonicsPanel() {
           </p>
           {renderTabContent()}
         </div>
+      </div>
       </div>
 
       {/* Core visualizations (not lazy) */}
