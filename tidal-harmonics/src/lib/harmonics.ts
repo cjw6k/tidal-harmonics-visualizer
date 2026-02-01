@@ -221,3 +221,91 @@ export function getTidalRange(
 
   return { minHeight: min, maxHeight: max };
 }
+
+/**
+ * Predict tide height from a subset of constituents
+ * Useful for showing individual constituent contributions
+ */
+export function predictTideFromConstituents(
+  station: TideStation,
+  date: Date,
+  constituentSymbols: string[]
+): number {
+  const astro = getAstronomicalParameters(date);
+  let height = 0;
+
+  for (const c of station.constituents) {
+    if (!constituentSymbols.includes(c.symbol)) continue;
+
+    const constituent = CONSTITUENTS[c.symbol];
+    if (!constituent) continue;
+
+    const { f, u } = getNodalFactors(c.symbol, astro.N);
+    const V0 = calculateV0(constituent.doodson, astro);
+    const phase = normalizeAngle(V0 + u - c.phase);
+    const phaseRad = (phase * Math.PI) / 180;
+
+    height += f * c.amplitude * Math.cos(phaseRad);
+  }
+
+  return height;
+}
+
+/**
+ * Generate constituent-layered time series
+ * Returns series for each major constituent group plus total
+ */
+export interface ConstituentSeriesData {
+  time: number;
+  label: string;
+  total: number;
+  M2?: number;
+  S2?: number;
+  K1?: number;
+  O1?: number;
+  semidiurnal?: number;
+  diurnal?: number;
+}
+
+export function predictTideSeriesWithConstituents(
+  station: TideStation,
+  startDate: Date,
+  endDate: Date,
+  intervalMinutes: number = 6
+): ConstituentSeriesData[] {
+  const series: ConstituentSeriesData[] = [];
+  const intervalMs = intervalMinutes * 60 * 1000;
+
+  // Constituent groups
+  const semidiurnalSymbols = ['M2', 'S2', 'N2', 'K2', 'NU2', 'MU2', '2N2', 'L2', 'T2', 'R2', 'LAM2'];
+  const diurnalSymbols = ['K1', 'O1', 'P1', 'Q1', 'J1', 'M1', 'OO1', 'S1', 'RHO1', '2Q1'];
+
+  for (let t = startDate.getTime(); t <= endDate.getTime(); t += intervalMs) {
+    const date = new Date(t);
+
+    const dataPoint: ConstituentSeriesData = {
+      time: t,
+      label: `${date.getUTCHours().toString().padStart(2, '0')}:${date.getUTCMinutes().toString().padStart(2, '0')}`,
+      total: predictTide(station, date),
+    };
+
+    // Individual major constituents
+    const hasM2 = station.constituents.some(c => c.symbol === 'M2');
+    const hasS2 = station.constituents.some(c => c.symbol === 'S2');
+    const hasK1 = station.constituents.some(c => c.symbol === 'K1');
+    const hasO1 = station.constituents.some(c => c.symbol === 'O1');
+
+    if (hasM2) dataPoint.M2 = predictTideFromConstituents(station, date, ['M2']);
+    if (hasS2) dataPoint.S2 = predictTideFromConstituents(station, date, ['S2']);
+    if (hasK1) dataPoint.K1 = predictTideFromConstituents(station, date, ['K1']);
+    if (hasO1) dataPoint.O1 = predictTideFromConstituents(station, date, ['O1']);
+
+    // Groups
+    dataPoint.semidiurnal = predictTideFromConstituents(station, date, semidiurnalSymbols);
+    dataPoint.diurnal = predictTideFromConstituents(station, date, diurnalSymbols);
+
+    series.push(dataPoint);
+  }
+
+  return series;
+}
