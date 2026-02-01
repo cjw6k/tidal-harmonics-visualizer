@@ -121,7 +121,9 @@ Harmonic constants are derived from long-term tide gauge observations. The astro
 
 ## License
 
-MIT
+This project is licensed under the [MIT License](LICENSE).
+
+You are free to use, modify, and distribute this software for any purpose, including commercial applications. See the [LICENSE](LICENSE) file for full terms.
 
 ---
 
