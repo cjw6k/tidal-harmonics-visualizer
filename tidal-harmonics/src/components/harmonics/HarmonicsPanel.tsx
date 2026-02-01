@@ -39,6 +39,7 @@ const KeyboardShortcuts = lazy(() => import('./KeyboardShortcuts').then(m => ({ 
 const ConstituentFamilies = lazy(() => import('./ConstituentFamilies').then(m => ({ default: m.ConstituentFamilies })));
 const TideAlerts = lazy(() => import('./TideAlerts').then(m => ({ default: m.TideAlerts })));
 const LunarPhaseDisplay = lazy(() => import('./LunarPhaseDisplay').then(m => ({ default: m.LunarPhaseDisplay })));
+const TidalCoefficients = lazy(() => import('./TidalCoefficients').then(m => ({ default: m.TidalCoefficients })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -87,6 +88,7 @@ export function HarmonicsPanel() {
   const [showFamilies, setShowFamilies] = useState(false);
   const [showAlerts, setShowAlerts] = useState(false);
   const [showLunar, setShowLunar] = useState(false);
+  const [showCoefficient, setShowCoefficient] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -118,6 +120,7 @@ export function HarmonicsPanel() {
     setShowFamilies,
     setShowAlerts,
     setShowLunar,
+    setShowCoefficient,
   });
 
   return (
@@ -299,6 +302,15 @@ export function HarmonicsPanel() {
           Moon
         </button>
         <button
+          onClick={() => setShowCoefficient(!showCoefficient)}
+          aria-pressed={showCoefficient}
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-lime-500 focus:ring-offset-1 focus:ring-offset-slate-900
+            ${showCoefficient ? 'bg-lime-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="Tidal coefficient (French scale)"
+        >
+          Coef
+        </button>
+        <button
           onClick={() => setShowTable(!showTable)}
           aria-pressed={showTable}
           className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1 focus:ring-offset-slate-900
@@ -445,6 +457,7 @@ export function HarmonicsPanel() {
         {showFamilies && <ConstituentFamilies />}
         {showAlerts && <TideAlerts />}
         {showLunar && <LunarPhaseDisplay />}
+        {showCoefficient && <TidalCoefficients />}
       </Suspense>
 
       {/* Info Panel */}
