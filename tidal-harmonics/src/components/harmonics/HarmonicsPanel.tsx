@@ -1,4 +1,5 @@
 import { useState, lazy, Suspense } from 'react';
+import type { ReactNode } from 'react';
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
 import { StationSelector } from './StationSelector';
 import { ConstituentToggles } from './ConstituentToggles';
@@ -106,9 +107,6 @@ const DiveSlateGenerator = lazy(() => import('./DiveSlateGenerator').then(m => (
 const CoastalHikingPlanner = lazy(() => import('./CoastalHikingPlanner').then(m => ({ default: m.CoastalHikingPlanner })));
 const SurfConditionsCalculator = lazy(() => import('./SurfConditionsCalculator').then(m => ({ default: m.SurfConditionsCalculator })));
 
-// Import hook directly since it's not lazy-loadable
-import { useKeyboardNavigation } from './KeyboardShortcuts';
-
 // Loading fallback for lazy components
 function LoadingFallback() {
   return (
@@ -118,145 +116,206 @@ function LoadingFallback() {
   );
 }
 
+// Collapsible section component
+function Section({
+  title,
+  icon,
+  children,
+  defaultOpen = false,
+  count
+}: {
+  title: string;
+  icon: string;
+  children: ReactNode;
+  defaultOpen?: boolean;
+  count?: number;
+}) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className="bg-slate-800/50 rounded-lg overflow-hidden">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-3 py-2 flex items-center justify-between text-left hover:bg-slate-700/50 transition-colors"
+      >
+        <span className="flex items-center gap-2 text-sm font-medium text-slate-200">
+          <span>{icon}</span>
+          <span>{title}</span>
+          {count !== undefined && (
+            <span className="text-xs text-slate-500">({count})</span>
+          )}
+        </span>
+        <span className={`text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}>
+          ▼
+        </span>
+      </button>
+      {isOpen && (
+        <div className="px-3 pb-3 pt-1">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Tool button with label
+function ToolButton({
+  label,
+  icon,
+  onClick,
+  active = false,
+  color = 'slate'
+}: {
+  label: string;
+  icon?: string;
+  onClick: () => void;
+  active?: boolean;
+  color?: 'slate' | 'blue' | 'amber' | 'emerald' | 'purple' | 'rose' | 'cyan';
+}) {
+  const colorClasses = {
+    slate: active ? 'bg-slate-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600',
+    blue: active ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-blue-600/50',
+    amber: active ? 'bg-amber-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-amber-600/50',
+    emerald: active ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-emerald-600/50',
+    purple: active ? 'bg-purple-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-purple-600/50',
+    rose: active ? 'bg-rose-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-rose-600/50',
+    cyan: active ? 'bg-cyan-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-cyan-600/50',
+  };
+
+  return (
+    <button
+      onClick={onClick}
+      className={`px-2 py-1.5 rounded text-xs transition-colors flex items-center gap-1.5 ${colorClasses[color]}`}
+    >
+      {icon && <span>{icon}</span>}
+      <span>{label}</span>
+    </button>
+  );
+}
+
 export function HarmonicsPanel() {
   const showPhasorDiagram = useHarmonicsStore((s) => s.showPhasorDiagram);
   const showTideCurve = useHarmonicsStore((s) => s.showTideCurve);
   const togglePhasorDiagram = useHarmonicsStore((s) => s.togglePhasorDiagram);
   const toggleTideCurve = useHarmonicsStore((s) => s.toggleTideCurve);
+
+  // Selected constituent for info panel
   const [selectedConstituent, setSelectedConstituent] = useState<string | null>(null);
-  const [showDoodsonExplorer, setShowDoodsonExplorer] = useState(false);
+
+  // Modal/panel visibility states - organized by category
+  // Visualizations
   const [showAccuracyComparison, setShowAccuracyComparison] = useState(false);
+  const [showWaveform, setShowWaveform] = useState(false);
+  const [showSpectrum, setShowSpectrum] = useState(false);
+  const [showPhaseAnimation, setShowPhaseAnimation] = useState(false);
+  const [showWaterShader, setShowWaterShader] = useState(false);
+  const [showClock, setShowClock] = useState(false);
+  const [showTimeline, setShowTimeline] = useState(false);
+  const [showBeatPattern, setShowBeatPattern] = useState(false);
+  const [showLiveTide, setShowLiveTide] = useState(false);
+
+  // Predictions & Data
+  const [showExtremes, setShowExtremes] = useState(false);
   const [showKingTidePredictor, setShowKingTidePredictor] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [showNodal, setShowNodal] = useState(false);
+  const [showExport, setShowExport] = useState(false);
+  const [showShare, setShowShare] = useState(false);
+  const [showPrintTable, setShowPrintTable] = useState(false);
+  const [showDateComparison, setShowDateComparison] = useState(false);
+  const [showHeightLookup, setShowHeightLookup] = useState(false);
+  const [showMoonCalendar, setShowMoonCalendar] = useState(false);
+  const [showTidalWindow, setShowTidalWindow] = useState(false);
+  const [showAlerts, setShowAlerts] = useState(false);
+  const [showEmbedWidget, setShowEmbedWidget] = useState(false);
+  const [showSeasonalTide, setShowSeasonalTide] = useState(false);
+
+  // Education & Science
+  const [showDoodsonExplorer, setShowDoodsonExplorer] = useState(false);
+  const [showDatumExplainer, setShowDatumExplainer] = useState(false);
+  const [showAnalysis, setShowAnalysis] = useState(false);
+  const [showBoreInfo, setShowBoreInfo] = useState(false);
+  const [showAmphidromic, setShowAmphidromic] = useState(false);
+  const [showTidalLoading, setShowTidalLoading] = useState(false);
+  const [showResonance, setShowResonance] = useState(false);
+  const [showCoriolis, setShowCoriolis] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [showGlossary, setShowGlossary] = useState(false);
+  const [showLunarDistance, setShowLunarDistance] = useState(false);
+  const [showEclipseTides, setShowEclipseTides] = useState(false);
+  const [showTwelfths, setShowTwelfths] = useState(false);
+  const [showAgeOfTide, setShowAgeOfTide] = useState(false);
+  const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
+
+  // Station & Constituent Analysis
   const [showStationComparison, setShowStationComparison] = useState(false);
   const [showRangeChart, setShowRangeChart] = useState(false);
   const [showPieChart, setShowPieChart] = useState(false);
-  const [showWaveform, setShowWaveform] = useState(false);
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [showTable, setShowTable] = useState(false);
-  const [showExtremes, setShowExtremes] = useState(false);
-  const [showNodal, setShowNodal] = useState(false);
-  const [showSpectrum, setShowSpectrum] = useState(false);
-  const [showPhaseAnimation, setShowPhaseAnimation] = useState(false);
-  const [showExport, setShowExport] = useState(false);
-  const [showDatumExplainer, setShowDatumExplainer] = useState(false);
-  const [showComparison, setShowComparison] = useState(false);
-  const [showSeaLevelRise, setShowSeaLevelRise] = useState(false);
-  const [showHistorical, setShowHistorical] = useState(false);
-  const [showWaterShader, setShowWaterShader] = useState(false);
-  const [showEnergy, setShowEnergy] = useState(false);
-  const [showClock, setShowClock] = useState(false);
-  const [showTimeline, setShowTimeline] = useState(false);
-  const [showShare, setShowShare] = useState(false);
-  const [showMap, setShowMap] = useState(false);
-  const [showBarometric, setShowBarometric] = useState(false);
-  const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
   const [showFamilies, setShowFamilies] = useState(false);
-  const [showAlerts, setShowAlerts] = useState(false);
+  const [showTable, setShowTable] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
+  const [showMap, setShowMap] = useState(false);
+  const [showPortTiming, setShowPortTiming] = useState(false);
+  const [showDatumConverter, setShowDatumConverter] = useState(false);
   const [showLunar, setShowLunar] = useState(false);
   const [showCoefficient, setShowCoefficient] = useState(false);
-  const [showQuiz, setShowQuiz] = useState(false);
-  const [showBoreInfo, setShowBoreInfo] = useState(false);
-  const [showAnalysis, setShowAnalysis] = useState(false);
-  const [showSolunar, setShowSolunar] = useState(false);
-  const [showTideRate, setShowTideRate] = useState(false);
-  const [showAmphidromic, setShowAmphidromic] = useState(false);
-  const [showTidalLoading, setShowTidalLoading] = useState(false);
-  const [showPortTiming, setShowPortTiming] = useState(false);
-  const [showWeatherSim, setShowWeatherSim] = useState(false);
-  const [showEstuary, setShowEstuary] = useState(false);
-  const [showNavSafety, setShowNavSafety] = useState(false);
-  const [showResonance, setShowResonance] = useState(false);
-  const [showMoonCalendar, setShowMoonCalendar] = useState(false);
-  const [showEmbedWidget, setShowEmbedWidget] = useState(false);
-  const [showDatumConverter, setShowDatumConverter] = useState(false);
-  const [showBeatPattern, setShowBeatPattern] = useState(false);
-  const [showUKC, setShowUKC] = useState(false);
-  const [showIntertidal, setShowIntertidal] = useState(false);
-  const [showPrintTable, setShowPrintTable] = useState(false);
-  const [showSlackWater, setShowSlackWater] = useState(false);
-  const [showBeachAccess, setShowBeachAccess] = useState(false);
-  const [showDateComparison, setShowDateComparison] = useState(false);
-  const [showCurrentSpeed, setShowCurrentSpeed] = useState(false);
-  const [showTwelfths, setShowTwelfths] = useState(false);
-  const [showTidalWindow, setShowTidalWindow] = useState(false);
-  const [showDepthCorrection, setShowDepthCorrection] = useState(false);
   const [showTideType, setShowTideType] = useState(false);
   const [showEbbFlood, setShowEbbFlood] = useState(false);
-  const [showAgeOfTide, setShowAgeOfTide] = useState(false);
-  const [showAnchorScope, setShowAnchorScope] = useState(false);
-  const [showTidalPrism, setShowTidalPrism] = useState(false);
-  const [showMarinaAccess, setShowMarinaAccess] = useState(false);
+  const [showTideRate, setShowTideRate] = useState(false);
+
+  // Navigation & Safety
+  const [showNavSafety, setShowNavSafety] = useState(false);
+  const [showUKC, setShowUKC] = useState(false);
   const [showBridgeClearance, setShowBridgeClearance] = useState(false);
+  const [showAnchorScope, setShowAnchorScope] = useState(false);
+  const [showGroundingRisk, setShowGroundingRisk] = useState(false);
   const [showStreamAtlas, setShowStreamAtlas] = useState(false);
   const [showPassagePlanner, setShowPassagePlanner] = useState(false);
-  const [showFuelEstimator, setShowFuelEstimator] = useState(false);
-  const [showCrewWatch, setShowCrewWatch] = useState(false);
-  const [showWaypointRoute, setShowWaypointRoute] = useState(false);
-  const [showSeasonalTide, setShowSeasonalTide] = useState(false);
+  const [showDepthCorrection, setShowDepthCorrection] = useState(false);
+  const [showSlackWater, setShowSlackWater] = useState(false);
+  const [showCurrentSpeed, setShowCurrentSpeed] = useState(false);
+  const [showTidalGate, setShowTidalGate] = useState(false);
+  const [showTidalRace, setShowTidalRace] = useState(false);
+  const [showFerryTiming, setShowFerryTiming] = useState(false);
   const [showPortApproach, setShowPortApproach] = useState(false);
   const [showDockingWindow, setShowDockingWindow] = useState(false);
   const [showMooringLine, setShowMooringLine] = useState(false);
-  const [showSwellImpact, setShowSwellImpact] = useState(false);
-  const [showVoyageLog, setShowVoyageLog] = useState(false);
-  const [showGroundingRisk, setShowGroundingRisk] = useState(false);
   const [showStrandingTimer, setShowStrandingTimer] = useState(false);
-  const [showHeightLookup, setShowHeightLookup] = useState(false);
-  const [showLunarDistance, setShowLunarDistance] = useState(false);
-  const [showEclipseTides, setShowEclipseTides] = useState(false);
-  const [showDryingHeights, setShowDryingHeights] = useState(false);
+  const [showMarinaAccess, setShowMarinaAccess] = useState(false);
+  const [showFuelEstimator, setShowFuelEstimator] = useState(false);
+  const [showCrewWatch, setShowCrewWatch] = useState(false);
+  const [showWaypointRoute, setShowWaypointRoute] = useState(false);
+  const [showVoyageLog, setShowVoyageLog] = useState(false);
+
+  // Weather & Environment
+  const [showBarometric, setShowBarometric] = useState(false);
+  const [showSeaLevelRise, setShowSeaLevelRise] = useState(false);
+  const [showHistorical, setShowHistorical] = useState(false);
   const [showStormSurge, setShowStormSurge] = useState(false);
-  const [showTidalGate, setShowTidalGate] = useState(false);
-  const [showCoriolis, setShowCoriolis] = useState(false);
-  const [showMSLTracker, setShowMSLTracker] = useState(false);
-  const [showTidalRace, setShowTidalRace] = useState(false);
-  const [showFerryTiming, setShowFerryTiming] = useState(false);
-  const [showGlossary, setShowGlossary] = useState(false);
+  const [showWeatherSim, setShowWeatherSim] = useState(false);
   const [showMarineWeather, setShowMarineWeather] = useState(false);
-  const [showLiveTide, setShowLiveTide] = useState(false);
-  const [showPhotoPlanner, setShowPhotoPlanner] = useState(false);
+  const [showSwellImpact, setShowSwellImpact] = useState(false);
+  const [showMSLTracker, setShowMSLTracker] = useState(false);
+  const [showEnergy, setShowEnergy] = useState(false);
+  const [showTidalPrism, setShowTidalPrism] = useState(false);
+  const [showEstuary, setShowEstuary] = useState(false);
+  const [showDryingHeights, setShowDryingHeights] = useState(false);
+
+  // Activities & Recreation
+  const [showBeachAccess, setShowBeachAccess] = useState(false);
+  const [showIntertidal, setShowIntertidal] = useState(false);
   const [showShellfishPlanner, setShowShellfishPlanner] = useState(false);
   const [showKayakPlanner, setShowKayakPlanner] = useState(false);
   const [showDiveSlate, setShowDiveSlate] = useState(false);
   const [showHikingPlanner, setShowHikingPlanner] = useState(false);
   const [showSurfCalc, setShowSurfCalc] = useState(false);
-
-  // Enable keyboard navigation
-  useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
-    setShowDoodsonExplorer,
-    setShowAccuracyComparison,
-    setShowKingTidePredictor,
-    setShowStationComparison,
-    setShowRangeChart,
-    setShowPieChart,
-    setShowWaveform,
-    setShowCalendar,
-    setShowTable,
-    setShowExtremes,
-    setShowNodal,
-    setShowSpectrum,
-    setShowPhaseAnimation,
-    setShowExport,
-    setShowDatumExplainer,
-    setShowComparison,
-    setShowSeaLevelRise,
-    setShowHistorical,
-    setShowWaterShader,
-    setShowEnergy,
-    setShowClock,
-    setShowTimeline,
-    setShowShare,
-    setShowMap,
-    setShowBarometric,
-    setShowFamilies,
-    setShowAlerts,
-    setShowLunar,
-    setShowCoefficient,
-  });
+  const [showPhotoPlanner, setShowPhotoPlanner] = useState(false);
+  const [showSolunar, setShowSolunar] = useState(false);
 
   return (
-    <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 flex flex-col gap-2 sm:gap-3 z-10 max-w-[320px] sm:max-w-[380px] max-h-[90vh] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent pr-1">
-      {/* Controls */}
-      <div className="flex flex-col gap-2">
+    <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 flex flex-col gap-2 z-10 w-[320px] sm:w-[360px] max-h-[90vh] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent pr-1">
+      {/* Station & Current Conditions - Always visible */}
+      <div className="bg-slate-800/90 backdrop-blur rounded-lg p-3 space-y-2">
         <div className="flex gap-2 items-center">
           <div className="flex-1">
             <StationSelector />
@@ -265,827 +324,182 @@ export function HarmonicsPanel() {
         </div>
         <TidalStatistics />
         <TidalCurrentIndicator />
+      </div>
+
+      {/* Constituents - Always visible */}
+      <div className="bg-slate-800/90 backdrop-blur rounded-lg p-3">
         <ConstituentToggles />
       </div>
 
-      {/* Toggle buttons - row 1 */}
-      <div className="flex flex-wrap gap-1 sm:gap-2" role="group" aria-label="Visualization controls - primary">
-        <button
-          onClick={togglePhasorDiagram}
-          aria-pressed={showPhasorDiagram}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showPhasorDiagram ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-        >
-          Phasor
-        </button>
-        <button
-          onClick={toggleTideCurve}
-          aria-pressed={showTideCurve}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showTideCurve ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-        >
-          Curve
-        </button>
-        <button
-          onClick={() => setShowAccuracyComparison(!showAccuracyComparison)}
-          aria-pressed={showAccuracyComparison}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showAccuracyComparison ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Compare prediction accuracy"
-        >
-          Accuracy
-        </button>
-        <button
-          onClick={() => setShowDoodsonExplorer(true)}
-          aria-label="Learn about Doodson numbers"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Learn about Doodson numbers"
-        >
-          ?
-        </button>
-        <button
-          onClick={() => setShowPhaseAnimation(true)}
-          aria-label="Show animated phasor rotation"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Animated phasor rotation"
-        >
-          ▶
-        </button>
-        <button
-          onClick={() => setShowComparison(true)}
-          aria-label="Compare constituents"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Compare constituents"
-        >
-          ⚖
-        </button>
-        <button
-          onClick={() => setShowExport(true)}
-          aria-label="Export data"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Export data"
-        >
-          ↓
-        </button>
-        <button
-          onClick={() => setShowShare(true)}
-          aria-label="Share this view"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Share this view"
-        >
-          🔗
-        </button>
-        <button
-          onClick={() => setShowKeyboardHelp(true)}
-          aria-label="Keyboard shortcuts"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Keyboard shortcuts (?)"
-        >
-          ⌨
-        </button>
-        <button
-          onClick={() => setShowQuiz(true)}
-          aria-label="Test your knowledge"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Test your knowledge"
-        >
-          🎓
-        </button>
+      {/* Core Visualization Toggles */}
+      <div className="bg-slate-800/90 backdrop-blur rounded-lg p-3">
+        <div className="flex flex-wrap gap-1.5">
+          <ToolButton
+            label="Phasor"
+            onClick={togglePhasorDiagram}
+            active={showPhasorDiagram}
+            color="blue"
+          />
+          <ToolButton
+            label="Tide Curve"
+            onClick={toggleTideCurve}
+            active={showTideCurve}
+            color="blue"
+          />
+          <ToolButton
+            label="Hi/Lo"
+            onClick={() => setShowExtremes(!showExtremes)}
+            active={showExtremes}
+            color="cyan"
+          />
+          <ToolButton
+            label="Timeline"
+            onClick={() => setShowTimeline(!showTimeline)}
+            active={showTimeline}
+            color="cyan"
+          />
+          <ToolButton
+            label="Map"
+            icon="🗺️"
+            onClick={() => setShowMap(!showMap)}
+            active={showMap}
+          />
+        </div>
       </div>
 
-      {/* Toggle buttons - row 2 */}
-      <div className="flex flex-wrap gap-1 sm:gap-2" role="group" aria-label="Visualization controls - secondary">
-        <button
-          onClick={() => setShowKingTidePredictor(!showKingTidePredictor)}
-          aria-pressed={showKingTidePredictor}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showKingTidePredictor ? 'bg-amber-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Predict king tides (perigean spring tides)"
-        >
-          👑 King
-        </button>
-        <button
-          onClick={() => setShowStationComparison(!showStationComparison)}
-          aria-pressed={showStationComparison}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showStationComparison ? 'bg-purple-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Compare stations over time"
-        >
-          Compare
-        </button>
-        <button
-          onClick={() => setShowRangeChart(!showRangeChart)}
-          aria-pressed={showRangeChart}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showRangeChart ? 'bg-cyan-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Compare tidal ranges"
-        >
-          Ranges
-        </button>
-        <button
-          onClick={() => setShowPieChart(!showPieChart)}
-          aria-pressed={showPieChart}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showPieChart ? 'bg-green-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Constituent breakdown"
-        >
-          Pie
-        </button>
-        <button
-          onClick={() => setShowFamilies(!showFamilies)}
-          aria-pressed={showFamilies}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showFamilies ? 'bg-pink-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Constituent families"
-        >
-          Family
-        </button>
-        <button
-          onClick={() => setShowDatumExplainer(true)}
-          aria-label="Learn about tidal datums"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Learn about tidal datums"
-        >
-          📏
-        </button>
-        <button
-          onClick={() => setShowBoreInfo(true)}
-          aria-label="Learn about tidal bores"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Learn about tidal bores"
-        >
-          🌊
-        </button>
-        <button
-          onClick={() => setShowAnalysis(true)}
-          aria-label="Learn about harmonic analysis"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Learn about harmonic analysis"
-        >
-          📊
-        </button>
-        <button
-          onClick={() => setShowSolunar(!showSolunar)}
-          aria-pressed={showSolunar}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showSolunar ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Solunar fishing forecast"
-        >
-          🎣 Fish
-        </button>
-        <button
-          onClick={() => setShowAmphidromic(true)}
-          aria-label="Learn about amphidromic points"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Amphidromic points"
-        >
-          🌀
-        </button>
-        <button
-          onClick={() => setShowTidalLoading(true)}
-          aria-label="Learn about tidal loading"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Tidal loading - land deformation"
-        >
-          ⬇️
-        </button>
-        <button
-          onClick={() => setShowPortTiming(true)}
-          aria-label="Compare port timing"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Port timing comparison"
-        >
-          ⏱️
-        </button>
-        <button
-          onClick={() => setShowWeatherSim(true)}
-          aria-label="Weather effects simulator"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Weather effects on sea level"
-        >
-          🌪️
-        </button>
-        <button
-          onClick={() => setShowEstuary(true)}
-          aria-label="Estuary tidal dynamics"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Estuary dynamics"
-        >
-          🏞️
-        </button>
-        <button
-          onClick={() => setShowNavSafety(true)}
-          aria-label="Navigation safety calculator"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Navigation safety"
-        >
-          ⚓
-        </button>
-        <button
-          onClick={() => setShowResonance(true)}
-          aria-label="Tidal resonance explainer"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Why some bays have giant tides"
-        >
-          📢
-        </button>
-        <button
-          onClick={() => setShowMoonCalendar(true)}
-          aria-label="Moon phase and tide calendar"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Moon phase calendar with tides"
-        >
-          📆
-        </button>
-        <button
-          onClick={() => setShowEmbedWidget(true)}
-          aria-label="Get embeddable tide widget"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Embeddable widget code"
-        >
-          📤
-        </button>
-        <button
-          onClick={() => setShowDatumConverter(true)}
-          aria-label="Tidal datum converter"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Convert between tidal datums"
-        >
-          🔄
-        </button>
-        <button
-          onClick={() => setShowBeatPattern(true)}
-          aria-label="Beat pattern visualizer"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Constituent beat patterns"
-        >
-          〰️
-        </button>
-        <button
-          onClick={() => setShowUKC(true)}
-          aria-label="Under keel clearance calculator"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Under keel clearance"
-        >
-          🚢
-        </button>
-      </div>
+      {/* Collapsible Sections */}
+      <Section title="Visualizations" icon="📊" count={9}>
+        <div className="flex flex-wrap gap-1.5">
+          <ToolButton label="Accuracy" onClick={() => setShowAccuracyComparison(!showAccuracyComparison)} active={showAccuracyComparison} />
+          <ToolButton label="Waveforms" onClick={() => setShowWaveform(!showWaveform)} active={showWaveform} />
+          <ToolButton label="Spectrum" onClick={() => setShowSpectrum(!showSpectrum)} active={showSpectrum} />
+          <ToolButton label="Phase Anim" icon="▶" onClick={() => setShowPhaseAnimation(true)} />
+          <ToolButton label="Water FX" onClick={() => setShowWaterShader(!showWaterShader)} active={showWaterShader} />
+          <ToolButton label="Clock" onClick={() => setShowClock(!showClock)} active={showClock} />
+          <ToolButton label="Beat Pattern" onClick={() => setShowBeatPattern(true)} />
+          <ToolButton label="Live Display" onClick={() => setShowLiveTide(true)} />
+          <ToolButton label="Rate" onClick={() => setShowTideRate(!showTideRate)} active={showTideRate} />
+        </div>
+      </Section>
 
-      {/* Toggle buttons - row 3 */}
-      <div className="flex flex-wrap gap-1 sm:gap-2" role="group" aria-label="Visualization controls - tertiary">
-        <button
-          onClick={() => setShowWaveform(!showWaveform)}
-          aria-pressed={showWaveform}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showWaveform ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Waveform decomposition"
-        >
-          Waves
-        </button>
-        <button
-          onClick={() => setShowCalendar(!showCalendar)}
-          aria-pressed={showCalendar}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showCalendar ? 'bg-rose-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Spring-neap calendar"
-        >
-          Calendar
-        </button>
-        <button
-          onClick={() => setShowLunar(!showLunar)}
-          aria-pressed={showLunar}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showLunar ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Lunar phase"
-        >
-          Moon
-        </button>
-        <button
-          onClick={() => setShowCoefficient(!showCoefficient)}
-          aria-pressed={showCoefficient}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-lime-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showCoefficient ? 'bg-lime-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Tidal coefficient (French scale)"
-        >
-          Coef
-        </button>
-        <button
-          onClick={() => setShowTable(!showTable)}
-          aria-pressed={showTable}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showTable ? 'bg-teal-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Constituent table"
-        >
-          Table
-        </button>
-        <button
-          onClick={() => setShowExtremes(!showExtremes)}
-          aria-pressed={showExtremes}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showExtremes ? 'bg-sky-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="High/low tide predictions"
-        >
-          Hi/Lo
-        </button>
-        <button
-          onClick={() => setShowTideRate(!showTideRate)}
-          aria-pressed={showTideRate}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showTideRate ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Current tide rate"
-        >
-          Rate
-        </button>
-        <button
-          onClick={() => setShowNodal(!showNodal)}
-          aria-pressed={showNodal}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showNodal ? 'bg-fuchsia-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="18.6-year nodal cycle"
-        >
-          Nodal
-        </button>
-        <button
-          onClick={() => setShowSpectrum(!showSpectrum)}
-          aria-pressed={showSpectrum}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showSpectrum ? 'bg-violet-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Frequency spectrum"
-        >
-          Freq
-        </button>
-        <button
-          onClick={() => setShowSeaLevelRise(!showSeaLevelRise)}
-          aria-pressed={showSeaLevelRise}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showSeaLevelRise ? 'bg-cyan-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Sea level rise projections"
-        >
-          SLR
-        </button>
-        <button
-          onClick={() => setShowHistorical(!showHistorical)}
-          aria-pressed={showHistorical}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showHistorical ? 'bg-orange-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Historical extreme tides"
-        >
-          Records
-        </button>
-        <button
-          onClick={() => setShowWaterShader(!showWaterShader)}
-          aria-pressed={showWaterShader}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showWaterShader ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="WebGL water surface animation"
-        >
-          Shader
-        </button>
-        <button
-          onClick={() => setShowEnergy(!showEnergy)}
-          aria-pressed={showEnergy}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showEnergy ? 'bg-yellow-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Tidal energy potential calculator"
-        >
-          Energy
-        </button>
-        <button
-          onClick={() => setShowClock(!showClock)}
-          aria-pressed={showClock}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showClock ? 'bg-slate-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Tide clock visualization"
-        >
-          Clock
-        </button>
-        <button
-          onClick={() => setShowTimeline(!showTimeline)}
-          aria-pressed={showTimeline}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showTimeline ? 'bg-teal-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="24-hour tide timeline"
-        >
-          Timeline
-        </button>
-        <button
-          onClick={() => setShowMap(!showMap)}
-          aria-pressed={showMap}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showMap ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Station map"
-        >
-          Map
-        </button>
-        <button
-          onClick={() => setShowBarometric(!showBarometric)}
-          aria-pressed={showBarometric}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showBarometric ? 'bg-amber-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Barometric pressure effects"
-        >
-          Baro
-        </button>
-        <button
-          onClick={() => setShowAlerts(!showAlerts)}
-          aria-pressed={showAlerts}
-          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:ring-offset-slate-900
-            ${showAlerts ? 'bg-red-600 text-white' : 'bg-slate-700 text-slate-400'}`}
-          title="Tide alerts"
-        >
-          Alerts
-        </button>
-        <button
-          onClick={() => setShowIntertidal(true)}
-          aria-label="Intertidal zone explorer"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Explore intertidal zones and tidepooling"
-        >
-          🦀
-        </button>
-        <button
-          onClick={() => setShowPrintTable(true)}
-          aria-label="Printable tide table"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Print-friendly tide table"
-        >
-          🖨️
-        </button>
-        <button
-          onClick={() => setShowSlackWater(true)}
-          aria-label="Slack water finder"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Find slack water times"
-        >
-          ⏸️
-        </button>
-        <button
-          onClick={() => setShowBeachAccess(true)}
-          aria-label="Beach access planner"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Plan beach access windows"
-        >
-          🏖️
-        </button>
-        <button
-          onClick={() => setShowDateComparison(true)}
-          aria-label="Compare dates"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Compare tides between dates"
-        >
-          📅
-        </button>
-        <button
-          onClick={() => setShowCurrentSpeed(true)}
-          aria-label="Current speed estimator"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Estimated tidal current speed"
-        >
-          🌀
-        </button>
-        <button
-          onClick={() => setShowTwelfths(true)}
-          aria-label="Rule of Twelfths"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Traditional mariner's Rule of Twelfths"
-        >
-          ¹²
-        </button>
-        <button
-          onClick={() => setShowTidalWindow(true)}
-          aria-label="Tidal window calculator"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Find times when tide is above/below threshold"
-        >
-          ⏰
-        </button>
-        <button
-          onClick={() => setShowDepthCorrection(true)}
-          aria-label="Depth correction tool"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Calculate actual depth from chart depth + tide"
-        >
-          📐
-        </button>
-        <button
-          onClick={() => setShowTideType(true)}
-          aria-label="Tide type classifier"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Semidiurnal, diurnal, or mixed?"
-        >
-          🔀
-        </button>
-        <button
-          onClick={() => setShowEbbFlood(true)}
-          aria-label="Ebb/Flood analysis"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Analyze ebb vs flood duration"
-        >
-          ↕️
-        </button>
-        <button
-          onClick={() => setShowAgeOfTide(true)}
-          aria-label="Age of tide"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Delay between moon phase and spring tide"
-        >
-          🕐
-        </button>
-        <button
-          onClick={() => setShowAnchorScope(true)}
-          aria-label="Anchor scope calculator"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Calculate anchor rode length for tide conditions"
-        >
-          ⚓
-        </button>
-        <button
-          onClick={() => setShowTidalPrism(true)}
-          aria-label="Tidal prism calculator"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Calculate volume of water exchanged per tidal cycle"
-        >
-          💧
-        </button>
-        <button
-          onClick={() => setShowMarinaAccess(true)}
-          aria-label="Marina access planner"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Plan marina access windows based on tide and draft"
-        >
-          🏗️
-        </button>
-        <button
-          onClick={() => setShowBridgeClearance(true)}
-          aria-label="Bridge clearance calculator"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Calculate bridge passage windows based on tide and mast height"
-        >
-          🌉
-        </button>
-        <button
-          onClick={() => setShowStreamAtlas(true)}
-          aria-label="Tidal stream atlas"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="View tidal stream patterns throughout the tidal cycle"
-        >
-          🔄
-        </button>
-        <button
-          onClick={() => setShowPassagePlanner(true)}
-          aria-label="Tide-optimized passage planner"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Plan optimal passage timing with tidal currents"
-        >
-          🧭
-        </button>
-        <button
-          onClick={() => setShowFuelEstimator(true)}
-          aria-label="Fuel consumption estimator"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Estimate fuel consumption accounting for tidal currents"
-        >
-          ⛽
-        </button>
-        <button
-          onClick={() => setShowCrewWatch(true)}
-          aria-label="Crew watch scheduler"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Schedule crew watches around tidal events"
-        >
-          👥
-        </button>
-        <button
-          onClick={() => setShowWaypointRoute(true)}
-          aria-label="Waypoint route planner"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Plan multi-waypoint routes with tidal gates"
-        >
-          📍
-        </button>
-        <button
-          onClick={() => setShowSeasonalTide(true)}
-          aria-label="Seasonal tide comparison"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Compare tides across seasons (solstices/equinoxes)"
-        >
-          🌗
-        </button>
-        <button
-          onClick={() => setShowPortApproach(true)}
-          aria-label="Port approach advisor"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Plan safe port approach based on draft and tide"
-        >
-          🚢
-        </button>
-        <button
-          onClick={() => setShowDockingWindow(true)}
-          aria-label="Docking window calculator"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Calculate optimal boarding windows based on dock height"
-        >
-          🪜
-        </button>
-        <button
-          onClick={() => setShowMooringLine(true)}
-          aria-label="Mooring line load calculator"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Calculate mooring line loads for tidal conditions"
-        >
-          🪢
-        </button>
-        <button
-          onClick={() => setShowSwellImpact(true)}
-          aria-label="Swell impact calculator"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Calculate swell/wave impact on water depth"
-        >
-          🌊
-        </button>
-        <button
-          onClick={() => setShowVoyageLog(true)}
-          aria-label="Voyage log generator"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Generate printable voyage tidal log"
-        >
-          📋
-        </button>
-        <button
-          onClick={() => setShowGroundingRisk(true)}
-          aria-label="Grounding risk analyzer"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Analyze grounding risk based on draft and tidal conditions"
-        >
-          ⚠️
-        </button>
-        <button
-          onClick={() => setShowStrandingTimer(true)}
-          aria-label="Tidal stranding timer"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Calculate stranding duration and refloat time"
-        >
-          ⏱️
-        </button>
-        <button
-          onClick={() => setShowHeightLookup(true)}
-          aria-label="Tide height lookup"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Look up tide height at any time"
-        >
-          🔍
-        </button>
-        <button
-          onClick={() => setShowLunarDistance(true)}
-          aria-label="Lunar distance and tidal effects"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="How Moon distance affects tides (perigee/apogee)"
-        >
-          🌙
-        </button>
-        <button
-          onClick={() => setShowEclipseTides(true)}
-          aria-label="Eclipse effects on tides"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="How solar and lunar eclipses affect tides"
-        >
-          🌒
-        </button>
-        <button
-          onClick={() => setShowDryingHeights(true)}
-          aria-label="Drying heights calculator"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Calculate when intertidal areas expose"
-        >
-          🏝️
-        </button>
-        <button
-          onClick={() => setShowStormSurge(true)}
-          aria-label="Storm surge estimator"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Estimate storm surge added to tide"
-        >
-          ⛈️
-        </button>
-        <button
-          onClick={() => setShowTidalGate(true)}
-          aria-label="Tidal gate scheduler"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Find passage windows through tidal gates"
-        >
-          🚪
-        </button>
-        <button
-          onClick={() => setShowCoriolis(true)}
-          aria-label="Coriolis effect explainer"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="How Earth's rotation affects tides"
-        >
-          🌍
-        </button>
-        <button
-          onClick={() => setShowMSLTracker(true)}
-          aria-label="Mean sea level tracker"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Track mean sea level changes over time"
-        >
-          📈
-        </button>
-        <button
-          onClick={() => setShowTidalRace(true)}
-          aria-label="Tidal race warning"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Dangerous tidal races and overfalls"
-        >
-          ⚡
-        </button>
-        <button
-          onClick={() => setShowFerryTiming(true)}
-          aria-label="Ferry timing optimizer"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Optimize ferry crossing times"
-        >
-          ⛴️
-        </button>
-        <button
-          onClick={() => setShowGlossary(true)}
-          aria-label="Tidal glossary"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Search tidal terminology"
-        >
-          📖
-        </button>
-        <button
-          onClick={() => setShowMarineWeather(true)}
-          aria-label="Marine weather effects"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Weather effects on tide levels"
-        >
-          🌤️
-        </button>
-        <button
-          onClick={() => setShowLiveTide(true)}
-          aria-label="Live tide display"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Live tide height display"
-        >
-          📺
-        </button>
-        <button
-          onClick={() => setShowPhotoPlanner(true)}
-          aria-label="Photo timing planner"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Find best times for coastal photography"
-        >
-          📷
-        </button>
-        <button
-          onClick={() => setShowShellfishPlanner(true)}
-          aria-label="Shellfish harvest planner"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Find optimal shellfish harvesting windows"
-        >
-          🦪
-        </button>
-        <button
-          onClick={() => setShowKayakPlanner(true)}
-          aria-label="Kayak launch planner"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Plan kayak and paddleboard launches"
-        >
-          🛶
-        </button>
-        <button
-          onClick={() => setShowDiveSlate(true)}
-          aria-label="Dive slate generator"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Generate printable dive planning slate"
-        >
-          🤿
-        </button>
-        <button
-          onClick={() => setShowHikingPlanner(true)}
-          aria-label="Coastal hiking planner"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Plan coastal hikes with tide crossings"
-        >
-          🥾
-        </button>
-        <button
-          onClick={() => setShowSurfCalc(true)}
-          aria-label="Surf conditions calculator"
-          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
-          title="Find optimal surf windows by tide"
-        >
-          🏄
-        </button>
-      </div>
+      <Section title="Predictions & Calendar" icon="📅" count={13}>
+        <div className="flex flex-wrap gap-1.5">
+          <ToolButton label="King Tides" icon="👑" onClick={() => setShowKingTidePredictor(!showKingTidePredictor)} active={showKingTidePredictor} color="amber" />
+          <ToolButton label="Spring/Neap" onClick={() => setShowCalendar(!showCalendar)} active={showCalendar} />
+          <ToolButton label="Moon Calendar" onClick={() => setShowMoonCalendar(true)} />
+          <ToolButton label="18.6yr Nodal" onClick={() => setShowNodal(!showNodal)} active={showNodal} />
+          <ToolButton label="Seasonal" onClick={() => setShowSeasonalTide(true)} />
+          <ToolButton label="Compare Dates" onClick={() => setShowDateComparison(true)} />
+          <ToolButton label="Height Lookup" onClick={() => setShowHeightLookup(true)} />
+          <ToolButton label="Tide Windows" onClick={() => setShowTidalWindow(true)} />
+          <ToolButton label="Alerts" onClick={() => setShowAlerts(!showAlerts)} active={showAlerts} />
+          <ToolButton label="Export" icon="↓" onClick={() => setShowExport(true)} />
+          <ToolButton label="Print Table" icon="🖨️" onClick={() => setShowPrintTable(true)} />
+          <ToolButton label="Share" icon="🔗" onClick={() => setShowShare(true)} />
+          <ToolButton label="Embed Widget" onClick={() => setShowEmbedWidget(true)} />
+        </div>
+      </Section>
+
+      <Section title="Education & Science" icon="🎓" count={15}>
+        <div className="flex flex-wrap gap-1.5">
+          <ToolButton label="Doodson Numbers" onClick={() => setShowDoodsonExplorer(true)} color="purple" />
+          <ToolButton label="Tidal Datums" onClick={() => setShowDatumExplainer(true)} />
+          <ToolButton label="Harmonic Analysis" onClick={() => setShowAnalysis(true)} />
+          <ToolButton label="Tidal Bores" onClick={() => setShowBoreInfo(true)} />
+          <ToolButton label="Amphidromic Pts" onClick={() => setShowAmphidromic(true)} />
+          <ToolButton label="Tidal Loading" onClick={() => setShowTidalLoading(true)} />
+          <ToolButton label="Resonance" onClick={() => setShowResonance(true)} />
+          <ToolButton label="Coriolis Effect" onClick={() => setShowCoriolis(true)} />
+          <ToolButton label="Moon Distance" onClick={() => setShowLunarDistance(true)} />
+          <ToolButton label="Eclipse Tides" onClick={() => setShowEclipseTides(true)} />
+          <ToolButton label="Rule of 12ths" onClick={() => setShowTwelfths(true)} />
+          <ToolButton label="Age of Tide" onClick={() => setShowAgeOfTide(true)} />
+          <ToolButton label="Quiz" icon="🎓" onClick={() => setShowQuiz(true)} color="emerald" />
+          <ToolButton label="Glossary" icon="📖" onClick={() => setShowGlossary(true)} />
+          <ToolButton label="Shortcuts" icon="⌨" onClick={() => setShowKeyboardHelp(true)} />
+        </div>
+      </Section>
+
+      <Section title="Station Analysis" icon="📈" count={13}>
+        <div className="flex flex-wrap gap-1.5">
+          <ToolButton label="Compare Stations" onClick={() => setShowStationComparison(!showStationComparison)} active={showStationComparison} />
+          <ToolButton label="Range Chart" onClick={() => setShowRangeChart(!showRangeChart)} active={showRangeChart} />
+          <ToolButton label="Amplitude Pie" onClick={() => setShowPieChart(!showPieChart)} active={showPieChart} />
+          <ToolButton label="Families" onClick={() => setShowFamilies(!showFamilies)} active={showFamilies} />
+          <ToolButton label="Data Table" onClick={() => setShowTable(!showTable)} active={showTable} />
+          <ToolButton label="Compare Const." onClick={() => setShowComparison(true)} />
+          <ToolButton label="Port Timing" onClick={() => setShowPortTiming(true)} />
+          <ToolButton label="Datum Convert" onClick={() => setShowDatumConverter(true)} />
+          <ToolButton label="Moon Phase" onClick={() => setShowLunar(!showLunar)} active={showLunar} />
+          <ToolButton label="Coefficient" onClick={() => setShowCoefficient(!showCoefficient)} active={showCoefficient} />
+          <ToolButton label="Tide Type" onClick={() => setShowTideType(true)} />
+          <ToolButton label="Ebb/Flood" onClick={() => setShowEbbFlood(true)} />
+        </div>
+      </Section>
+
+      <Section title="Navigation & Safety" icon="⚓" count={20}>
+        <div className="flex flex-wrap gap-1.5">
+          <ToolButton label="Safety Calc" onClick={() => setShowNavSafety(true)} color="rose" />
+          <ToolButton label="Under Keel" onClick={() => setShowUKC(true)} />
+          <ToolButton label="Bridge Clear." onClick={() => setShowBridgeClearance(true)} />
+          <ToolButton label="Anchor Scope" onClick={() => setShowAnchorScope(true)} />
+          <ToolButton label="Grounding Risk" icon="⚠️" onClick={() => setShowGroundingRisk(true)} color="rose" />
+          <ToolButton label="Stream Atlas" onClick={() => setShowStreamAtlas(true)} />
+          <ToolButton label="Passage Plan" onClick={() => setShowPassagePlanner(true)} />
+          <ToolButton label="Depth Correct" onClick={() => setShowDepthCorrection(true)} />
+          <ToolButton label="Slack Water" onClick={() => setShowSlackWater(true)} />
+          <ToolButton label="Current Speed" onClick={() => setShowCurrentSpeed(true)} />
+          <ToolButton label="Tidal Gates" onClick={() => setShowTidalGate(true)} />
+          <ToolButton label="Tidal Races" icon="⚡" onClick={() => setShowTidalRace(true)} />
+          <ToolButton label="Ferry Timing" onClick={() => setShowFerryTiming(true)} />
+          <ToolButton label="Port Approach" onClick={() => setShowPortApproach(true)} />
+          <ToolButton label="Docking Window" onClick={() => setShowDockingWindow(true)} />
+          <ToolButton label="Mooring Lines" onClick={() => setShowMooringLine(true)} />
+          <ToolButton label="Stranding Time" onClick={() => setShowStrandingTimer(true)} />
+          <ToolButton label="Marina Access" onClick={() => setShowMarinaAccess(true)} />
+          <ToolButton label="Fuel Est." onClick={() => setShowFuelEstimator(true)} />
+          <ToolButton label="Crew Watch" onClick={() => setShowCrewWatch(true)} />
+          <ToolButton label="Waypoints" onClick={() => setShowWaypointRoute(true)} />
+          <ToolButton label="Voyage Log" onClick={() => setShowVoyageLog(true)} />
+        </div>
+      </Section>
+
+      <Section title="Weather & Environment" icon="🌊" count={12}>
+        <div className="flex flex-wrap gap-1.5">
+          <ToolButton label="Barometric" onClick={() => setShowBarometric(!showBarometric)} active={showBarometric} />
+          <ToolButton label="Sea Level Rise" onClick={() => setShowSeaLevelRise(!showSeaLevelRise)} active={showSeaLevelRise} />
+          <ToolButton label="Historical" onClick={() => setShowHistorical(!showHistorical)} active={showHistorical} />
+          <ToolButton label="Storm Surge" onClick={() => setShowStormSurge(true)} color="amber" />
+          <ToolButton label="Weather Sim" onClick={() => setShowWeatherSim(true)} />
+          <ToolButton label="Marine Weather" onClick={() => setShowMarineWeather(true)} />
+          <ToolButton label="Swell Impact" onClick={() => setShowSwellImpact(true)} />
+          <ToolButton label="MSL Tracker" onClick={() => setShowMSLTracker(true)} />
+          <ToolButton label="Tidal Energy" onClick={() => setShowEnergy(!showEnergy)} active={showEnergy} />
+          <ToolButton label="Tidal Prism" onClick={() => setShowTidalPrism(true)} />
+          <ToolButton label="Estuary" onClick={() => setShowEstuary(true)} />
+          <ToolButton label="Drying Heights" onClick={() => setShowDryingHeights(true)} />
+        </div>
+      </Section>
+
+      <Section title="Activities & Recreation" icon="🏄" count={9}>
+        <div className="flex flex-wrap gap-1.5">
+          <ToolButton label="Beach Access" icon="🏖️" onClick={() => setShowBeachAccess(true)} />
+          <ToolButton label="Tidepools" icon="🦀" onClick={() => setShowIntertidal(true)} />
+          <ToolButton label="Shellfish" icon="🦪" onClick={() => setShowShellfishPlanner(true)} />
+          <ToolButton label="Kayak/SUP" icon="🛶" onClick={() => setShowKayakPlanner(true)} />
+          <ToolButton label="Dive Slate" icon="🤿" onClick={() => setShowDiveSlate(true)} />
+          <ToolButton label="Coastal Hike" icon="🥾" onClick={() => setShowHikingPlanner(true)} />
+          <ToolButton label="Surf" icon="🏄" onClick={() => setShowSurfCalc(true)} />
+          <ToolButton label="Photo Timing" icon="📷" onClick={() => setShowPhotoPlanner(true)} />
+          <ToolButton label="Fishing" icon="🎣" onClick={() => setShowSolunar(!showSolunar)} active={showSolunar} color="emerald" />
+        </div>
+      </Section>
 
       {/* Core visualizations (not lazy) */}
       {showPhasorDiagram && <PhasorDiagram onConstituentClick={setSelectedConstituent} />}
       {showTideCurve && <TideCurve />}
 
-      {/* Lazy-loaded visualizations */}
+      {/* Lazy-loaded toggle panels */}
       <Suspense fallback={<LoadingFallback />}>
         {showAccuracyComparison && <AccuracyComparison />}
         {showKingTidePredictor && <KingTidePredictor />}
@@ -1123,285 +537,76 @@ export function HarmonicsPanel() {
 
       {/* Lazy-loaded modals */}
       <Suspense fallback={null}>
-        {showDoodsonExplorer && (
-          <DoodsonExplorer onClose={() => setShowDoodsonExplorer(false)} />
-        )}
-
-        {showPhaseAnimation && (
-          <PhaseAnimation onClose={() => setShowPhaseAnimation(false)} />
-        )}
-
-        {showExport && (
-          <DataExport onClose={() => setShowExport(false)} />
-        )}
-
-        {showDatumExplainer && (
-          <TidalDatumExplainer onClose={() => setShowDatumExplainer(false)} />
-        )}
-
-        {showComparison && (
-          <ConstituentComparison onClose={() => setShowComparison(false)} />
-        )}
-
-        {showShare && (
-          <SharePanel onClose={() => setShowShare(false)} />
-        )}
-
-        {showKeyboardHelp && (
-          <KeyboardShortcuts onClose={() => setShowKeyboardHelp(false)} />
-        )}
-
-        {showQuiz && (
-          <ConstituentQuiz onClose={() => setShowQuiz(false)} />
-        )}
-
-        {showBoreInfo && (
-          <TidalBoreInfo onClose={() => setShowBoreInfo(false)} />
-        )}
-
-        {showAnalysis && (
-          <HarmonicAnalysisExplainer onClose={() => setShowAnalysis(false)} />
-        )}
-
-        {showAmphidromic && (
-          <AmphidromicPoints onClose={() => setShowAmphidromic(false)} />
-        )}
-
-        {showTidalLoading && (
-          <TidalLoadingExplainer onClose={() => setShowTidalLoading(false)} />
-        )}
-
-        {showPortTiming && (
-          <PortTimingComparison onClose={() => setShowPortTiming(false)} />
-        )}
-
-        {showWeatherSim && (
-          <WeatherEffectSimulator onClose={() => setShowWeatherSim(false)} />
-        )}
-
-        {showEstuary && (
-          <EstuaryDynamics onClose={() => setShowEstuary(false)} />
-        )}
-
-        {showNavSafety && (
-          <NavigationSafety onClose={() => setShowNavSafety(false)} />
-        )}
-
-        {showResonance && (
-          <TidalResonance onClose={() => setShowResonance(false)} />
-        )}
-
-        {showMoonCalendar && (
-          <MoonPhaseCalendar onClose={() => setShowMoonCalendar(false)} />
-        )}
-
-        {showEmbedWidget && (
-          <EmbeddableTideWidget onClose={() => setShowEmbedWidget(false)} />
-        )}
-
-        {showDatumConverter && (
-          <TidalDatumConverter onClose={() => setShowDatumConverter(false)} />
-        )}
-
-        {showBeatPattern && (
-          <BeatPatternVisualizer onClose={() => setShowBeatPattern(false)} />
-        )}
-
-        {showUKC && (
-          <UnderKeelClearance onClose={() => setShowUKC(false)} />
-        )}
-
-        {showIntertidal && (
-          <IntertidalZoneExplorer onClose={() => setShowIntertidal(false)} />
-        )}
-
-        {showPrintTable && (
-          <PrintableTideTable onClose={() => setShowPrintTable(false)} />
-        )}
-
-        {showSlackWater && (
-          <SlackWaterFinder onClose={() => setShowSlackWater(false)} />
-        )}
-
-        {showBeachAccess && (
-          <BeachAccessPlanner onClose={() => setShowBeachAccess(false)} />
-        )}
-
-        {showDateComparison && (
-          <TideDateComparison onClose={() => setShowDateComparison(false)} />
-        )}
-
-        {showCurrentSpeed && (
-          <TidalCurrentSpeed onClose={() => setShowCurrentSpeed(false)} />
-        )}
-
-        {showTwelfths && (
-          <RuleOfTwelfths onClose={() => setShowTwelfths(false)} />
-        )}
-
-        {showTidalWindow && (
-          <TidalWindowCalculator onClose={() => setShowTidalWindow(false)} />
-        )}
-
-        {showDepthCorrection && (
-          <DepthCorrectionTool onClose={() => setShowDepthCorrection(false)} />
-        )}
-
-        {showTideType && (
-          <TideTypeClassifier onClose={() => setShowTideType(false)} />
-        )}
-
-        {showEbbFlood && (
-          <EbbFloodAnalyzer onClose={() => setShowEbbFlood(false)} />
-        )}
-
-        {showAgeOfTide && (
-          <AgeOfTide onClose={() => setShowAgeOfTide(false)} />
-        )}
-
-        {showAnchorScope && (
-          <AnchorScopeCalculator onClose={() => setShowAnchorScope(false)} />
-        )}
-
-        {showTidalPrism && (
-          <TidalPrismCalculator onClose={() => setShowTidalPrism(false)} />
-        )}
-
-        {showMarinaAccess && (
-          <MarinaAccessPlanner onClose={() => setShowMarinaAccess(false)} />
-        )}
-
-        {showBridgeClearance && (
-          <BridgeClearanceCalculator onClose={() => setShowBridgeClearance(false)} />
-        )}
-
-        {showStreamAtlas && (
-          <TidalStreamAtlas onClose={() => setShowStreamAtlas(false)} />
-        )}
-
-        {showPassagePlanner && (
-          <PassagePlannerTide onClose={() => setShowPassagePlanner(false)} />
-        )}
-
-        {showFuelEstimator && (
-          <FuelConsumptionEstimator onClose={() => setShowFuelEstimator(false)} />
-        )}
-
-        {showCrewWatch && (
-          <CrewWatchScheduler onClose={() => setShowCrewWatch(false)} />
-        )}
-
-        {showWaypointRoute && (
-          <WaypointRoutePlanner onClose={() => setShowWaypointRoute(false)} />
-        )}
-
-        {showSeasonalTide && (
-          <SeasonalTideComparison onClose={() => setShowSeasonalTide(false)} />
-        )}
-
-        {showPortApproach && (
-          <PortApproachAdvisor onClose={() => setShowPortApproach(false)} />
-        )}
-
-        {showDockingWindow && (
-          <DockingWindowCalculator onClose={() => setShowDockingWindow(false)} />
-        )}
-
-        {showMooringLine && (
-          <MooringLineCalculator onClose={() => setShowMooringLine(false)} />
-        )}
-
-        {showSwellImpact && (
-          <SwellImpactCalculator onClose={() => setShowSwellImpact(false)} />
-        )}
-
-        {showVoyageLog && (
-          <VoyageLogGenerator onClose={() => setShowVoyageLog(false)} />
-        )}
-
-        {showGroundingRisk && (
-          <GroundingRiskAnalyzer onClose={() => setShowGroundingRisk(false)} />
-        )}
-
-        {showStrandingTimer && (
-          <TidalStrandingTimer onClose={() => setShowStrandingTimer(false)} />
-        )}
-
-        {showHeightLookup && (
-          <TideHeightLookup onClose={() => setShowHeightLookup(false)} />
-        )}
-
-        {showLunarDistance && (
-          <LunarDistancePanel onClose={() => setShowLunarDistance(false)} />
-        )}
-
-        {showEclipseTides && (
-          <EclipseTidesPanel onClose={() => setShowEclipseTides(false)} />
-        )}
-
-        {showDryingHeights && (
-          <DryingHeightsCalculator onClose={() => setShowDryingHeights(false)} />
-        )}
-
-        {showStormSurge && (
-          <StormSurgeEstimator onClose={() => setShowStormSurge(false)} />
-        )}
-
-        {showTidalGate && (
-          <TidalGateScheduler onClose={() => setShowTidalGate(false)} />
-        )}
-
-        {showCoriolis && (
-          <CoriolisEffectPanel onClose={() => setShowCoriolis(false)} />
-        )}
-
-        {showMSLTracker && (
-          <MeanSeaLevelTracker onClose={() => setShowMSLTracker(false)} />
-        )}
-
-        {showTidalRace && (
-          <TidalRaceWarning onClose={() => setShowTidalRace(false)} />
-        )}
-
-        {showFerryTiming && (
-          <FerryTimingOptimizer onClose={() => setShowFerryTiming(false)} />
-        )}
-
-        {showGlossary && (
-          <TidalGlossary onClose={() => setShowGlossary(false)} />
-        )}
-
-        {showMarineWeather && (
-          <MarineWeatherPanel onClose={() => setShowMarineWeather(false)} />
-        )}
-
-        {showLiveTide && (
-          <LiveTideDisplay onClose={() => setShowLiveTide(false)} />
-        )}
-
-        {showPhotoPlanner && (
-          <PhotoTimingPlanner onClose={() => setShowPhotoPlanner(false)} />
-        )}
-
-        {showShellfishPlanner && (
-          <ShellfishHarvestPlanner onClose={() => setShowShellfishPlanner(false)} />
-        )}
-
-        {showKayakPlanner && (
-          <KayakLaunchPlanner onClose={() => setShowKayakPlanner(false)} />
-        )}
-
-        {showDiveSlate && (
-          <DiveSlateGenerator onClose={() => setShowDiveSlate(false)} />
-        )}
-
-        {showHikingPlanner && (
-          <CoastalHikingPlanner onClose={() => setShowHikingPlanner(false)} />
-        )}
-
-        {showSurfCalc && (
-          <SurfConditionsCalculator onClose={() => setShowSurfCalc(false)} />
-        )}
+        {showDoodsonExplorer && <DoodsonExplorer onClose={() => setShowDoodsonExplorer(false)} />}
+        {showPhaseAnimation && <PhaseAnimation onClose={() => setShowPhaseAnimation(false)} />}
+        {showExport && <DataExport onClose={() => setShowExport(false)} />}
+        {showDatumExplainer && <TidalDatumExplainer onClose={() => setShowDatumExplainer(false)} />}
+        {showComparison && <ConstituentComparison onClose={() => setShowComparison(false)} />}
+        {showShare && <SharePanel onClose={() => setShowShare(false)} />}
+        {showKeyboardHelp && <KeyboardShortcuts onClose={() => setShowKeyboardHelp(false)} />}
+        {showQuiz && <ConstituentQuiz onClose={() => setShowQuiz(false)} />}
+        {showBoreInfo && <TidalBoreInfo onClose={() => setShowBoreInfo(false)} />}
+        {showAnalysis && <HarmonicAnalysisExplainer onClose={() => setShowAnalysis(false)} />}
+        {showAmphidromic && <AmphidromicPoints onClose={() => setShowAmphidromic(false)} />}
+        {showTidalLoading && <TidalLoadingExplainer onClose={() => setShowTidalLoading(false)} />}
+        {showPortTiming && <PortTimingComparison onClose={() => setShowPortTiming(false)} />}
+        {showWeatherSim && <WeatherEffectSimulator onClose={() => setShowWeatherSim(false)} />}
+        {showEstuary && <EstuaryDynamics onClose={() => setShowEstuary(false)} />}
+        {showNavSafety && <NavigationSafety onClose={() => setShowNavSafety(false)} />}
+        {showResonance && <TidalResonance onClose={() => setShowResonance(false)} />}
+        {showMoonCalendar && <MoonPhaseCalendar onClose={() => setShowMoonCalendar(false)} />}
+        {showEmbedWidget && <EmbeddableTideWidget onClose={() => setShowEmbedWidget(false)} />}
+        {showDatumConverter && <TidalDatumConverter onClose={() => setShowDatumConverter(false)} />}
+        {showBeatPattern && <BeatPatternVisualizer onClose={() => setShowBeatPattern(false)} />}
+        {showUKC && <UnderKeelClearance onClose={() => setShowUKC(false)} />}
+        {showIntertidal && <IntertidalZoneExplorer onClose={() => setShowIntertidal(false)} />}
+        {showPrintTable && <PrintableTideTable onClose={() => setShowPrintTable(false)} />}
+        {showSlackWater && <SlackWaterFinder onClose={() => setShowSlackWater(false)} />}
+        {showBeachAccess && <BeachAccessPlanner onClose={() => setShowBeachAccess(false)} />}
+        {showDateComparison && <TideDateComparison onClose={() => setShowDateComparison(false)} />}
+        {showCurrentSpeed && <TidalCurrentSpeed onClose={() => setShowCurrentSpeed(false)} />}
+        {showTwelfths && <RuleOfTwelfths onClose={() => setShowTwelfths(false)} />}
+        {showTidalWindow && <TidalWindowCalculator onClose={() => setShowTidalWindow(false)} />}
+        {showDepthCorrection && <DepthCorrectionTool onClose={() => setShowDepthCorrection(false)} />}
+        {showTideType && <TideTypeClassifier onClose={() => setShowTideType(false)} />}
+        {showEbbFlood && <EbbFloodAnalyzer onClose={() => setShowEbbFlood(false)} />}
+        {showAgeOfTide && <AgeOfTide onClose={() => setShowAgeOfTide(false)} />}
+        {showAnchorScope && <AnchorScopeCalculator onClose={() => setShowAnchorScope(false)} />}
+        {showTidalPrism && <TidalPrismCalculator onClose={() => setShowTidalPrism(false)} />}
+        {showMarinaAccess && <MarinaAccessPlanner onClose={() => setShowMarinaAccess(false)} />}
+        {showBridgeClearance && <BridgeClearanceCalculator onClose={() => setShowBridgeClearance(false)} />}
+        {showStreamAtlas && <TidalStreamAtlas onClose={() => setShowStreamAtlas(false)} />}
+        {showPassagePlanner && <PassagePlannerTide onClose={() => setShowPassagePlanner(false)} />}
+        {showFuelEstimator && <FuelConsumptionEstimator onClose={() => setShowFuelEstimator(false)} />}
+        {showCrewWatch && <CrewWatchScheduler onClose={() => setShowCrewWatch(false)} />}
+        {showWaypointRoute && <WaypointRoutePlanner onClose={() => setShowWaypointRoute(false)} />}
+        {showSeasonalTide && <SeasonalTideComparison onClose={() => setShowSeasonalTide(false)} />}
+        {showPortApproach && <PortApproachAdvisor onClose={() => setShowPortApproach(false)} />}
+        {showDockingWindow && <DockingWindowCalculator onClose={() => setShowDockingWindow(false)} />}
+        {showMooringLine && <MooringLineCalculator onClose={() => setShowMooringLine(false)} />}
+        {showSwellImpact && <SwellImpactCalculator onClose={() => setShowSwellImpact(false)} />}
+        {showVoyageLog && <VoyageLogGenerator onClose={() => setShowVoyageLog(false)} />}
+        {showGroundingRisk && <GroundingRiskAnalyzer onClose={() => setShowGroundingRisk(false)} />}
+        {showStrandingTimer && <TidalStrandingTimer onClose={() => setShowStrandingTimer(false)} />}
+        {showHeightLookup && <TideHeightLookup onClose={() => setShowHeightLookup(false)} />}
+        {showLunarDistance && <LunarDistancePanel onClose={() => setShowLunarDistance(false)} />}
+        {showEclipseTides && <EclipseTidesPanel onClose={() => setShowEclipseTides(false)} />}
+        {showDryingHeights && <DryingHeightsCalculator onClose={() => setShowDryingHeights(false)} />}
+        {showStormSurge && <StormSurgeEstimator onClose={() => setShowStormSurge(false)} />}
+        {showTidalGate && <TidalGateScheduler onClose={() => setShowTidalGate(false)} />}
+        {showCoriolis && <CoriolisEffectPanel onClose={() => setShowCoriolis(false)} />}
+        {showMSLTracker && <MeanSeaLevelTracker onClose={() => setShowMSLTracker(false)} />}
+        {showTidalRace && <TidalRaceWarning onClose={() => setShowTidalRace(false)} />}
+        {showFerryTiming && <FerryTimingOptimizer onClose={() => setShowFerryTiming(false)} />}
+        {showGlossary && <TidalGlossary onClose={() => setShowGlossary(false)} />}
+        {showMarineWeather && <MarineWeatherPanel onClose={() => setShowMarineWeather(false)} />}
+        {showLiveTide && <LiveTideDisplay onClose={() => setShowLiveTide(false)} />}
+        {showPhotoPlanner && <PhotoTimingPlanner onClose={() => setShowPhotoPlanner(false)} />}
+        {showShellfishPlanner && <ShellfishHarvestPlanner onClose={() => setShowShellfishPlanner(false)} />}
+        {showKayakPlanner && <KayakLaunchPlanner onClose={() => setShowKayakPlanner(false)} />}
+        {showDiveSlate && <DiveSlateGenerator onClose={() => setShowDiveSlate(false)} />}
+        {showHikingPlanner && <CoastalHikingPlanner onClose={() => setShowHikingPlanner(false)} />}
+        {showSurfCalc && <SurfConditionsCalculator onClose={() => setShowSurfCalc(false)} />}
       </Suspense>
     </div>
   );
