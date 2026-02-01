@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="ocean" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a5f"/>
+      <stop offset="100%" style="stop-color:#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="64" fill="url(#ocean)"/>
+  <g fill="none" stroke="#60a5fa" stroke-width="8" stroke-linecap="round">
+    <!-- Tidal wave pattern -->
+    <path d="M 50 256 Q 100 200, 150 256 T 250 256 T 350 256 T 450 256"/>
+    <path d="M 50 300 Q 100 244, 150 300 T 250 300 T 350 300 T 450 300" stroke-opacity="0.7"/>
+    <path d="M 50 212 Q 100 268, 150 212 T 250 212 T 350 212 T 450 212" stroke-opacity="0.7"/>
+  </g>
+  <!-- Moon symbol -->
+  <circle cx="400" cy="112" r="40" fill="#e2e8f0"/>
+  <circle cx="380" cy="112" r="40" fill="url(#ocean)"/>
+</svg>
