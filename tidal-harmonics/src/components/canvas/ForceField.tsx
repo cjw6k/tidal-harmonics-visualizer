@@ -14,33 +14,35 @@ const SUN_MASS = 1.989e30;
 const G = 6.674e-11;
 
 // Calculate tidal force from a single body
+// Tidal force = gravitational acceleration at surface point - gravitational acceleration at Earth center
 function calculateSingleBodyTidalForce(
-  surfacePoint: Vector3,
-  bodyPosition: Vector3,
+  surfacePoint: Vector3,  // in km from Earth center
+  bodyPosition: Vector3,  // in km from Earth center
   bodyMass: number
 ): Vector3 {
   const earthCenter = new Vector3(0, 0, 0);
 
-  // Vector from body to surface point
-  const toSurface = surfacePoint.clone().sub(bodyPosition);
-  const distSurface = toSurface.length() * 1000; // Convert km to m
+  // Vector FROM surface point TO body (direction gravity pulls)
+  const surfaceToBody = bodyPosition.clone().sub(surfacePoint);
+  const distSurfaceM = surfaceToBody.length() * 1000; // km to m
 
-  // Vector from body to Earth center
-  const toCenter = earthCenter.clone().sub(bodyPosition);
-  const distCenter = toCenter.length() * 1000; // Convert km to m
+  // Vector FROM Earth center TO body
+  const centerToBody = bodyPosition.clone().sub(earthCenter);
+  const distCenterM = centerToBody.length() * 1000; // km to m
 
-  // Gravitational acceleration at surface point
-  const accSurface = toSurface.clone().normalize().multiplyScalar(
-    G * bodyMass / (distSurface * distSurface)
+  // Gravitational acceleration at surface point (points toward body)
+  const accSurface = surfaceToBody.clone().normalize().multiplyScalar(
+    G * bodyMass / (distSurfaceM * distSurfaceM)
   );
 
-  // Gravitational acceleration at Earth center
-  const accCenter = toCenter.clone().normalize().multiplyScalar(
-    G * bodyMass / (distCenter * distCenter)
+  // Gravitational acceleration at Earth center (points toward body)
+  const accCenter = centerToBody.clone().normalize().multiplyScalar(
+    G * bodyMass / (distCenterM * distCenterM)
   );
 
-  // Tidal force = difference
-  return accSurface.sub(accCenter);
+  // Tidal acceleration = acceleration at surface - acceleration at center
+  // This is what causes the bulge: differential gravity
+  return accSurface.clone().sub(accCenter);
 }
 
 export function ForceField() {
