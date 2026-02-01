@@ -21,6 +21,7 @@ import { useHarmonicsStore } from '@/stores/harmonicsStore';
  * - P: Toggle phasor diagram
  * - C: Toggle tide curve
  * - U: Toggle metric/imperial units
+ * - *: Toggle favorite station
  *
  * Tutorial:
  * - ?: Start tutorial
@@ -44,6 +45,8 @@ export function useKeyboardShortcuts() {
   const togglePhasorDiagram = useHarmonicsStore((s) => s.togglePhasorDiagram);
   const toggleTideCurve = useHarmonicsStore((s) => s.toggleTideCurve);
   const toggleUnitSystem = useHarmonicsStore((s) => s.toggleUnitSystem);
+  const selectedStation = useHarmonicsStore((s) => s.selectedStation);
+  const toggleFavorite = useHarmonicsStore((s) => s.toggleFavorite);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -126,6 +129,12 @@ export function useKeyboardShortcuts() {
           toggleUnitSystem();
           break;
 
+        case '*':
+          if (selectedStation) {
+            toggleFavorite(selectedStation.id);
+          }
+          break;
+
         // Tutorial
         case '?':
           if (!isActive) startTutorial();
@@ -151,6 +160,8 @@ export function useKeyboardShortcuts() {
     togglePhasorDiagram,
     toggleTideCurve,
     toggleUnitSystem,
+    selectedStation,
+    toggleFavorite,
     isActive,
     startTutorial,
     exitTutorial,
@@ -175,6 +186,7 @@ export const KEYBOARD_SHORTCUTS = [
     { key: 'P', action: 'Toggle phasor diagram' },
     { key: 'C', action: 'Toggle tide curve' },
     { key: 'U', action: 'Toggle metric/imperial' },
+    { key: '*', action: 'Toggle favorite station' },
   ]},
   { category: 'Tutorial', shortcuts: [
     { key: '?', action: 'Start tutorial' },
