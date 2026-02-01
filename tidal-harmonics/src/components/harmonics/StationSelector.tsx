@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
 import { getTidalType, getTidalTypeLabel } from '@/data/stations';
+import type { TideStation } from '@/types/harmonics';
 
 const TIDAL_TYPE_COLORS = {
   'semidiurnal': 'bg-blue-500/20 text-blue-400',
@@ -8,12 +10,55 @@ const TIDAL_TYPE_COLORS = {
   'diurnal': 'bg-amber-500/20 text-amber-400',
 };
 
+// Country display order and names
+const COUNTRY_ORDER = ['US', 'Canada', 'UK', 'France', 'Netherlands', 'Japan', 'Vietnam', 'Australia'];
+const COUNTRY_NAMES: Record<string, string> = {
+  'US': 'United States',
+  'Canada': 'Canada',
+  'UK': 'United Kingdom',
+  'France': 'France',
+  'Netherlands': 'Netherlands',
+  'Japan': 'Japan',
+  'Vietnam': 'Vietnam',
+  'Australia': 'Australia',
+};
+
+function groupStationsByCountry(stations: TideStation[]): Map<string, TideStation[]> {
+  const groups = new Map<string, TideStation[]>();
+
+  for (const station of stations) {
+    const country = station.country;
+    if (!groups.has(country)) {
+      groups.set(country, []);
+    }
+    groups.get(country)!.push(station);
+  }
+
+  // Sort by country order
+  const sorted = new Map<string, TideStation[]>();
+  for (const country of COUNTRY_ORDER) {
+    if (groups.has(country)) {
+      sorted.set(country, groups.get(country)!);
+    }
+  }
+  // Add any countries not in the order list
+  for (const [country, stationList] of groups) {
+    if (!sorted.has(country)) {
+      sorted.set(country, stationList);
+    }
+  }
+
+  return sorted;
+}
+
 export function StationSelector() {
   const stations = useHarmonicsStore((s) => s.stations);
   const selectedStation = useHarmonicsStore((s) => s.selectedStation);
   const selectStation = useHarmonicsStore((s) => s.selectStation);
 
   const tidalType = selectedStation ? getTidalType(selectedStation) : null;
+
+  const groupedStations = useMemo(() => groupStationsByCountry(stations), [stations]);
 
   return (
     <div className="bg-slate-800/80 backdrop-blur-sm rounded-lg p-3">
@@ -23,10 +68,14 @@ export function StationSelector() {
         onChange={(e) => selectStation(e.target.value)}
         className="w-full bg-slate-700 text-white text-sm px-3 py-2 rounded border border-slate-600 focus:border-blue-500 focus:outline-none"
       >
-        {stations.map((s) => (
-          <option key={s.id} value={s.id}>
-            {s.state ? `${s.name}, ${s.state}` : `${s.name}, ${s.country}`}
-          </option>
+        {Array.from(groupedStations.entries()).map(([country, stationList]) => (
+          <optgroup key={country} label={COUNTRY_NAMES[country] || country}>
+            {stationList.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.state ? `${s.name}, ${s.state}` : s.name}
+              </option>
+            ))}
+          </optgroup>
         ))}
       </select>
       {selectedStation && (
