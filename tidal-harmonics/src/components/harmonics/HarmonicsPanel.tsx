@@ -45,6 +45,7 @@ const TidalBoreInfo = lazy(() => import('./TidalBoreInfo').then(m => ({ default:
 const HarmonicAnalysisExplainer = lazy(() => import('./HarmonicAnalysisExplainer').then(m => ({ default: m.HarmonicAnalysisExplainer })));
 const SolunarActivity = lazy(() => import('./SolunarActivity').then(m => ({ default: m.SolunarActivity })));
 const TideRateIndicator = lazy(() => import('./TideRateIndicator').then(m => ({ default: m.TideRateIndicator })));
+const AmphidromicPoints = lazy(() => import('./AmphidromicPoints').then(m => ({ default: m.AmphidromicPoints })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -99,6 +100,7 @@ export function HarmonicsPanel() {
   const [showAnalysis, setShowAnalysis] = useState(false);
   const [showSolunar, setShowSolunar] = useState(false);
   const [showTideRate, setShowTideRate] = useState(false);
+  const [showAmphidromic, setShowAmphidromic] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -312,6 +314,14 @@ export function HarmonicsPanel() {
           title="Solunar fishing forecast"
         >
           🎣 Fish
+        </button>
+        <button
+          onClick={() => setShowAmphidromic(true)}
+          aria-label="Learn about amphidromic points"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Amphidromic points"
+        >
+          🌀
         </button>
       </div>
 
@@ -560,6 +570,10 @@ export function HarmonicsPanel() {
 
         {showAnalysis && (
           <HarmonicAnalysisExplainer onClose={() => setShowAnalysis(false)} />
+        )}
+
+        {showAmphidromic && (
+          <AmphidromicPoints onClose={() => setShowAmphidromic(false)} />
         )}
       </Suspense>
     </div>
