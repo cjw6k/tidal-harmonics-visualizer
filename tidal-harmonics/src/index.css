@@ -106,3 +106,41 @@ button:active:not(:disabled),
     outline-offset: 2px !important;
   }
 }
+
+/* Print styles */
+@media print {
+  /* Hide interactive elements */
+  button,
+  select,
+  input,
+  canvas,
+  .tutorial-overlay,
+  #main-content {
+    display: none !important;
+  }
+
+  /* Light background for printing */
+  body,
+  html {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Show printable content */
+  .bg-slate-800\/80,
+  .bg-slate-900 {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+
+  /* Make charts visible */
+  svg {
+    max-width: 100% !important;
+  }
+
+  /* Page setup */
+  @page {
+    margin: 1cm;
+  }
+}
