@@ -16,6 +16,7 @@ import { WaveformDecomposition } from './WaveformDecomposition';
 import { SpringNeapCalendar } from './SpringNeapCalendar';
 import { ConstituentTable } from './ConstituentTable';
 import { TideExtremesPanel } from './TideExtremesPanel';
+import { NodalCorrectionPanel } from './NodalCorrectionPanel';
 
 export function HarmonicsPanel() {
   const showPhasorDiagram = useHarmonicsStore((s) => s.showPhasorDiagram);
@@ -33,6 +34,7 @@ export function HarmonicsPanel() {
   const [showCalendar, setShowCalendar] = useState(false);
   const [showTable, setShowTable] = useState(false);
   const [showExtremes, setShowExtremes] = useState(false);
+  const [showNodal, setShowNodal] = useState(false);
 
   return (
     <div className="absolute bottom-4 right-4 flex flex-col gap-3 z-10 max-w-[380px]">
@@ -146,6 +148,14 @@ export function HarmonicsPanel() {
         >
           Hi/Lo
         </button>
+        <button
+          onClick={() => setShowNodal(!showNodal)}
+          className={`flex-1 px-3 py-1 rounded text-xs transition-colors
+            ${showNodal ? 'bg-fuchsia-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="18.6-year nodal cycle"
+        >
+          Nodal
+        </button>
       </div>
 
       {/* Visualizations */}
@@ -160,6 +170,7 @@ export function HarmonicsPanel() {
       {showCalendar && <SpringNeapCalendar />}
       {showTable && <ConstituentTable />}
       {showExtremes && <TideExtremesPanel />}
+      {showNodal && <NodalCorrectionPanel />}
 
       {/* Info Panel */}
       <ConstituentInfoPanel
