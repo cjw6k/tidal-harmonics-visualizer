@@ -13,6 +13,7 @@ import { StationComparison } from './StationComparison';
 import { TidalRangeChart } from './TidalRangeChart';
 import { ConstituentPieChart } from './ConstituentPieChart';
 import { WaveformDecomposition } from './WaveformDecomposition';
+import { SpringNeapCalendar } from './SpringNeapCalendar';
 
 export function HarmonicsPanel() {
   const showPhasorDiagram = useHarmonicsStore((s) => s.showPhasorDiagram);
@@ -27,6 +28,7 @@ export function HarmonicsPanel() {
   const [showRangeChart, setShowRangeChart] = useState(false);
   const [showPieChart, setShowPieChart] = useState(false);
   const [showWaveform, setShowWaveform] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
 
   return (
     <div className="absolute bottom-4 right-4 flex flex-col gap-3 z-10 max-w-[380px]">
@@ -116,6 +118,14 @@ export function HarmonicsPanel() {
         >
           Waves
         </button>
+        <button
+          onClick={() => setShowCalendar(!showCalendar)}
+          className={`flex-1 px-3 py-1 rounded text-xs transition-colors
+            ${showCalendar ? 'bg-rose-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="Spring-neap calendar"
+        >
+          Calendar
+        </button>
       </div>
 
       {/* Visualizations */}
@@ -127,6 +137,7 @@ export function HarmonicsPanel() {
       {showRangeChart && <TidalRangeChart />}
       {showPieChart && <ConstituentPieChart />}
       {showWaveform && <WaveformDecomposition />}
+      {showCalendar && <SpringNeapCalendar />}
 
       {/* Info Panel */}
       <ConstituentInfoPanel
