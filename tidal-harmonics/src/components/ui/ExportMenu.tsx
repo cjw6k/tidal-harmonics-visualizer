@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useExport } from '@/hooks/useExport';
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
+import { PrintReport } from './PrintReport';
 
 export function ExportMenu() {
   const [showDaysDialog, setShowDaysDialog] = useState(false);
@@ -55,7 +56,18 @@ export function ExportMenu() {
           >
             📈 Constants
           </button>
+
+          <button
+            onClick={() => window.print()}
+            disabled={!station}
+            className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-xs rounded transition-colors flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed print-button"
+            title="Print 7-day tide report"
+          >
+            🖨️ Print
+          </button>
         </div>
+
+        <PrintReport />
 
         {!station && (
           <div className="mt-2 text-xs text-slate-500">
