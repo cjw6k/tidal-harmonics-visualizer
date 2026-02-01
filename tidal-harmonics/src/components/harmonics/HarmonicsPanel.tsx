@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, lazy, Suspense, useMemo, useRef, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
 import { StationSelector } from './StationSelector';
@@ -127,6 +127,120 @@ const TABS: { id: TabId; label: string; icon: string; count: number; desc: strin
   { id: 'plan', label: 'Plan', icon: '🗓️', count: 21, desc: 'Activities, weather, and environment' },
 ];
 
+// Tool definitions for search
+interface ToolDef {
+  id: string;
+  label: string;
+  tooltip: string;
+  tab: TabId;
+  keywords: string[];
+}
+
+const TOOLS: ToolDef[] = [
+  // Charts
+  { id: 'phasor', label: 'Phasor', tooltip: 'Rotating vector diagram showing constituent phases', tab: 'charts', keywords: ['vector', 'diagram', 'rotation', 'phase'] },
+  { id: 'curve', label: 'Curve', tooltip: 'Predicted tide height curve over time', tab: 'charts', keywords: ['height', 'prediction', 'graph', 'tide'] },
+  { id: 'accuracy', label: 'Accuracy', tooltip: 'Compare predictions with observed data', tab: 'charts', keywords: ['compare', 'observed', 'validation'] },
+  { id: 'waves', label: 'Waves', tooltip: 'Individual constituent waveforms combined', tab: 'charts', keywords: ['waveform', 'decomposition', 'sine'] },
+  { id: 'spectrum', label: 'Spectrum', tooltip: 'Frequency spectrum of tidal constituents', tab: 'charts', keywords: ['frequency', 'fft', 'analysis'] },
+  { id: 'timeline', label: 'Timeline', tooltip: 'Horizontal timeline with tide heights', tab: 'charts', keywords: ['horizontal', 'time'] },
+  { id: 'clock', label: 'Clock', tooltip: 'Analog clock face showing tide state', tab: 'charts', keywords: ['analog', 'time', 'display'] },
+  { id: 'phase', label: '▶ Phase', tooltip: 'Animated constituent rotation', tab: 'charts', keywords: ['animation', 'rotation', 'play'] },
+  { id: 'beats', label: 'Beats', tooltip: 'Beat patterns from constituent interaction', tab: 'charts', keywords: ['pattern', 'interaction', 'interference'] },
+  { id: 'waterFx', label: 'Water FX', tooltip: '3D water surface visualization', tab: 'charts', keywords: ['3d', 'shader', 'surface', 'visualization'] },
+  { id: 'live', label: 'Live', tooltip: 'Real-time tide display', tab: 'charts', keywords: ['realtime', 'current', 'now'] },
+  { id: 'rate', label: 'Rate', tooltip: 'Rate of tide change (rising/falling)', tab: 'charts', keywords: ['rising', 'falling', 'change', 'speed'] },
+  { id: 'compare', label: 'Compare', tooltip: 'Compare multiple tide stations', tab: 'charts', keywords: ['station', 'multiple', 'comparison'] },
+  { id: 'ranges', label: 'Ranges', tooltip: 'Chart of tidal ranges over time', tab: 'charts', keywords: ['range', 'amplitude'] },
+  { id: 'pie', label: 'Pie', tooltip: 'Pie chart of constituent amplitudes', tab: 'charts', keywords: ['chart', 'amplitude', 'proportion'] },
+  { id: 'families', label: 'Families', tooltip: 'Constituents grouped by family', tab: 'charts', keywords: ['group', 'lunar', 'solar'] },
+  { id: 'table', label: 'Table', tooltip: 'Sortable table of all constituents', tab: 'charts', keywords: ['list', 'data', 'sortable'] },
+  { id: 'map', label: '🗺️ Map', tooltip: 'Map of tide stations', tab: 'charts', keywords: ['location', 'station', 'geographic'] },
+  // Predict
+  { id: 'hilo', label: 'Hi/Lo', tooltip: 'High and low tide predictions', tab: 'predict', keywords: ['high', 'low', 'extremes', 'prediction'] },
+  { id: 'king', label: '👑 King', tooltip: 'Predict extreme king tides', tab: 'predict', keywords: ['extreme', 'perigean', 'spring'] },
+  { id: 'calendar', label: 'Calendar', tooltip: 'Spring/neap tide calendar', tab: 'predict', keywords: ['spring', 'neap', 'schedule'] },
+  { id: 'moon', label: '🌙 Moon', tooltip: 'Moon phase calendar', tab: 'predict', keywords: ['lunar', 'phase', 'full', 'new'] },
+  { id: 'nodal', label: '18.6yr', tooltip: '18.6-year lunar nodal cycle corrections', tab: 'predict', keywords: ['nodal', 'correction', 'long-term'] },
+  { id: 'seasonal', label: 'Seasonal', tooltip: 'Compare tides across seasons', tab: 'predict', keywords: ['season', 'summer', 'winter'] },
+  { id: 'dateCompare', label: 'Compare', tooltip: 'Compare tides on different dates', tab: 'predict', keywords: ['date', 'comparison'] },
+  { id: 'lookup', label: 'Lookup', tooltip: 'Find tide height at specific time', tab: 'predict', keywords: ['search', 'find', 'height', 'time'] },
+  { id: 'windows', label: 'Windows', tooltip: 'Calculate safe tidal windows', tab: 'predict', keywords: ['safe', 'window', 'timing'] },
+  { id: 'alerts', label: '🔔 Alerts', tooltip: 'Set tide level alerts', tab: 'predict', keywords: ['notification', 'warning', 'alarm'] },
+  { id: 'lunarPhase', label: 'Phase', tooltip: 'Current lunar phase display', tab: 'predict', keywords: ['moon', 'lunar', 'current'] },
+  { id: 'coef', label: 'Coef', tooltip: 'Tidal coefficients (French system)', tab: 'predict', keywords: ['coefficient', 'french', 'brest'] },
+  { id: 'type', label: 'Type', tooltip: 'Classify tide type (diurnal/semidiurnal)', tab: 'predict', keywords: ['diurnal', 'semidiurnal', 'mixed', 'classification'] },
+  { id: 'ebbFlood', label: 'Ebb/Flood', tooltip: 'Analyze ebb and flood patterns', tab: 'predict', keywords: ['ebb', 'flood', 'current', 'flow'] },
+  { id: 'export', label: '↓ Export', tooltip: 'Export tide data (CSV, JSON)', tab: 'predict', keywords: ['download', 'csv', 'json', 'data'] },
+  { id: 'print', label: '🖨️ Print', tooltip: 'Print-friendly tide table', tab: 'predict', keywords: ['print', 'table', 'paper'] },
+  { id: 'share', label: '🔗 Share', tooltip: 'Share link to this view', tab: 'predict', keywords: ['link', 'url', 'share'] },
+  { id: 'embed', label: 'Embed', tooltip: 'Embeddable widget for websites', tab: 'predict', keywords: ['widget', 'iframe', 'website'] },
+  // Learn
+  { id: 'doodson', label: 'Doodson #', tooltip: 'Interactive Doodson number breakdown', tab: 'learn', keywords: ['doodson', 'number', 'code'] },
+  { id: 'datums', label: 'Datums', tooltip: 'Tidal datum reference levels explained', tab: 'learn', keywords: ['datum', 'reference', 'mllw', 'mhhw'] },
+  { id: 'analysis', label: 'Analysis', tooltip: 'How harmonic analysis works', tab: 'learn', keywords: ['harmonic', 'fourier', 'math'] },
+  { id: 'bores', label: 'Bores', tooltip: 'Tidal bores around the world', tab: 'learn', keywords: ['bore', 'wave', 'river'] },
+  { id: 'amphidromic', label: 'Amphidromic', tooltip: 'Amphidromic points and cotidal lines', tab: 'learn', keywords: ['amphidrome', 'cotidal', 'rotation'] },
+  { id: 'loading', label: 'Loading', tooltip: 'Earth deformation from tidal loading', tab: 'learn', keywords: ['earth', 'deformation', 'crustal'] },
+  { id: 'resonance', label: 'Resonance', tooltip: 'Tidal resonance in basins', tab: 'learn', keywords: ['basin', 'resonance', 'amplification'] },
+  { id: 'coriolis', label: 'Coriolis', tooltip: 'Coriolis effect on tides', tab: 'learn', keywords: ['coriolis', 'rotation', 'earth'] },
+  { id: 'lunarDist', label: '🌙 Distance', tooltip: 'Moon distance and tidal forcing', tab: 'learn', keywords: ['perigee', 'apogee', 'distance', 'forcing'] },
+  { id: 'eclipse', label: 'Eclipses', tooltip: 'How eclipses affect tides', tab: 'learn', keywords: ['eclipse', 'solar', 'lunar'] },
+  { id: 'twelfths', label: 'Rule of 12', tooltip: 'Rule of Twelfths for tide estimation', tab: 'learn', keywords: ['twelfths', 'estimation', 'rule'] },
+  { id: 'age', label: 'Age', tooltip: 'Lag between moon phase and tide', tab: 'learn', keywords: ['age', 'lag', 'delay'] },
+  { id: 'portTime', label: 'Port Time', tooltip: 'Compare high water times at ports', tab: 'learn', keywords: ['port', 'high water', 'time difference'] },
+  { id: 'convert', label: 'Convert', tooltip: 'Convert between tidal datums', tab: 'learn', keywords: ['convert', 'datum', 'transformation'] },
+  { id: 'constituentCompare', label: 'Compare', tooltip: 'Side-by-side constituent comparison', tab: 'learn', keywords: ['constituent', 'comparison', 'side by side'] },
+  { id: 'quiz', label: '🎓 Quiz', tooltip: 'Test your tidal knowledge', tab: 'learn', keywords: ['quiz', 'test', 'learn', 'game'] },
+  { id: 'glossary', label: '📖 Glossary', tooltip: 'Tidal terminology glossary', tab: 'learn', keywords: ['glossary', 'terms', 'definitions'] },
+  { id: 'keys', label: '⌨ Keys', tooltip: 'Keyboard shortcuts', tab: 'learn', keywords: ['keyboard', 'shortcuts', 'hotkeys'] },
+  // Navigate
+  { id: 'safety', label: 'Safety', tooltip: 'Navigation safety overview', tab: 'nav', keywords: ['safety', 'navigation', 'overview'] },
+  { id: 'ukc', label: 'Under Keel', tooltip: 'Under-keel clearance calculator', tab: 'nav', keywords: ['under keel', 'clearance', 'draft', 'ukc'] },
+  { id: 'bridge', label: '🌉 Bridge', tooltip: 'Bridge clearance calculator', tab: 'nav', keywords: ['bridge', 'clearance', 'height', 'mast'] },
+  { id: 'anchor', label: '⚓ Anchor', tooltip: 'Anchor scope calculator', tab: 'nav', keywords: ['anchor', 'scope', 'chain', 'rode'] },
+  { id: 'ground', label: '⚠️ Ground', tooltip: 'Grounding risk analysis', tab: 'nav', keywords: ['grounding', 'risk', 'shallow'] },
+  { id: 'streams', label: 'Streams', tooltip: 'Tidal stream atlas', tab: 'nav', keywords: ['stream', 'atlas', 'current'] },
+  { id: 'passage', label: 'Passage', tooltip: 'Tide-aware passage planner', tab: 'nav', keywords: ['passage', 'plan', 'route'] },
+  { id: 'depth', label: 'Depth', tooltip: 'Chart depth correction tool', tab: 'nav', keywords: ['depth', 'correction', 'chart'] },
+  { id: 'slack', label: 'Slack', tooltip: 'Find slack water times', tab: 'nav', keywords: ['slack', 'water', 'current', 'zero'] },
+  { id: 'current', label: 'Current', tooltip: 'Tidal current speed calculator', tab: 'nav', keywords: ['current', 'speed', 'velocity'] },
+  { id: 'gates', label: 'Gates', tooltip: 'Tidal gate/barrier schedules', tab: 'nav', keywords: ['gate', 'barrier', 'lock'] },
+  { id: 'races', label: '⚡ Races', tooltip: 'Tidal race warnings', tab: 'nav', keywords: ['race', 'overfalls', 'dangerous'] },
+  { id: 'ferry', label: '⛴️ Ferry', tooltip: 'Ferry timing optimization', tab: 'nav', keywords: ['ferry', 'crossing', 'timing'] },
+  { id: 'port', label: '🚢 Port', tooltip: 'Port approach advisor', tab: 'nav', keywords: ['port', 'approach', 'entry'] },
+  { id: 'dock', label: 'Dock', tooltip: 'Calculate docking windows', tab: 'nav', keywords: ['dock', 'berth', 'window'] },
+  { id: 'mooring', label: 'Mooring', tooltip: 'Mooring line length calculator', tab: 'nav', keywords: ['mooring', 'line', 'rope'] },
+  { id: 'strand', label: 'Strand', tooltip: 'Stranding countdown timer', tab: 'nav', keywords: ['stranding', 'aground', 'timer'] },
+  { id: 'marina', label: 'Marina', tooltip: 'Marina access times', tab: 'nav', keywords: ['marina', 'access', 'entry'] },
+  { id: 'fuel', label: '⛽ Fuel', tooltip: 'Tide-adjusted fuel consumption', tab: 'nav', keywords: ['fuel', 'consumption', 'economy'] },
+  { id: 'watch', label: 'Watch', tooltip: 'Crew watch scheduler', tab: 'nav', keywords: ['watch', 'crew', 'schedule'] },
+  { id: 'route', label: '📍 Route', tooltip: 'Waypoint route planner', tab: 'nav', keywords: ['waypoint', 'route', 'navigation'] },
+  { id: 'log', label: '📋 Log', tooltip: 'Generate voyage log', tab: 'nav', keywords: ['voyage', 'log', 'record'] },
+  // Plan
+  { id: 'beach', label: '🏖️ Beach', tooltip: 'Beach access planner', tab: 'plan', keywords: ['beach', 'access', 'sand'] },
+  { id: 'tidepool', label: '🦀 Tidepool', tooltip: 'Tidepool exploration times', tab: 'plan', keywords: ['tidepool', 'intertidal', 'explore'] },
+  { id: 'shellfish', label: '🦪 Shellfish', tooltip: 'Shellfish harvesting planner', tab: 'plan', keywords: ['shellfish', 'clam', 'harvest', 'oyster'] },
+  { id: 'kayak', label: '🛶 Kayak', tooltip: 'Kayak launch planner', tab: 'plan', keywords: ['kayak', 'launch', 'paddle'] },
+  { id: 'dive', label: '🤿 Dive', tooltip: 'Generate dive slate', tab: 'plan', keywords: ['dive', 'scuba', 'slate'] },
+  { id: 'hike', label: '🥾 Hike', tooltip: 'Coastal hiking planner', tab: 'plan', keywords: ['hike', 'coastal', 'trail'] },
+  { id: 'surf', label: '🏄 Surf', tooltip: 'Surf conditions calculator', tab: 'plan', keywords: ['surf', 'wave', 'swell'] },
+  { id: 'photo', label: '📷 Photo', tooltip: 'Photography timing planner', tab: 'plan', keywords: ['photo', 'photography', 'golden hour'] },
+  { id: 'fish', label: '🎣 Fish', tooltip: 'Solunar fishing activity', tab: 'plan', keywords: ['fishing', 'solunar', 'bite'] },
+  { id: 'pressure', label: 'Pressure', tooltip: 'Barometric pressure effects', tab: 'plan', keywords: ['pressure', 'barometric', 'weather'] },
+  { id: 'seaRise', label: 'Sea Rise', tooltip: 'Sea level rise projections', tab: 'plan', keywords: ['sea level', 'rise', 'climate'] },
+  { id: 'records', label: 'Records', tooltip: 'Historical tide extremes', tab: 'plan', keywords: ['historical', 'record', 'extreme'] },
+  { id: 'storm', label: '⛈️ Storm', tooltip: 'Storm surge estimator', tab: 'plan', keywords: ['storm', 'surge', 'hurricane'] },
+  { id: 'weather', label: 'Weather', tooltip: 'Weather effect simulator', tab: 'plan', keywords: ['weather', 'wind', 'effect'] },
+  { id: 'marineWx', label: 'Marine Wx', tooltip: 'Marine weather panel', tab: 'plan', keywords: ['marine', 'weather', 'forecast'] },
+  { id: 'swell', label: '🌊 Swell', tooltip: 'Swell impact calculator', tab: 'plan', keywords: ['swell', 'wave', 'impact'] },
+  { id: 'msl', label: 'MSL', tooltip: 'Mean sea level tracker', tab: 'plan', keywords: ['mean sea level', 'msl', 'average'] },
+  { id: 'energy', label: 'Energy', tooltip: 'Tidal energy calculator', tab: 'plan', keywords: ['energy', 'power', 'tidal'] },
+  { id: 'prism', label: 'Prism', tooltip: 'Tidal prism calculator', tab: 'plan', keywords: ['prism', 'volume', 'estuary'] },
+  { id: 'estuary', label: 'Estuary', tooltip: 'Estuary dynamics', tab: 'plan', keywords: ['estuary', 'dynamics', 'river'] },
+  { id: 'drying', label: 'Drying', tooltip: 'Drying heights calculator', tab: 'plan', keywords: ['drying', 'height', 'exposed'] },
+];
+
 // Tool button component
 function Btn({
   children,
@@ -162,6 +276,36 @@ export function HarmonicsPanel() {
 
   const [selectedConstituent, setSelectedConstituent] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>('charts');
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Filter tools based on search query
+  const filteredTools = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const query = searchQuery.toLowerCase();
+    return TOOLS.filter(tool =>
+      tool.label.toLowerCase().includes(query) ||
+      tool.tooltip.toLowerCase().includes(query) ||
+      tool.keywords.some(kw => kw.includes(query))
+    );
+  }, [searchQuery]);
+
+  // Clear search when pressing Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && searchQuery) {
+        setSearchQuery('');
+        searchInputRef.current?.blur();
+      }
+      // Ctrl/Cmd + K to focus search
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [searchQuery]);
 
   // All modal/panel states
   const [showAccuracyComparison, setShowAccuracyComparison] = useState(false);
@@ -259,6 +403,116 @@ export function HarmonicsPanel() {
   const [showSurfCalc, setShowSurfCalc] = useState(false);
   const [showPhotoPlanner, setShowPhotoPlanner] = useState(false);
   const [showSolunar, setShowSolunar] = useState(false);
+
+  // Handle tool activation from search
+  const handleToolClick = (toolId: string) => {
+    setSearchQuery('');
+    const toolActions: Record<string, () => void> = {
+      // Charts
+      phasor: togglePhasorDiagram,
+      curve: toggleTideCurve,
+      accuracy: () => setShowAccuracyComparison(!showAccuracyComparison),
+      waves: () => setShowWaveform(!showWaveform),
+      spectrum: () => setShowSpectrum(!showSpectrum),
+      timeline: () => setShowTimeline(!showTimeline),
+      clock: () => setShowClock(!showClock),
+      phase: () => setShowPhaseAnimation(true),
+      beats: () => setShowBeatPattern(true),
+      waterFx: () => setShowWaterShader(!showWaterShader),
+      live: () => setShowLiveTide(true),
+      rate: () => setShowTideRate(!showTideRate),
+      compare: () => setShowStationComparison(!showStationComparison),
+      ranges: () => setShowRangeChart(!showRangeChart),
+      pie: () => setShowPieChart(!showPieChart),
+      families: () => setShowFamilies(!showFamilies),
+      table: () => setShowTable(!showTable),
+      map: () => setShowMap(!showMap),
+      // Predict
+      hilo: () => setShowExtremes(!showExtremes),
+      king: () => setShowKingTidePredictor(!showKingTidePredictor),
+      calendar: () => setShowCalendar(!showCalendar),
+      moon: () => setShowMoonCalendar(true),
+      nodal: () => setShowNodal(!showNodal),
+      seasonal: () => setShowSeasonalTide(true),
+      dateCompare: () => setShowDateComparison(true),
+      lookup: () => setShowHeightLookup(true),
+      windows: () => setShowTidalWindow(true),
+      alerts: () => setShowAlerts(!showAlerts),
+      lunarPhase: () => setShowLunar(!showLunar),
+      coef: () => setShowCoefficient(!showCoefficient),
+      type: () => setShowTideType(true),
+      ebbFlood: () => setShowEbbFlood(true),
+      export: () => setShowExport(true),
+      print: () => setShowPrintTable(true),
+      share: () => setShowShare(true),
+      embed: () => setShowEmbedWidget(true),
+      // Learn
+      doodson: () => setShowDoodsonExplorer(true),
+      datums: () => setShowDatumExplainer(true),
+      analysis: () => setShowAnalysis(true),
+      bores: () => setShowBoreInfo(true),
+      amphidromic: () => setShowAmphidromic(true),
+      loading: () => setShowTidalLoading(true),
+      resonance: () => setShowResonance(true),
+      coriolis: () => setShowCoriolis(true),
+      lunarDist: () => setShowLunarDistance(true),
+      eclipse: () => setShowEclipseTides(true),
+      twelfths: () => setShowTwelfths(true),
+      age: () => setShowAgeOfTide(true),
+      portTime: () => setShowPortTiming(true),
+      convert: () => setShowDatumConverter(true),
+      constituentCompare: () => setShowComparison(true),
+      quiz: () => setShowQuiz(true),
+      glossary: () => setShowGlossary(true),
+      keys: () => setShowKeyboardHelp(true),
+      // Nav
+      safety: () => setShowNavSafety(true),
+      ukc: () => setShowUKC(true),
+      bridge: () => setShowBridgeClearance(true),
+      anchor: () => setShowAnchorScope(true),
+      ground: () => setShowGroundingRisk(true),
+      streams: () => setShowStreamAtlas(true),
+      passage: () => setShowPassagePlanner(true),
+      depth: () => setShowDepthCorrection(true),
+      slack: () => setShowSlackWater(true),
+      current: () => setShowCurrentSpeed(true),
+      gates: () => setShowTidalGate(true),
+      races: () => setShowTidalRace(true),
+      ferry: () => setShowFerryTiming(true),
+      port: () => setShowPortApproach(true),
+      dock: () => setShowDockingWindow(true),
+      mooring: () => setShowMooringLine(true),
+      strand: () => setShowStrandingTimer(true),
+      marina: () => setShowMarinaAccess(true),
+      fuel: () => setShowFuelEstimator(true),
+      watch: () => setShowCrewWatch(true),
+      route: () => setShowWaypointRoute(true),
+      log: () => setShowVoyageLog(true),
+      // Plan
+      beach: () => setShowBeachAccess(true),
+      tidepool: () => setShowIntertidal(true),
+      shellfish: () => setShowShellfishPlanner(true),
+      kayak: () => setShowKayakPlanner(true),
+      dive: () => setShowDiveSlate(true),
+      hike: () => setShowHikingPlanner(true),
+      surf: () => setShowSurfCalc(true),
+      photo: () => setShowPhotoPlanner(true),
+      fish: () => setShowSolunar(!showSolunar),
+      pressure: () => setShowBarometric(!showBarometric),
+      seaRise: () => setShowSeaLevelRise(!showSeaLevelRise),
+      records: () => setShowHistorical(!showHistorical),
+      storm: () => setShowStormSurge(true),
+      weather: () => setShowWeatherSim(true),
+      marineWx: () => setShowMarineWeather(true),
+      swell: () => setShowSwellImpact(true),
+      msl: () => setShowMSLTracker(true),
+      energy: () => setShowEnergy(!showEnergy),
+      prism: () => setShowTidalPrism(true),
+      estuary: () => setShowEstuary(true),
+      drying: () => setShowDryingHeights(true),
+    };
+    toolActions[toolId]?.();
+  };
 
   // Render tools for the active tab
   const renderTabContent = () => {
@@ -408,6 +662,62 @@ export function HarmonicsPanel() {
 
       {/* Constituents */}
       <ConstituentToggles />
+
+      {/* Search Tools */}
+      <div className="bg-slate-800/90 backdrop-blur rounded-lg p-2">
+        <div className="relative">
+          <input
+            ref={searchInputRef}
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search tools... (Ctrl+K)"
+            className="w-full bg-slate-700 text-slate-200 text-xs rounded px-3 py-1.5 pl-7 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+          <svg
+            className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+        {/* Search Results */}
+        {filteredTools.length > 0 && (
+          <div className="mt-2 max-h-48 overflow-y-auto">
+            <div className="text-[10px] text-slate-500 mb-1">
+              {filteredTools.length} tool{filteredTools.length !== 1 ? 's' : ''} found
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {filteredTools.map((tool) => (
+                <button
+                  key={tool.id}
+                  onClick={() => handleToolClick(tool.id)}
+                  title={`${tool.tooltip} (${TABS.find(t => t.id === tool.tab)?.label})`}
+                  className="px-2 py-1 rounded text-xs bg-slate-700 text-slate-300 hover:bg-slate-600 transition-colors flex items-center gap-1"
+                >
+                  <span className="text-[10px] text-slate-500">{TABS.find(t => t.id === tool.tab)?.icon}</span>
+                  {tool.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        {searchQuery && filteredTools.length === 0 && (
+          <div className="mt-2 text-xs text-slate-500">No tools found</div>
+        )}
+      </div>
 
       {/* Tab Navigation */}
       <div className="bg-slate-800/90 backdrop-blur rounded-lg overflow-hidden">
