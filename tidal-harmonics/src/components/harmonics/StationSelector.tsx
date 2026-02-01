@@ -1,9 +1,19 @@
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
+import { getTidalType, getTidalTypeLabel } from '@/data/stations';
+
+const TIDAL_TYPE_COLORS = {
+  'semidiurnal': 'bg-blue-500/20 text-blue-400',
+  'mixed-semidiurnal': 'bg-cyan-500/20 text-cyan-400',
+  'mixed-diurnal': 'bg-green-500/20 text-green-400',
+  'diurnal': 'bg-amber-500/20 text-amber-400',
+};
 
 export function StationSelector() {
   const stations = useHarmonicsStore((s) => s.stations);
   const selectedStation = useHarmonicsStore((s) => s.selectedStation);
   const selectStation = useHarmonicsStore((s) => s.selectStation);
+
+  const tidalType = selectedStation ? getTidalType(selectedStation) : null;
 
   return (
     <div className="bg-slate-800/80 backdrop-blur-sm rounded-lg p-3">
@@ -15,16 +25,24 @@ export function StationSelector() {
       >
         {stations.map((s) => (
           <option key={s.id} value={s.id}>
-            {s.state ? `${s.name}, ${s.state}` : s.name}
+            {s.state ? `${s.name}, ${s.state}` : `${s.name}, ${s.country}`}
           </option>
         ))}
       </select>
       {selectedStation && (
-        <div className="mt-2 text-xs text-slate-500">
-          <span>
-            {selectedStation.lat.toFixed(3)}°N, {Math.abs(selectedStation.lon).toFixed(3)}°W
-          </span>
-          <span className="ml-2">Datum: {selectedStation.datum}</span>
+        <div className="mt-2 space-y-1">
+          <div className="text-xs text-slate-500">
+            <span>
+              {selectedStation.lat.toFixed(2)}°{selectedStation.lat >= 0 ? 'N' : 'S'},{' '}
+              {Math.abs(selectedStation.lon).toFixed(2)}°{selectedStation.lon >= 0 ? 'E' : 'W'}
+            </span>
+            <span className="ml-2">Datum: {selectedStation.datum}</span>
+          </div>
+          {tidalType && (
+            <div className={`text-xs px-2 py-0.5 rounded inline-block ${TIDAL_TYPE_COLORS[tidalType]}`}>
+              {getTidalTypeLabel(tidalType)}
+            </div>
+          )}
         </div>
       )}
     </div>
