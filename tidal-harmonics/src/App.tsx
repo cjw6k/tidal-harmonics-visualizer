@@ -4,6 +4,7 @@ import { HarmonicsPanel } from '@/components/harmonics/HarmonicsPanel';
 import { KeyboardShortcutsHelp } from '@/components/ui/KeyboardShortcutsHelp';
 import { AboutPanel } from '@/components/ui/AboutPanel';
 import { TidalFactsWidget } from '@/components/ui/TidalFactsWidget';
+import { InstallPrompt } from '@/components/ui/InstallPrompt';
 import { TutorialOverlay } from '@/components/tutorial/TutorialOverlay';
 import { TutorialOverlayEffects } from '@/components/tutorial/TutorialOverlayEffects';
 import { TutorialButton } from '@/components/tutorial/TutorialButton';
@@ -39,6 +40,7 @@ function App() {
       <KeyboardShortcutsHelp />
       <AboutPanel />
       <TidalFactsWidget />
+      <InstallPrompt />
     </div>
   );
 }
