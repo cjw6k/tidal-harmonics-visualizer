@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { TidalGlossary } from './TidalGlossary';
+import { HistoricalFacts } from './HistoricalFacts';
 
 /**
  * About Panel
@@ -9,6 +10,7 @@ import { TidalGlossary } from './TidalGlossary';
 export function AboutPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const [showGlossary, setShowGlossary] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   if (!isOpen) {
     return (
@@ -159,14 +161,22 @@ export function AboutPanel() {
 
         {/* Footer */}
         <div className="px-6 py-3 border-t border-slate-700 flex items-center justify-between">
-          <button
-            onClick={() => setShowGlossary(true)}
-            className="text-blue-400 hover:text-blue-300 text-xs"
-          >
-            Open Glossary
-          </button>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setShowGlossary(true)}
+              className="text-blue-400 hover:text-blue-300 text-xs"
+            >
+              Glossary
+            </button>
+            <button
+              onClick={() => setShowHistory(true)}
+              className="text-purple-400 hover:text-purple-300 text-xs"
+            >
+              History & Facts
+            </button>
+          </div>
           <span className="text-xs text-slate-500">
-            Created with Claude Code • Educational use only
+            Educational use only
           </span>
         </div>
       </div>
@@ -174,6 +184,11 @@ export function AboutPanel() {
       {/* Glossary Modal */}
       {showGlossary && (
         <TidalGlossary onClose={() => setShowGlossary(false)} />
+      )}
+
+      {/* Historical Facts Modal */}
+      {showHistory && (
+        <HistoricalFacts onClose={() => setShowHistory(false)} />
       )}
     </div>
   );
