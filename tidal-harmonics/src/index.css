@@ -22,3 +22,45 @@ body {
   background-color: #0a0a0f;
   color: #ffffff;
 }
+
+/* Touch-friendly improvements */
+@layer utilities {
+  /* Prevent double-tap zoom on interactive elements */
+  .touch-action-manipulation {
+    touch-action: manipulation;
+  }
+}
+
+/* Global touch optimizations */
+button,
+select,
+input,
+[role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Active state feedback for touch */
+button:active:not(:disabled),
+[role="button"]:active:not(:disabled) {
+  transform: scale(0.97);
+  transition: transform 0.1s ease-out;
+}
+
+/* Ensure minimum touch target size on mobile */
+@media (pointer: coarse) {
+  button,
+  select,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Larger text inputs on touch devices */
+  input[type="text"],
+  input[type="search"],
+  input[type="datetime-local"] {
+    min-height: 44px;
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+}

@@ -77,7 +77,7 @@ export function HarmonicsPanel() {
         <button
           onClick={togglePhasorDiagram}
           aria-pressed={showPhasorDiagram}
-          className={`flex-1 px-3 py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900
             ${showPhasorDiagram ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400'}`}
         >
           Phasor
@@ -85,7 +85,7 @@ export function HarmonicsPanel() {
         <button
           onClick={toggleTideCurve}
           aria-pressed={showTideCurve}
-          className={`flex-1 px-3 py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900
             ${showTideCurve ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400'}`}
         >
           Curve
@@ -93,7 +93,7 @@ export function HarmonicsPanel() {
         <button
           onClick={() => setShowAccuracyComparison(!showAccuracyComparison)}
           aria-pressed={showAccuracyComparison}
-          className={`flex-1 px-3 py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900
             ${showAccuracyComparison ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400'}`}
           title="Compare prediction accuracy"
         >
@@ -102,7 +102,7 @@ export function HarmonicsPanel() {
         <button
           onClick={() => setShowDoodsonExplorer(true)}
           aria-label="Learn about Doodson numbers"
-          className="px-3 py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
           title="Learn about Doodson numbers"
         >
           ?
@@ -110,7 +110,7 @@ export function HarmonicsPanel() {
         <button
           onClick={() => setShowPhaseAnimation(true)}
           aria-label="Show animated phasor rotation"
-          className="px-3 py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
           title="Animated phasor rotation"
         >
           ▶
@@ -118,7 +118,7 @@ export function HarmonicsPanel() {
         <button
           onClick={() => setShowComparison(true)}
           aria-label="Compare constituents"
-          className="px-3 py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
           title="Compare constituents"
         >
           ⚖
@@ -126,7 +126,7 @@ export function HarmonicsPanel() {
         <button
           onClick={() => setShowExport(true)}
           aria-label="Export data"
-          className="px-3 py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
           title="Export data"
         >
           ↓
@@ -138,7 +138,7 @@ export function HarmonicsPanel() {
         <button
           onClick={() => setShowKingTidePredictor(!showKingTidePredictor)}
           aria-pressed={showKingTidePredictor}
-          className={`flex-1 px-3 py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-1 focus:ring-offset-slate-900
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-1 focus:ring-offset-slate-900
             ${showKingTidePredictor ? 'bg-amber-600 text-white' : 'bg-slate-700 text-slate-400'}`}
           title="Predict king tides (perigean spring tides)"
         >
@@ -147,7 +147,7 @@ export function HarmonicsPanel() {
         <button
           onClick={() => setShowStationComparison(!showStationComparison)}
           aria-pressed={showStationComparison}
-          className={`flex-1 px-3 py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-1 focus:ring-offset-slate-900
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-1 focus:ring-offset-slate-900
             ${showStationComparison ? 'bg-purple-600 text-white' : 'bg-slate-700 text-slate-400'}`}
           title="Compare stations over time"
         >
@@ -156,7 +156,7 @@ export function HarmonicsPanel() {
         <button
           onClick={() => setShowRangeChart(!showRangeChart)}
           aria-pressed={showRangeChart}
-          className={`flex-1 px-3 py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-1 focus:ring-offset-slate-900
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-1 focus:ring-offset-slate-900
             ${showRangeChart ? 'bg-cyan-600 text-white' : 'bg-slate-700 text-slate-400'}`}
           title="Compare tidal ranges"
         >
@@ -165,7 +165,7 @@ export function HarmonicsPanel() {
         <button
           onClick={() => setShowPieChart(!showPieChart)}
           aria-pressed={showPieChart}
-          className={`flex-1 px-3 py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1 focus:ring-offset-slate-900
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1 focus:ring-offset-slate-900
             ${showPieChart ? 'bg-green-600 text-white' : 'bg-slate-700 text-slate-400'}`}
           title="Constituent breakdown"
         >
@@ -174,7 +174,7 @@ export function HarmonicsPanel() {
         <button
           onClick={() => setShowDatumExplainer(true)}
           aria-label="Learn about tidal datums"
-          className="px-3 py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
           title="Learn about tidal datums"
         >
           📏
@@ -186,7 +186,7 @@ export function HarmonicsPanel() {
         <button
           onClick={() => setShowWaveform(!showWaveform)}
           aria-pressed={showWaveform}
-          className={`flex-1 px-3 py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 focus:ring-offset-slate-900
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 focus:ring-offset-slate-900
             ${showWaveform ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-400'}`}
           title="Waveform decomposition"
         >
@@ -195,7 +195,7 @@ export function HarmonicsPanel() {
         <button
           onClick={() => setShowCalendar(!showCalendar)}
           aria-pressed={showCalendar}
-          className={`flex-1 px-3 py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-1 focus:ring-offset-slate-900
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-1 focus:ring-offset-slate-900
             ${showCalendar ? 'bg-rose-600 text-white' : 'bg-slate-700 text-slate-400'}`}
           title="Spring-neap calendar"
         >
@@ -204,7 +204,7 @@ export function HarmonicsPanel() {
         <button
           onClick={() => setShowTable(!showTable)}
           aria-pressed={showTable}
-          className={`flex-1 px-3 py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1 focus:ring-offset-slate-900
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1 focus:ring-offset-slate-900
             ${showTable ? 'bg-teal-600 text-white' : 'bg-slate-700 text-slate-400'}`}
           title="Constituent table"
         >
@@ -213,7 +213,7 @@ export function HarmonicsPanel() {
         <button
           onClick={() => setShowExtremes(!showExtremes)}
           aria-pressed={showExtremes}
-          className={`flex-1 px-3 py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1 focus:ring-offset-slate-900
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1 focus:ring-offset-slate-900
             ${showExtremes ? 'bg-sky-600 text-white' : 'bg-slate-700 text-slate-400'}`}
           title="High/low tide predictions"
         >
@@ -222,7 +222,7 @@ export function HarmonicsPanel() {
         <button
           onClick={() => setShowNodal(!showNodal)}
           aria-pressed={showNodal}
-          className={`flex-1 px-3 py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:ring-offset-1 focus:ring-offset-slate-900
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:ring-offset-1 focus:ring-offset-slate-900
             ${showNodal ? 'bg-fuchsia-600 text-white' : 'bg-slate-700 text-slate-400'}`}
           title="18.6-year nodal cycle"
         >
@@ -231,7 +231,7 @@ export function HarmonicsPanel() {
         <button
           onClick={() => setShowSpectrum(!showSpectrum)}
           aria-pressed={showSpectrum}
-          className={`flex-1 px-3 py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-1 focus:ring-offset-slate-900
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-1 focus:ring-offset-slate-900
             ${showSpectrum ? 'bg-violet-600 text-white' : 'bg-slate-700 text-slate-400'}`}
           title="Frequency spectrum"
         >
