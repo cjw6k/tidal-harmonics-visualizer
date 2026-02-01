@@ -91,6 +91,7 @@ const LunarDistancePanel = lazy(() => import('./LunarDistancePanel').then(m => (
 const EclipseTidesPanel = lazy(() => import('./EclipseTidesPanel').then(m => ({ default: m.EclipseTidesPanel })));
 const DryingHeightsCalculator = lazy(() => import('./DryingHeightsCalculator').then(m => ({ default: m.DryingHeightsCalculator })));
 const StormSurgeEstimator = lazy(() => import('./StormSurgeEstimator').then(m => ({ default: m.StormSurgeEstimator })));
+const TidalGateScheduler = lazy(() => import('./TidalGateScheduler').then(m => ({ default: m.TidalGateScheduler })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -191,6 +192,7 @@ export function HarmonicsPanel() {
   const [showEclipseTides, setShowEclipseTides] = useState(false);
   const [showDryingHeights, setShowDryingHeights] = useState(false);
   const [showStormSurge, setShowStormSurge] = useState(false);
+  const [showTidalGate, setShowTidalGate] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -939,6 +941,14 @@ export function HarmonicsPanel() {
         >
           ⛈️
         </button>
+        <button
+          onClick={() => setShowTidalGate(true)}
+          aria-label="Tidal gate scheduler"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Find passage windows through tidal gates"
+        >
+          🚪
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -1204,6 +1214,10 @@ export function HarmonicsPanel() {
 
         {showStormSurge && (
           <StormSurgeEstimator onClose={() => setShowStormSurge(false)} />
+        )}
+
+        {showTidalGate && (
+          <TidalGateScheduler onClose={() => setShowTidalGate(false)} />
         )}
       </Suspense>
     </div>
