@@ -119,12 +119,12 @@ function LoadingFallback() {
 // Tab types
 type TabId = 'charts' | 'predict' | 'learn' | 'nav' | 'plan';
 
-const TABS: { id: TabId; label: string; icon: string }[] = [
-  { id: 'charts', label: 'Charts', icon: '📊' },
-  { id: 'predict', label: 'Predict', icon: '📅' },
-  { id: 'learn', label: 'Learn', icon: '🎓' },
-  { id: 'nav', label: 'Navigate', icon: '⚓' },
-  { id: 'plan', label: 'Plan', icon: '🗓️' },
+const TABS: { id: TabId; label: string; icon: string; count: number }[] = [
+  { id: 'charts', label: 'Charts', icon: '📊', count: 18 },
+  { id: 'predict', label: 'Predict', icon: '📅', count: 18 },
+  { id: 'learn', label: 'Learn', icon: '🎓', count: 18 },
+  { id: 'nav', label: 'Navigate', icon: '⚓', count: 22 },
+  { id: 'plan', label: 'Plan', icon: '🗓️', count: 21 },
 ];
 
 // Tool button component
@@ -453,6 +453,9 @@ export function HarmonicsPanel() {
             >
               <span className="block" aria-hidden="true">{tab.icon}</span>
               <span className="block mt-0.5">{tab.label}</span>
+              <span className={`block text-[10px] ${activeTab === tab.id ? 'text-slate-300' : 'text-slate-500'}`}>
+                {tab.count}
+              </span>
             </button>
           ))}
         </div>
