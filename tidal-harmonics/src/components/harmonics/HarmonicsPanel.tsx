@@ -37,6 +37,7 @@ const StationMap = lazy(() => import('./StationMap').then(m => ({ default: m.Sta
 const BarometricPressure = lazy(() => import('./BarometricPressure').then(m => ({ default: m.BarometricPressure })));
 const KeyboardShortcuts = lazy(() => import('./KeyboardShortcuts').then(m => ({ default: m.KeyboardShortcuts })));
 const ConstituentFamilies = lazy(() => import('./ConstituentFamilies').then(m => ({ default: m.ConstituentFamilies })));
+const TideAlerts = lazy(() => import('./TideAlerts').then(m => ({ default: m.TideAlerts })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -83,6 +84,7 @@ export function HarmonicsPanel() {
   const [showBarometric, setShowBarometric] = useState(false);
   const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
   const [showFamilies, setShowFamilies] = useState(false);
+  const [showAlerts, setShowAlerts] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -112,6 +114,7 @@ export function HarmonicsPanel() {
     setShowMap,
     setShowBarometric,
     setShowFamilies,
+    setShowAlerts,
   });
 
   return (
@@ -391,6 +394,15 @@ export function HarmonicsPanel() {
         >
           Baro
         </button>
+        <button
+          onClick={() => setShowAlerts(!showAlerts)}
+          aria-pressed={showAlerts}
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:ring-offset-slate-900
+            ${showAlerts ? 'bg-red-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="Tide alerts"
+        >
+          Alerts
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -419,6 +431,7 @@ export function HarmonicsPanel() {
         {showMap && <StationMap />}
         {showBarometric && <BarometricPressure />}
         {showFamilies && <ConstituentFamilies />}
+        {showAlerts && <TideAlerts />}
       </Suspense>
 
       {/* Info Panel */}
