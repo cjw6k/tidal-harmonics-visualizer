@@ -1,14 +1,50 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { CONSTITUENTS } from '@/data/constituents';
 import { getConstituentDetail, CONSTITUENT_GROUPS } from '@/data/constituentEncyclopedia';
+
+// Get ordered list of all constituents
+const ALL_SYMBOLS = Object.keys(CONSTITUENTS);
 
 interface ConstituentInfoPanelProps {
   symbol: string | null;
   onClose: () => void;
+  onNavigate?: (symbol: string) => void;
 }
 
-export function ConstituentInfoPanel({ symbol, onClose }: ConstituentInfoPanelProps) {
+export function ConstituentInfoPanel({ symbol, onClose, onNavigate }: ConstituentInfoPanelProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'physics' | 'math'>('overview');
+
+  // Navigation helpers
+  const currentIndex = useMemo(() => symbol ? ALL_SYMBOLS.indexOf(symbol) : -1, [symbol]);
+  const prevSymbol = currentIndex > 0 ? ALL_SYMBOLS[currentIndex - 1] : null;
+  const nextSymbol = currentIndex < ALL_SYMBOLS.length - 1 ? ALL_SYMBOLS[currentIndex + 1] : null;
+
+  const goToPrev = useCallback(() => {
+    if (prevSymbol && onNavigate) onNavigate(prevSymbol);
+  }, [prevSymbol, onNavigate]);
+
+  const goToNext = useCallback(() => {
+    if (nextSymbol && onNavigate) onNavigate(nextSymbol);
+  }, [nextSymbol, onNavigate]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft' && prevSymbol) {
+        e.preventDefault();
+        goToPrev();
+      } else if (e.key === 'ArrowRight' && nextSymbol) {
+        e.preventDefault();
+        goToNext();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [prevSymbol, nextSymbol, goToPrev, goToNext, onClose]);
 
   if (!symbol) return null;
 
@@ -27,28 +63,65 @@ export function ConstituentInfoPanel({ symbol, onClose }: ConstituentInfoPanelPr
       <div className="bg-slate-900 rounded-2xl shadow-2xl border border-slate-700 max-w-2xl w-full mx-4 max-h-[85vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-700 flex items-start justify-between">
-          <div>
-            <div className="flex items-center gap-3">
-              <span className="text-3xl font-bold text-white">{symbol}</span>
-              <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                constituent.family === 'semidiurnal' ? 'bg-blue-500/20 text-blue-400' :
-                constituent.family === 'diurnal' ? 'bg-green-500/20 text-green-400' :
-                constituent.family === 'long-period' ? 'bg-purple-500/20 text-purple-400' :
-                'bg-orange-500/20 text-orange-400'
-              }`}>
-                {constituent.family}
-              </span>
+          <div className="flex items-center gap-4">
+            {/* Navigation buttons */}
+            {onNavigate && (
+              <div className="flex flex-col gap-1">
+                <button
+                  onClick={goToPrev}
+                  disabled={!prevSymbol}
+                  className="p-1.5 rounded bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  title={prevSymbol ? `Previous: ${prevSymbol}` : 'No previous'}
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={goToNext}
+                  disabled={!nextSymbol}
+                  className="p-1.5 rounded bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  title={nextSymbol ? `Next: ${nextSymbol}` : 'No next'}
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            )}
+            <div>
+              <div className="flex items-center gap-3">
+                <span className="text-3xl font-bold text-white">{symbol}</span>
+                <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                  constituent.family === 'semidiurnal' ? 'bg-blue-500/20 text-blue-400' :
+                  constituent.family === 'diurnal' ? 'bg-green-500/20 text-green-400' :
+                  constituent.family === 'long-period' ? 'bg-purple-500/20 text-purple-400' :
+                  'bg-orange-500/20 text-orange-400'
+                }`}>
+                  {constituent.family}
+                </span>
+                {onNavigate && (
+                  <span className="text-slate-600 text-xs">
+                    {currentIndex + 1} / {ALL_SYMBOLS.length}
+                  </span>
+                )}
+              </div>
+              <p className="text-slate-400 mt-1">{constituent.name}</p>
             </div>
-            <p className="text-slate-400 mt-1">{constituent.name}</p>
           </div>
-          <button
-            onClick={onClose}
-            className="text-slate-500 hover:text-white transition-colors p-1"
-          >
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          <div className="flex items-center gap-2">
+            {onNavigate && (
+              <span className="text-slate-600 text-xs hidden sm:block">← → to navigate</span>
+            )}
+            <button
+              onClick={onClose}
+              className="text-slate-500 hover:text-white transition-colors p-1"
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Stats bar */}

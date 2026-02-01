@@ -1118,6 +1118,7 @@ export function HarmonicsPanel() {
       <ConstituentInfoPanel
         symbol={selectedConstituent}
         onClose={() => setSelectedConstituent(null)}
+        onNavigate={setSelectedConstituent}
       />
 
       {/* Lazy-loaded modals */}
