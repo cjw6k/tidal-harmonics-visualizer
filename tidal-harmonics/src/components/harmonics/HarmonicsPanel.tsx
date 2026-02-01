@@ -119,12 +119,12 @@ function LoadingFallback() {
 // Tab types
 type TabId = 'charts' | 'predict' | 'learn' | 'nav' | 'plan';
 
-const TABS: { id: TabId; label: string; icon: string; count: number }[] = [
-  { id: 'charts', label: 'Charts', icon: '📊', count: 18 },
-  { id: 'predict', label: 'Predict', icon: '📅', count: 18 },
-  { id: 'learn', label: 'Learn', icon: '🎓', count: 18 },
-  { id: 'nav', label: 'Navigate', icon: '⚓', count: 22 },
-  { id: 'plan', label: 'Plan', icon: '🗓️', count: 21 },
+const TABS: { id: TabId; label: string; icon: string; count: number; desc: string }[] = [
+  { id: 'charts', label: 'Charts', icon: '📊', count: 18, desc: 'Visualizations and real-time displays' },
+  { id: 'predict', label: 'Predict', icon: '📅', count: 18, desc: 'Forecasts, calendars, and export' },
+  { id: 'learn', label: 'Learn', icon: '🎓', count: 18, desc: 'Educational content and science' },
+  { id: 'nav', label: 'Navigate', icon: '⚓', count: 22, desc: 'Navigation safety and planning' },
+  { id: 'plan', label: 'Plan', icon: '🗓️', count: 21, desc: 'Activities, weather, and environment' },
 ];
 
 // Tool button component
@@ -465,6 +465,9 @@ export function HarmonicsPanel() {
           aria-labelledby={`tab-${activeTab}`}
           className="p-3"
         >
+          <p className="text-xs text-slate-500 mb-2">
+            {TABS.find(t => t.id === activeTab)?.desc}
+          </p>
           {renderTabContent()}
         </div>
       </div>
