@@ -976,11 +976,26 @@ export function HarmonicsPanel() {
                 <button
                   key={tool.id}
                   onClick={() => handleToolClick(tool.id)}
-                  title={`${tool.tooltip} (${TABS.find(t => t.id === tool.tab)?.label})`}
-                  className="px-2 py-1 rounded text-xs bg-slate-700 text-slate-300 hover:bg-slate-600 transition-colors flex items-center gap-1"
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    toggleFavorite(tool.id);
+                  }}
+                  title={`${tool.tooltip} (${TABS.find(t => t.id === tool.tab)?.label})${favoriteTools.includes(tool.id) ? ' - right-click to unfavorite' : ' - right-click to favorite'}`}
+                  className={`px-2 py-1 rounded text-xs transition-colors flex items-center gap-1 ${
+                    favoriteTools.includes(tool.id)
+                      ? 'bg-yellow-900/30 text-yellow-200 hover:bg-yellow-900/50 border border-yellow-700/30'
+                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                  }`}
                 >
-                  <span className="text-[10px] text-slate-500">{TABS.find(t => t.id === tool.tab)?.icon}</span>
+                  <span className={`text-[10px] ${favoriteTools.includes(tool.id) ? 'text-yellow-500' : 'text-slate-500'}`}>
+                    {TABS.find(t => t.id === tool.tab)?.icon}
+                  </span>
                   {tool.label}
+                  {favoriteTools.includes(tool.id) && (
+                    <svg className="w-2.5 h-2.5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                  )}
                 </button>
               ))}
             </div>
@@ -1066,7 +1081,7 @@ export function HarmonicsPanel() {
           role="tablist"
           aria-label="Tool categories"
         >
-          {TABS.map((tab) => (
+          {TABS.map((tab, index) => (
             <button
               key={tab.id}
               role="tab"
@@ -1095,6 +1110,7 @@ export function HarmonicsPanel() {
                   (e.currentTarget.parentElement?.children[newIndex] as HTMLElement)?.focus();
                 }
               }}
+              title={`${tab.label} (Press ${index + 1})`}
               className={`flex-1 px-2 py-2 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset ${
                 activeTab === tab.id
                   ? 'bg-slate-700 text-white border-b-2 border-blue-500'
@@ -1108,6 +1124,9 @@ export function HarmonicsPanel() {
                     {activeCountByTab[tab.id]}
                   </span>
                 )}
+                <span className="absolute -bottom-0.5 -left-1 text-[9px] text-slate-500 font-mono opacity-60">
+                  {index + 1}
+                </span>
               </span>
               <span className="block mt-0.5">{tab.label}</span>
               <span className={`block text-[10px] ${activeTab === tab.id ? 'text-slate-300' : 'text-slate-500'}`}>
