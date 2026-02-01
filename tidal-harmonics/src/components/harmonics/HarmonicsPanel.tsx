@@ -5,6 +5,7 @@ import { ConstituentToggles } from './ConstituentToggles';
 import { PhasorDiagram } from './PhasorDiagram';
 import { TideCurve } from './TideCurve';
 import { ConstituentInfoPanel } from './ConstituentInfoPanel';
+import { DoodsonExplorer } from './DoodsonExplorer';
 
 export function HarmonicsPanel() {
   const showPhasorDiagram = useHarmonicsStore((s) => s.showPhasorDiagram);
@@ -12,6 +13,7 @@ export function HarmonicsPanel() {
   const togglePhasorDiagram = useHarmonicsStore((s) => s.togglePhasorDiagram);
   const toggleTideCurve = useHarmonicsStore((s) => s.toggleTideCurve);
   const [selectedConstituent, setSelectedConstituent] = useState<string | null>(null);
+  const [showDoodsonExplorer, setShowDoodsonExplorer] = useState(false);
 
   return (
     <div className="absolute bottom-4 right-4 flex flex-col gap-3 z-10 max-w-[380px]">
@@ -37,6 +39,13 @@ export function HarmonicsPanel() {
         >
           Tide Curve
         </button>
+        <button
+          onClick={() => setShowDoodsonExplorer(true)}
+          className="px-3 py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 transition-colors"
+          title="Learn about Doodson numbers"
+        >
+          ?
+        </button>
       </div>
 
       {/* Visualizations */}
@@ -48,6 +57,11 @@ export function HarmonicsPanel() {
         symbol={selectedConstituent}
         onClose={() => setSelectedConstituent(null)}
       />
+
+      {/* Doodson Explorer */}
+      {showDoodsonExplorer && (
+        <DoodsonExplorer onClose={() => setShowDoodsonExplorer(false)} />
+      )}
     </div>
   );
 }
