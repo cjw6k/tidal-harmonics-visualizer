@@ -2,6 +2,7 @@ import { useMemo, useState, useCallback } from 'react';
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
 import { getTidalType, getTidalTypeLabel } from '@/data/stations';
 import { copyStationUrl } from '@/hooks/useUrlSync';
+import { TideNotifications } from '@/components/ui/TideNotifications';
 import type { TideStation } from '@/types/harmonics';
 
 // Fuzzy match score - returns score (higher is better) or -1 if no match
@@ -345,6 +346,7 @@ export function StationSelector() {
                 </span>
               )}
             </button>
+            <TideNotifications />
           </>
         )}
       </div>
