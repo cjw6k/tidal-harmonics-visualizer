@@ -12,6 +12,7 @@ import { KingTidePredictor } from './KingTidePredictor';
 import { StationComparison } from './StationComparison';
 import { TidalRangeChart } from './TidalRangeChart';
 import { ConstituentPieChart } from './ConstituentPieChart';
+import { WaveformDecomposition } from './WaveformDecomposition';
 
 export function HarmonicsPanel() {
   const showPhasorDiagram = useHarmonicsStore((s) => s.showPhasorDiagram);
@@ -25,6 +26,7 @@ export function HarmonicsPanel() {
   const [showStationComparison, setShowStationComparison] = useState(false);
   const [showRangeChart, setShowRangeChart] = useState(false);
   const [showPieChart, setShowPieChart] = useState(false);
+  const [showWaveform, setShowWaveform] = useState(false);
 
   return (
     <div className="absolute bottom-4 right-4 flex flex-col gap-3 z-10 max-w-[380px]">
@@ -104,6 +106,18 @@ export function HarmonicsPanel() {
         </button>
       </div>
 
+      {/* Toggle buttons - row 3 */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => setShowWaveform(!showWaveform)}
+          className={`flex-1 px-3 py-1 rounded text-xs transition-colors
+            ${showWaveform ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="Waveform decomposition"
+        >
+          Waves
+        </button>
+      </div>
+
       {/* Visualizations */}
       {showPhasorDiagram && <PhasorDiagram onConstituentClick={setSelectedConstituent} />}
       {showTideCurve && <TideCurve />}
@@ -112,6 +126,7 @@ export function HarmonicsPanel() {
       {showStationComparison && <StationComparison />}
       {showRangeChart && <TidalRangeChart />}
       {showPieChart && <ConstituentPieChart />}
+      {showWaveform && <WaveformDecomposition />}
 
       {/* Info Panel */}
       <ConstituentInfoPanel
