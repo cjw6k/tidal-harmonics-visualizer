@@ -382,17 +382,39 @@ export function HarmonicsPanel() {
     );
   }, [searchQuery]);
 
-  // Clear search when pressing Escape
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't handle if typing in an input
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+        // Only handle Escape to clear search
+        if (e.key === 'Escape' && searchQuery) {
+          setSearchQuery('');
+          searchInputRef.current?.blur();
+        }
+        return;
+      }
+
+      // Escape clears search
       if (e.key === 'Escape' && searchQuery) {
         setSearchQuery('');
         searchInputRef.current?.blur();
       }
+
       // Ctrl/Cmd + K to focus search
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
         searchInputRef.current?.focus();
+      }
+
+      // Number keys 1-5 switch tabs (when not in input)
+      if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+        const tabIndex = parseInt(e.key) - 1;
+        const tab = TABS[tabIndex];
+        if (tab) {
+          setActiveTab(tab.id);
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
