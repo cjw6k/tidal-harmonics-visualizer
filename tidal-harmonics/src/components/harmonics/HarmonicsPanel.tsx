@@ -59,6 +59,7 @@ const BeatPatternVisualizer = lazy(() => import('./BeatPatternVisualizer').then(
 const UnderKeelClearance = lazy(() => import('./UnderKeelClearance').then(m => ({ default: m.UnderKeelClearance })));
 const IntertidalZoneExplorer = lazy(() => import('./IntertidalZoneExplorer').then(m => ({ default: m.IntertidalZoneExplorer })));
 const PrintableTideTable = lazy(() => import('./PrintableTideTable').then(m => ({ default: m.PrintableTideTable })));
+const SlackWaterFinder = lazy(() => import('./SlackWaterFinder').then(m => ({ default: m.SlackWaterFinder })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -127,6 +128,7 @@ export function HarmonicsPanel() {
   const [showUKC, setShowUKC] = useState(false);
   const [showIntertidal, setShowIntertidal] = useState(false);
   const [showPrintTable, setShowPrintTable] = useState(false);
+  const [showSlackWater, setShowSlackWater] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -619,6 +621,14 @@ export function HarmonicsPanel() {
         >
           🖨️
         </button>
+        <button
+          onClick={() => setShowSlackWater(true)}
+          aria-label="Slack water finder"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Find slack water times"
+        >
+          ⏸️
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -756,6 +766,10 @@ export function HarmonicsPanel() {
 
         {showPrintTable && (
           <PrintableTideTable onClose={() => setShowPrintTable(false)} />
+        )}
+
+        {showSlackWater && (
+          <SlackWaterFinder onClose={() => setShowSlackWater(false)} />
         )}
       </Suspense>
     </div>
