@@ -75,6 +75,7 @@ const MarinaAccessPlanner = lazy(() => import('./MarinaAccessPlanner').then(m =>
 const BridgeClearanceCalculator = lazy(() => import('./BridgeClearanceCalculator').then(m => ({ default: m.BridgeClearanceCalculator })));
 const TidalStreamAtlas = lazy(() => import('./TidalStreamAtlas').then(m => ({ default: m.TidalStreamAtlas })));
 const PassagePlannerTide = lazy(() => import('./PassagePlannerTide').then(m => ({ default: m.PassagePlannerTide })));
+const FuelConsumptionEstimator = lazy(() => import('./FuelConsumptionEstimator').then(m => ({ default: m.FuelConsumptionEstimator })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -159,6 +160,7 @@ export function HarmonicsPanel() {
   const [showBridgeClearance, setShowBridgeClearance] = useState(false);
   const [showStreamAtlas, setShowStreamAtlas] = useState(false);
   const [showPassagePlanner, setShowPassagePlanner] = useState(false);
+  const [showFuelEstimator, setShowFuelEstimator] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -779,6 +781,14 @@ export function HarmonicsPanel() {
         >
           🧭
         </button>
+        <button
+          onClick={() => setShowFuelEstimator(true)}
+          aria-label="Fuel consumption estimator"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Estimate fuel consumption accounting for tidal currents"
+        >
+          ⛽
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -980,6 +990,10 @@ export function HarmonicsPanel() {
 
         {showPassagePlanner && (
           <PassagePlannerTide onClose={() => setShowPassagePlanner(false)} />
+        )}
+
+        {showFuelEstimator && (
+          <FuelConsumptionEstimator onClose={() => setShowFuelEstimator(false)} />
         )}
       </Suspense>
     </div>
