@@ -81,7 +81,7 @@ export function ConstituentToggles() {
       </div>
 
       {/* Family quick-filters */}
-      <div className="flex gap-1 mb-2">
+      <div className="flex gap-1 mb-2" role="group" aria-label="Toggle constituent families">
         {Object.entries(FAMILY_INFO).map(([family, info]) => {
           if (!byFamily[family] || byFamily[family].length === 0) return null;
           const isActive = isFamilyVisible(family);
@@ -89,7 +89,9 @@ export function ConstituentToggles() {
             <button
               key={family}
               onClick={() => toggleFamily(family)}
-              className={`px-2 py-0.5 rounded text-xs transition-colors ${
+              aria-pressed={isActive}
+              aria-label={`${info.label} constituents`}
+              className={`px-2 py-0.5 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900 ${
                 isActive
                   ? FAMILY_COLORS[family] + ' text-white'
                   : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
@@ -103,7 +105,7 @@ export function ConstituentToggles() {
       </div>
 
       {/* Individual constituent toggles */}
-      <div className="flex flex-wrap gap-1">
+      <div className="flex flex-wrap gap-1" role="group" aria-label="Individual constituent toggles">
         {station.constituents.map((c) => {
           const constituent = CONSTITUENTS[c.symbol];
           const isVisible = visible.includes(c.symbol);
@@ -113,7 +115,9 @@ export function ConstituentToggles() {
             <button
               key={c.symbol}
               onClick={() => toggle(c.symbol)}
-              className={`px-2 py-1 rounded text-xs font-mono transition-colors
+              aria-pressed={isVisible}
+              aria-label={`${constituent?.name || c.symbol} constituent, ${c.amplitude.toFixed(3)} meters amplitude`}
+              className={`px-2 py-1 rounded text-xs font-mono transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900
                 ${isVisible ? colorClass + ' text-white' : 'bg-slate-700 text-slate-400'}
                 hover:opacity-80`}
               title={`${constituent?.name || c.symbol}: ${c.amplitude.toFixed(3)}m (${constituent?.family || 'unknown'})`}
