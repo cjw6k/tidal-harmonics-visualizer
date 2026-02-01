@@ -17,6 +17,7 @@ import { SpringNeapCalendar } from './SpringNeapCalendar';
 import { ConstituentTable } from './ConstituentTable';
 import { TideExtremesPanel } from './TideExtremesPanel';
 import { NodalCorrectionPanel } from './NodalCorrectionPanel';
+import { FrequencySpectrum } from './FrequencySpectrum';
 
 export function HarmonicsPanel() {
   const showPhasorDiagram = useHarmonicsStore((s) => s.showPhasorDiagram);
@@ -35,6 +36,7 @@ export function HarmonicsPanel() {
   const [showTable, setShowTable] = useState(false);
   const [showExtremes, setShowExtremes] = useState(false);
   const [showNodal, setShowNodal] = useState(false);
+  const [showSpectrum, setShowSpectrum] = useState(false);
 
   return (
     <div className="absolute bottom-4 right-4 flex flex-col gap-3 z-10 max-w-[380px]">
@@ -156,6 +158,14 @@ export function HarmonicsPanel() {
         >
           Nodal
         </button>
+        <button
+          onClick={() => setShowSpectrum(!showSpectrum)}
+          className={`flex-1 px-3 py-1 rounded text-xs transition-colors
+            ${showSpectrum ? 'bg-violet-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="Frequency spectrum"
+        >
+          Freq
+        </button>
       </div>
 
       {/* Visualizations */}
@@ -171,6 +181,7 @@ export function HarmonicsPanel() {
       {showTable && <ConstituentTable />}
       {showExtremes && <TideExtremesPanel />}
       {showNodal && <NodalCorrectionPanel />}
+      {showSpectrum && <FrequencySpectrum />}
 
       {/* Info Panel */}
       <ConstituentInfoPanel
