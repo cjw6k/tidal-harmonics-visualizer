@@ -1083,9 +1083,9 @@ export function HarmonicsPanel() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="bg-slate-800/90 backdrop-blur rounded-lg overflow-hidden">
+      <div className="bg-slate-800/90 backdrop-blur rounded-lg flex flex-col max-h-[280px] sticky bottom-0">
         <div
-          className="flex border-b border-slate-700"
+          className="flex shrink-0 overflow-x-auto scrollbar-none border-b border-slate-700"
           role="tablist"
           aria-label="Tool categories"
         >
@@ -1119,7 +1119,7 @@ export function HarmonicsPanel() {
                 }
               }}
               title={`${tab.label} (Press ${index + 1})`}
-              className={`flex-1 px-2 py-2 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset ${
+              className={`flex-1 min-w-[64px] px-2 py-2 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset ${
                 activeTab === tab.id
                   ? 'bg-slate-700 text-white border-b-2 border-blue-500'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
@@ -1148,7 +1148,7 @@ export function HarmonicsPanel() {
           role="tabpanel"
           id={`tabpanel-${activeTab}`}
           aria-labelledby={`tab-${activeTab}`}
-          className="p-3"
+          className="p-3 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600"
           style={{ animation: 'fadeIn 150ms ease-out' }}
         >
           <p className="text-xs text-slate-500 mb-2">
