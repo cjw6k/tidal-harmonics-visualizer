@@ -3,6 +3,9 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+    paths:
+      - 'tidal-harmonics/**'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 permissions:
@@ -17,6 +20,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tidal-harmonics
     steps:
       - uses: actions/checkout@v4
 
@@ -24,13 +30,14 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: tidal-harmonics/package-lock.json
 
       - run: npm ci
       - run: npm run build
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: tidal-harmonics/dist
 
   deploy:
     needs: build
