@@ -44,6 +44,7 @@ const ConstituentQuiz = lazy(() => import('./ConstituentQuiz').then(m => ({ defa
 const TidalBoreInfo = lazy(() => import('./TidalBoreInfo').then(m => ({ default: m.TidalBoreInfo })));
 const HarmonicAnalysisExplainer = lazy(() => import('./HarmonicAnalysisExplainer').then(m => ({ default: m.HarmonicAnalysisExplainer })));
 const SolunarActivity = lazy(() => import('./SolunarActivity').then(m => ({ default: m.SolunarActivity })));
+const TideRateIndicator = lazy(() => import('./TideRateIndicator').then(m => ({ default: m.TideRateIndicator })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -97,6 +98,7 @@ export function HarmonicsPanel() {
   const [showBoreInfo, setShowBoreInfo] = useState(false);
   const [showAnalysis, setShowAnalysis] = useState(false);
   const [showSolunar, setShowSolunar] = useState(false);
+  const [showTideRate, setShowTideRate] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -370,6 +372,15 @@ export function HarmonicsPanel() {
           Hi/Lo
         </button>
         <button
+          onClick={() => setShowTideRate(!showTideRate)}
+          aria-pressed={showTideRate}
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900
+            ${showTideRate ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="Current tide rate"
+        >
+          Rate
+        </button>
+        <button
           onClick={() => setShowNodal(!showNodal)}
           aria-pressed={showNodal}
           className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:ring-offset-1 focus:ring-offset-slate-900
@@ -500,6 +511,7 @@ export function HarmonicsPanel() {
         {showLunar && <LunarPhaseDisplay />}
         {showCoefficient && <TidalCoefficients />}
         {showSolunar && <SolunarActivity />}
+        {showTideRate && <TideRateIndicator />}
       </Suspense>
 
       {/* Info Panel */}
