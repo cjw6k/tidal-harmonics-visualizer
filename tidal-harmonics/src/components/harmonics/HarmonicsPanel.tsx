@@ -96,6 +96,7 @@ const CoriolisEffectPanel = lazy(() => import('./CoriolisEffectPanel').then(m =>
 const MeanSeaLevelTracker = lazy(() => import('./MeanSeaLevelTracker').then(m => ({ default: m.MeanSeaLevelTracker })));
 const TidalRaceWarning = lazy(() => import('./TidalRaceWarning').then(m => ({ default: m.TidalRaceWarning })));
 const FerryTimingOptimizer = lazy(() => import('./FerryTimingOptimizer').then(m => ({ default: m.FerryTimingOptimizer })));
+const TidalGlossary = lazy(() => import('./TidalGlossary').then(m => ({ default: m.TidalGlossary })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -201,6 +202,7 @@ export function HarmonicsPanel() {
   const [showMSLTracker, setShowMSLTracker] = useState(false);
   const [showTidalRace, setShowTidalRace] = useState(false);
   const [showFerryTiming, setShowFerryTiming] = useState(false);
+  const [showGlossary, setShowGlossary] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -989,6 +991,14 @@ export function HarmonicsPanel() {
         >
           ⛴️
         </button>
+        <button
+          onClick={() => setShowGlossary(true)}
+          aria-label="Tidal glossary"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Search tidal terminology"
+        >
+          📖
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -1274,6 +1284,10 @@ export function HarmonicsPanel() {
 
         {showFerryTiming && (
           <FerryTimingOptimizer onClose={() => setShowFerryTiming(false)} />
+        )}
+
+        {showGlossary && (
+          <TidalGlossary onClose={() => setShowGlossary(false)} />
         )}
       </Suspense>
     </div>
