@@ -38,6 +38,7 @@ export function useKeyboardShortcuts() {
   const toggleTidalBulge = useSceneStore((s) => s.toggleTidalBulge);
   const toggleForceVectors = useSceneStore((s) => s.toggleForceVectors);
   const togglePlanets = useSceneStore((s) => s.togglePlanets);
+  const toggleStarfield = useSceneStore((s) => s.toggleStarfield);
 
   const isActive = useTutorialStore((s) => s.isActive);
   const startTutorial = useTutorialStore((s) => s.startTutorial);
@@ -119,6 +120,11 @@ export function useKeyboardShortcuts() {
           togglePlanets();
           break;
 
+        case 's':
+        case 'S':
+          toggleStarfield();
+          break;
+
         // Harmonics panel
         case 'p':
         case 'P':
@@ -164,6 +170,7 @@ export function useKeyboardShortcuts() {
     toggleTidalBulge,
     toggleForceVectors,
     togglePlanets,
+    toggleStarfield,
     togglePhasorDiagram,
     toggleTideCurve,
     toggleUnitSystem,
@@ -189,6 +196,7 @@ export const KEYBOARD_SHORTCUTS = [
     { key: 'T', action: 'Toggle tidal bulge' },
     { key: 'F', action: 'Toggle force vectors' },
     { key: 'L', action: 'Toggle planets' },
+    { key: 'S', action: 'Toggle starfield' },
   ]},
   { category: 'Harmonics', shortcuts: [
     { key: 'P', action: 'Toggle phasor diagram' },

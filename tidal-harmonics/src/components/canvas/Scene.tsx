@@ -8,6 +8,7 @@ import { TidalEarth } from './TidalEarth';
 import { Moon } from './Moon';
 import { Sun } from './Sun';
 import { Planets } from './Planets';
+import { Starfield } from './Starfield';
 import { Lighting } from './Lighting';
 import { CameraController } from './CameraController';
 import { MoonOrbitPath } from './OrbitPath';
@@ -79,11 +80,13 @@ function SceneContent() {
   const showOrbits = useSceneStore((s) => s.showOrbits);
   const showForceVectors = useSceneStore((s) => s.showForceVectors);
   const showPlanets = useSceneStore((s) => s.showPlanets);
+  const showStarfield = useSceneStore((s) => s.showStarfield);
 
   return (
     <>
       <TimeUpdater />
       <TutorialCameraController />
+      {showStarfield && <Starfield />}
       <Lighting />
       <CameraController />
       <Suspense fallback={<Loader />}>

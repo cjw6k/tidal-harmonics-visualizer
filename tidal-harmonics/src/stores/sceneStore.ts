@@ -6,6 +6,7 @@ interface SceneState {
   showOrbits: boolean;
   showLabels: boolean;
   showPlanets: boolean;
+  showStarfield: boolean;
   // Tidal visualization
   showTidalBulge: boolean;
   tidalExaggeration: number;
@@ -21,6 +22,7 @@ interface SceneState {
   toggleOrbits: () => void;
   toggleLabels: () => void;
   togglePlanets: () => void;
+  toggleStarfield: () => void;
   toggleTidalBulge: () => void;
   setTidalExaggeration: (factor: number) => void;
   toggleForceVectors: () => void;
@@ -35,7 +37,8 @@ export const useSceneStore = create<SceneState>((set) => ({
   scaleMode: 'exaggerated',
   showOrbits: true,
   showLabels: true,
-  showPlanets: false, // Hidden by default, toggle with 'L'
+  showPlanets: false,
+  showStarfield: true, // Starfield enabled by default for realism
   // Tidal visualization defaults
   showTidalBulge: true,
   tidalExaggeration: 10000, // Educational mode: 10,000x
@@ -51,6 +54,7 @@ export const useSceneStore = create<SceneState>((set) => ({
   toggleOrbits: () => set((state) => ({ showOrbits: !state.showOrbits })),
   toggleLabels: () => set((state) => ({ showLabels: !state.showLabels })),
   togglePlanets: () => set((state) => ({ showPlanets: !state.showPlanets })),
+  toggleStarfield: () => set((state) => ({ showStarfield: !state.showStarfield })),
   toggleTidalBulge: () => set((state) => ({ showTidalBulge: !state.showTidalBulge })),
   setTidalExaggeration: (factor) => set({ tidalExaggeration: factor }),
   toggleForceVectors: () => set((state) => ({ showForceVectors: !state.showForceVectors })),
