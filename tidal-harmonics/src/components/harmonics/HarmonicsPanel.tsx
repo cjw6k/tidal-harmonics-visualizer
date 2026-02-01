@@ -266,127 +266,127 @@ export function HarmonicsPanel() {
       case 'charts':
         return (
           <div className="flex flex-wrap gap-1.5">
-            <Btn onClick={togglePhasorDiagram} active={showPhasorDiagram}>Phasor</Btn>
-            <Btn onClick={toggleTideCurve} active={showTideCurve}>Curve</Btn>
-            <Btn onClick={() => setShowAccuracyComparison(!showAccuracyComparison)} active={showAccuracyComparison}>Accuracy</Btn>
-            <Btn onClick={() => setShowWaveform(!showWaveform)} active={showWaveform}>Waves</Btn>
-            <Btn onClick={() => setShowSpectrum(!showSpectrum)} active={showSpectrum}>Spectrum</Btn>
-            <Btn onClick={() => setShowTimeline(!showTimeline)} active={showTimeline}>Timeline</Btn>
-            <Btn onClick={() => setShowClock(!showClock)} active={showClock}>Clock</Btn>
-            <Btn onClick={() => setShowPhaseAnimation(true)}>▶ Phase</Btn>
-            <Btn onClick={() => setShowBeatPattern(true)}>Beats</Btn>
-            <Btn onClick={() => setShowWaterShader(!showWaterShader)} active={showWaterShader}>Water FX</Btn>
-            <Btn onClick={() => setShowLiveTide(true)}>Live</Btn>
-            <Btn onClick={() => setShowTideRate(!showTideRate)} active={showTideRate}>Rate</Btn>
-            <Btn onClick={() => setShowStationComparison(!showStationComparison)} active={showStationComparison}>Compare</Btn>
-            <Btn onClick={() => setShowRangeChart(!showRangeChart)} active={showRangeChart}>Ranges</Btn>
-            <Btn onClick={() => setShowPieChart(!showPieChart)} active={showPieChart}>Pie</Btn>
-            <Btn onClick={() => setShowFamilies(!showFamilies)} active={showFamilies}>Families</Btn>
-            <Btn onClick={() => setShowTable(!showTable)} active={showTable}>Table</Btn>
-            <Btn onClick={() => setShowMap(!showMap)} active={showMap}>🗺️ Map</Btn>
+            <Btn onClick={togglePhasorDiagram} active={showPhasorDiagram} title="Rotating vector diagram showing constituent phases">Phasor</Btn>
+            <Btn onClick={toggleTideCurve} active={showTideCurve} title="Predicted tide height curve over time">Curve</Btn>
+            <Btn onClick={() => setShowAccuracyComparison(!showAccuracyComparison)} active={showAccuracyComparison} title="Compare predictions with observed data">Accuracy</Btn>
+            <Btn onClick={() => setShowWaveform(!showWaveform)} active={showWaveform} title="Individual constituent waveforms combined">Waves</Btn>
+            <Btn onClick={() => setShowSpectrum(!showSpectrum)} active={showSpectrum} title="Frequency spectrum of tidal constituents">Spectrum</Btn>
+            <Btn onClick={() => setShowTimeline(!showTimeline)} active={showTimeline} title="Horizontal timeline with tide heights">Timeline</Btn>
+            <Btn onClick={() => setShowClock(!showClock)} active={showClock} title="Analog clock face showing tide state">Clock</Btn>
+            <Btn onClick={() => setShowPhaseAnimation(true)} title="Animated constituent rotation">▶ Phase</Btn>
+            <Btn onClick={() => setShowBeatPattern(true)} title="Beat patterns from constituent interaction">Beats</Btn>
+            <Btn onClick={() => setShowWaterShader(!showWaterShader)} active={showWaterShader} title="3D water surface visualization">Water FX</Btn>
+            <Btn onClick={() => setShowLiveTide(true)} title="Real-time tide display">Live</Btn>
+            <Btn onClick={() => setShowTideRate(!showTideRate)} active={showTideRate} title="Rate of tide change (rising/falling)">Rate</Btn>
+            <Btn onClick={() => setShowStationComparison(!showStationComparison)} active={showStationComparison} title="Compare multiple tide stations">Compare</Btn>
+            <Btn onClick={() => setShowRangeChart(!showRangeChart)} active={showRangeChart} title="Chart of tidal ranges over time">Ranges</Btn>
+            <Btn onClick={() => setShowPieChart(!showPieChart)} active={showPieChart} title="Pie chart of constituent amplitudes">Pie</Btn>
+            <Btn onClick={() => setShowFamilies(!showFamilies)} active={showFamilies} title="Constituents grouped by family">Families</Btn>
+            <Btn onClick={() => setShowTable(!showTable)} active={showTable} title="Sortable table of all constituents">Table</Btn>
+            <Btn onClick={() => setShowMap(!showMap)} active={showMap} title="Map of tide stations">🗺️ Map</Btn>
           </div>
         );
 
       case 'predict':
         return (
           <div className="flex flex-wrap gap-1.5">
-            <Btn onClick={() => setShowExtremes(!showExtremes)} active={showExtremes}>Hi/Lo</Btn>
-            <Btn onClick={() => setShowKingTidePredictor(!showKingTidePredictor)} active={showKingTidePredictor}>👑 King</Btn>
-            <Btn onClick={() => setShowCalendar(!showCalendar)} active={showCalendar}>Calendar</Btn>
-            <Btn onClick={() => setShowMoonCalendar(true)}>🌙 Moon</Btn>
-            <Btn onClick={() => setShowNodal(!showNodal)} active={showNodal}>18.6yr</Btn>
-            <Btn onClick={() => setShowSeasonalTide(true)}>Seasonal</Btn>
-            <Btn onClick={() => setShowDateComparison(true)}>Compare</Btn>
-            <Btn onClick={() => setShowHeightLookup(true)}>Lookup</Btn>
-            <Btn onClick={() => setShowTidalWindow(true)}>Windows</Btn>
-            <Btn onClick={() => setShowAlerts(!showAlerts)} active={showAlerts}>🔔 Alerts</Btn>
-            <Btn onClick={() => setShowLunar(!showLunar)} active={showLunar}>Phase</Btn>
-            <Btn onClick={() => setShowCoefficient(!showCoefficient)} active={showCoefficient}>Coef</Btn>
-            <Btn onClick={() => setShowTideType(true)}>Type</Btn>
-            <Btn onClick={() => setShowEbbFlood(true)}>Ebb/Flood</Btn>
-            <Btn onClick={() => setShowExport(true)}>↓ Export</Btn>
-            <Btn onClick={() => setShowPrintTable(true)}>🖨️ Print</Btn>
-            <Btn onClick={() => setShowShare(true)}>🔗 Share</Btn>
-            <Btn onClick={() => setShowEmbedWidget(true)}>Embed</Btn>
+            <Btn onClick={() => setShowExtremes(!showExtremes)} active={showExtremes} title="High and low tide predictions">Hi/Lo</Btn>
+            <Btn onClick={() => setShowKingTidePredictor(!showKingTidePredictor)} active={showKingTidePredictor} title="Predict extreme king tides">👑 King</Btn>
+            <Btn onClick={() => setShowCalendar(!showCalendar)} active={showCalendar} title="Spring/neap tide calendar">Calendar</Btn>
+            <Btn onClick={() => setShowMoonCalendar(true)} title="Moon phase calendar">🌙 Moon</Btn>
+            <Btn onClick={() => setShowNodal(!showNodal)} active={showNodal} title="18.6-year lunar nodal cycle corrections">18.6yr</Btn>
+            <Btn onClick={() => setShowSeasonalTide(true)} title="Compare tides across seasons">Seasonal</Btn>
+            <Btn onClick={() => setShowDateComparison(true)} title="Compare tides on different dates">Compare</Btn>
+            <Btn onClick={() => setShowHeightLookup(true)} title="Find tide height at specific time">Lookup</Btn>
+            <Btn onClick={() => setShowTidalWindow(true)} title="Calculate safe tidal windows">Windows</Btn>
+            <Btn onClick={() => setShowAlerts(!showAlerts)} active={showAlerts} title="Set tide level alerts">🔔 Alerts</Btn>
+            <Btn onClick={() => setShowLunar(!showLunar)} active={showLunar} title="Current lunar phase display">Phase</Btn>
+            <Btn onClick={() => setShowCoefficient(!showCoefficient)} active={showCoefficient} title="Tidal coefficients (French system)">Coef</Btn>
+            <Btn onClick={() => setShowTideType(true)} title="Classify tide type (diurnal/semidiurnal)">Type</Btn>
+            <Btn onClick={() => setShowEbbFlood(true)} title="Analyze ebb and flood patterns">Ebb/Flood</Btn>
+            <Btn onClick={() => setShowExport(true)} title="Export tide data (CSV, JSON)">↓ Export</Btn>
+            <Btn onClick={() => setShowPrintTable(true)} title="Print-friendly tide table">🖨️ Print</Btn>
+            <Btn onClick={() => setShowShare(true)} title="Share link to this view">🔗 Share</Btn>
+            <Btn onClick={() => setShowEmbedWidget(true)} title="Embeddable widget for websites">Embed</Btn>
           </div>
         );
 
       case 'learn':
         return (
           <div className="flex flex-wrap gap-1.5">
-            <Btn onClick={() => setShowDoodsonExplorer(true)}>Doodson #</Btn>
-            <Btn onClick={() => setShowDatumExplainer(true)}>Datums</Btn>
-            <Btn onClick={() => setShowAnalysis(true)}>Analysis</Btn>
-            <Btn onClick={() => setShowBoreInfo(true)}>Bores</Btn>
-            <Btn onClick={() => setShowAmphidromic(true)}>Amphidromic</Btn>
-            <Btn onClick={() => setShowTidalLoading(true)}>Loading</Btn>
-            <Btn onClick={() => setShowResonance(true)}>Resonance</Btn>
-            <Btn onClick={() => setShowCoriolis(true)}>Coriolis</Btn>
-            <Btn onClick={() => setShowLunarDistance(true)}>🌙 Distance</Btn>
-            <Btn onClick={() => setShowEclipseTides(true)}>Eclipses</Btn>
-            <Btn onClick={() => setShowTwelfths(true)}>Rule of 12</Btn>
-            <Btn onClick={() => setShowAgeOfTide(true)}>Age</Btn>
-            <Btn onClick={() => setShowPortTiming(true)}>Port Time</Btn>
-            <Btn onClick={() => setShowDatumConverter(true)}>Convert</Btn>
-            <Btn onClick={() => setShowComparison(true)}>Compare</Btn>
-            <Btn onClick={() => setShowQuiz(true)}>🎓 Quiz</Btn>
-            <Btn onClick={() => setShowGlossary(true)}>📖 Glossary</Btn>
-            <Btn onClick={() => setShowKeyboardHelp(true)}>⌨ Keys</Btn>
+            <Btn onClick={() => setShowDoodsonExplorer(true)} title="Interactive Doodson number breakdown">Doodson #</Btn>
+            <Btn onClick={() => setShowDatumExplainer(true)} title="Tidal datum reference levels explained">Datums</Btn>
+            <Btn onClick={() => setShowAnalysis(true)} title="How harmonic analysis works">Analysis</Btn>
+            <Btn onClick={() => setShowBoreInfo(true)} title="Tidal bores around the world">Bores</Btn>
+            <Btn onClick={() => setShowAmphidromic(true)} title="Amphidromic points and cotidal lines">Amphidromic</Btn>
+            <Btn onClick={() => setShowTidalLoading(true)} title="Earth deformation from tidal loading">Loading</Btn>
+            <Btn onClick={() => setShowResonance(true)} title="Tidal resonance in basins">Resonance</Btn>
+            <Btn onClick={() => setShowCoriolis(true)} title="Coriolis effect on tides">Coriolis</Btn>
+            <Btn onClick={() => setShowLunarDistance(true)} title="Moon distance and tidal forcing">🌙 Distance</Btn>
+            <Btn onClick={() => setShowEclipseTides(true)} title="How eclipses affect tides">Eclipses</Btn>
+            <Btn onClick={() => setShowTwelfths(true)} title="Rule of Twelfths for tide estimation">Rule of 12</Btn>
+            <Btn onClick={() => setShowAgeOfTide(true)} title="Lag between moon phase and tide">Age</Btn>
+            <Btn onClick={() => setShowPortTiming(true)} title="Compare high water times at ports">Port Time</Btn>
+            <Btn onClick={() => setShowDatumConverter(true)} title="Convert between tidal datums">Convert</Btn>
+            <Btn onClick={() => setShowComparison(true)} title="Side-by-side constituent comparison">Compare</Btn>
+            <Btn onClick={() => setShowQuiz(true)} title="Test your tidal knowledge">🎓 Quiz</Btn>
+            <Btn onClick={() => setShowGlossary(true)} title="Tidal terminology glossary">📖 Glossary</Btn>
+            <Btn onClick={() => setShowKeyboardHelp(true)} title="Keyboard shortcuts">⌨ Keys</Btn>
           </div>
         );
 
       case 'nav':
         return (
           <div className="flex flex-wrap gap-1.5">
-            <Btn onClick={() => setShowNavSafety(true)}>Safety</Btn>
-            <Btn onClick={() => setShowUKC(true)}>Under Keel</Btn>
-            <Btn onClick={() => setShowBridgeClearance(true)}>🌉 Bridge</Btn>
-            <Btn onClick={() => setShowAnchorScope(true)}>⚓ Anchor</Btn>
-            <Btn onClick={() => setShowGroundingRisk(true)}>⚠️ Ground</Btn>
-            <Btn onClick={() => setShowStreamAtlas(true)}>Streams</Btn>
-            <Btn onClick={() => setShowPassagePlanner(true)}>Passage</Btn>
-            <Btn onClick={() => setShowDepthCorrection(true)}>Depth</Btn>
-            <Btn onClick={() => setShowSlackWater(true)}>Slack</Btn>
-            <Btn onClick={() => setShowCurrentSpeed(true)}>Current</Btn>
-            <Btn onClick={() => setShowTidalGate(true)}>Gates</Btn>
-            <Btn onClick={() => setShowTidalRace(true)}>⚡ Races</Btn>
-            <Btn onClick={() => setShowFerryTiming(true)}>⛴️ Ferry</Btn>
-            <Btn onClick={() => setShowPortApproach(true)}>🚢 Port</Btn>
-            <Btn onClick={() => setShowDockingWindow(true)}>Dock</Btn>
-            <Btn onClick={() => setShowMooringLine(true)}>Mooring</Btn>
-            <Btn onClick={() => setShowStrandingTimer(true)}>Strand</Btn>
-            <Btn onClick={() => setShowMarinaAccess(true)}>Marina</Btn>
-            <Btn onClick={() => setShowFuelEstimator(true)}>⛽ Fuel</Btn>
-            <Btn onClick={() => setShowCrewWatch(true)}>Watch</Btn>
-            <Btn onClick={() => setShowWaypointRoute(true)}>📍 Route</Btn>
-            <Btn onClick={() => setShowVoyageLog(true)}>📋 Log</Btn>
+            <Btn onClick={() => setShowNavSafety(true)} title="Navigation safety overview">Safety</Btn>
+            <Btn onClick={() => setShowUKC(true)} title="Under-keel clearance calculator">Under Keel</Btn>
+            <Btn onClick={() => setShowBridgeClearance(true)} title="Bridge clearance calculator">🌉 Bridge</Btn>
+            <Btn onClick={() => setShowAnchorScope(true)} title="Anchor scope calculator">⚓ Anchor</Btn>
+            <Btn onClick={() => setShowGroundingRisk(true)} title="Grounding risk analysis">⚠️ Ground</Btn>
+            <Btn onClick={() => setShowStreamAtlas(true)} title="Tidal stream atlas">Streams</Btn>
+            <Btn onClick={() => setShowPassagePlanner(true)} title="Tide-aware passage planner">Passage</Btn>
+            <Btn onClick={() => setShowDepthCorrection(true)} title="Chart depth correction tool">Depth</Btn>
+            <Btn onClick={() => setShowSlackWater(true)} title="Find slack water times">Slack</Btn>
+            <Btn onClick={() => setShowCurrentSpeed(true)} title="Tidal current speed calculator">Current</Btn>
+            <Btn onClick={() => setShowTidalGate(true)} title="Tidal gate/barrier schedules">Gates</Btn>
+            <Btn onClick={() => setShowTidalRace(true)} title="Tidal race warnings">⚡ Races</Btn>
+            <Btn onClick={() => setShowFerryTiming(true)} title="Ferry timing optimization">⛴️ Ferry</Btn>
+            <Btn onClick={() => setShowPortApproach(true)} title="Port approach advisor">🚢 Port</Btn>
+            <Btn onClick={() => setShowDockingWindow(true)} title="Calculate docking windows">Dock</Btn>
+            <Btn onClick={() => setShowMooringLine(true)} title="Mooring line length calculator">Mooring</Btn>
+            <Btn onClick={() => setShowStrandingTimer(true)} title="Stranding countdown timer">Strand</Btn>
+            <Btn onClick={() => setShowMarinaAccess(true)} title="Marina access times">Marina</Btn>
+            <Btn onClick={() => setShowFuelEstimator(true)} title="Tide-adjusted fuel consumption">⛽ Fuel</Btn>
+            <Btn onClick={() => setShowCrewWatch(true)} title="Crew watch scheduler">Watch</Btn>
+            <Btn onClick={() => setShowWaypointRoute(true)} title="Waypoint route planner">📍 Route</Btn>
+            <Btn onClick={() => setShowVoyageLog(true)} title="Generate voyage log">📋 Log</Btn>
           </div>
         );
 
       case 'plan':
         return (
           <div className="flex flex-wrap gap-1.5">
-            <Btn onClick={() => setShowBeachAccess(true)}>🏖️ Beach</Btn>
-            <Btn onClick={() => setShowIntertidal(true)}>🦀 Tidepool</Btn>
-            <Btn onClick={() => setShowShellfishPlanner(true)}>🦪 Shellfish</Btn>
-            <Btn onClick={() => setShowKayakPlanner(true)}>🛶 Kayak</Btn>
-            <Btn onClick={() => setShowDiveSlate(true)}>🤿 Dive</Btn>
-            <Btn onClick={() => setShowHikingPlanner(true)}>🥾 Hike</Btn>
-            <Btn onClick={() => setShowSurfCalc(true)}>🏄 Surf</Btn>
-            <Btn onClick={() => setShowPhotoPlanner(true)}>📷 Photo</Btn>
-            <Btn onClick={() => setShowSolunar(!showSolunar)} active={showSolunar}>🎣 Fish</Btn>
-            <Btn onClick={() => setShowBarometric(!showBarometric)} active={showBarometric}>Pressure</Btn>
-            <Btn onClick={() => setShowSeaLevelRise(!showSeaLevelRise)} active={showSeaLevelRise}>Sea Rise</Btn>
-            <Btn onClick={() => setShowHistorical(!showHistorical)} active={showHistorical}>Records</Btn>
-            <Btn onClick={() => setShowStormSurge(true)}>⛈️ Storm</Btn>
-            <Btn onClick={() => setShowWeatherSim(true)}>Weather</Btn>
-            <Btn onClick={() => setShowMarineWeather(true)}>Marine Wx</Btn>
-            <Btn onClick={() => setShowSwellImpact(true)}>🌊 Swell</Btn>
-            <Btn onClick={() => setShowMSLTracker(true)}>MSL</Btn>
-            <Btn onClick={() => setShowEnergy(!showEnergy)} active={showEnergy}>Energy</Btn>
-            <Btn onClick={() => setShowTidalPrism(true)}>Prism</Btn>
-            <Btn onClick={() => setShowEstuary(true)}>Estuary</Btn>
-            <Btn onClick={() => setShowDryingHeights(true)}>Drying</Btn>
+            <Btn onClick={() => setShowBeachAccess(true)} title="Beach access planner">🏖️ Beach</Btn>
+            <Btn onClick={() => setShowIntertidal(true)} title="Tidepool exploration times">🦀 Tidepool</Btn>
+            <Btn onClick={() => setShowShellfishPlanner(true)} title="Shellfish harvesting planner">🦪 Shellfish</Btn>
+            <Btn onClick={() => setShowKayakPlanner(true)} title="Kayak launch planner">🛶 Kayak</Btn>
+            <Btn onClick={() => setShowDiveSlate(true)} title="Generate dive slate">🤿 Dive</Btn>
+            <Btn onClick={() => setShowHikingPlanner(true)} title="Coastal hiking planner">🥾 Hike</Btn>
+            <Btn onClick={() => setShowSurfCalc(true)} title="Surf conditions calculator">🏄 Surf</Btn>
+            <Btn onClick={() => setShowPhotoPlanner(true)} title="Photography timing planner">📷 Photo</Btn>
+            <Btn onClick={() => setShowSolunar(!showSolunar)} active={showSolunar} title="Solunar fishing activity">🎣 Fish</Btn>
+            <Btn onClick={() => setShowBarometric(!showBarometric)} active={showBarometric} title="Barometric pressure effects">Pressure</Btn>
+            <Btn onClick={() => setShowSeaLevelRise(!showSeaLevelRise)} active={showSeaLevelRise} title="Sea level rise projections">Sea Rise</Btn>
+            <Btn onClick={() => setShowHistorical(!showHistorical)} active={showHistorical} title="Historical tide extremes">Records</Btn>
+            <Btn onClick={() => setShowStormSurge(true)} title="Storm surge estimator">⛈️ Storm</Btn>
+            <Btn onClick={() => setShowWeatherSim(true)} title="Weather effect simulator">Weather</Btn>
+            <Btn onClick={() => setShowMarineWeather(true)} title="Marine weather panel">Marine Wx</Btn>
+            <Btn onClick={() => setShowSwellImpact(true)} title="Swell impact calculator">🌊 Swell</Btn>
+            <Btn onClick={() => setShowMSLTracker(true)} title="Mean sea level tracker">MSL</Btn>
+            <Btn onClick={() => setShowEnergy(!showEnergy)} active={showEnergy} title="Tidal energy calculator">Energy</Btn>
+            <Btn onClick={() => setShowTidalPrism(true)} title="Tidal prism calculator">Prism</Btn>
+            <Btn onClick={() => setShowEstuary(true)} title="Estuary dynamics">Estuary</Btn>
+            <Btn onClick={() => setShowDryingHeights(true)} title="Drying heights calculator">Drying</Btn>
           </div>
         );
     }
