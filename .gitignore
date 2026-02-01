@@ -3,5 +3,6 @@
 .logs/
 .beads/
 node_modules/
+package.json
 package-lock.json
 state.json
