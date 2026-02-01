@@ -43,6 +43,7 @@ const TidalCoefficients = lazy(() => import('./TidalCoefficients').then(m => ({ 
 const ConstituentQuiz = lazy(() => import('./ConstituentQuiz').then(m => ({ default: m.ConstituentQuiz })));
 const TidalBoreInfo = lazy(() => import('./TidalBoreInfo').then(m => ({ default: m.TidalBoreInfo })));
 const HarmonicAnalysisExplainer = lazy(() => import('./HarmonicAnalysisExplainer').then(m => ({ default: m.HarmonicAnalysisExplainer })));
+const SolunarActivity = lazy(() => import('./SolunarActivity').then(m => ({ default: m.SolunarActivity })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -95,6 +96,7 @@ export function HarmonicsPanel() {
   const [showQuiz, setShowQuiz] = useState(false);
   const [showBoreInfo, setShowBoreInfo] = useState(false);
   const [showAnalysis, setShowAnalysis] = useState(false);
+  const [showSolunar, setShowSolunar] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -300,6 +302,15 @@ export function HarmonicsPanel() {
         >
           📊
         </button>
+        <button
+          onClick={() => setShowSolunar(!showSolunar)}
+          aria-pressed={showSolunar}
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-slate-900
+            ${showSolunar ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="Solunar fishing forecast"
+        >
+          🎣 Fish
+        </button>
       </div>
 
       {/* Toggle buttons - row 3 */}
@@ -488,6 +499,7 @@ export function HarmonicsPanel() {
         {showAlerts && <TideAlerts />}
         {showLunar && <LunarPhaseDisplay />}
         {showCoefficient && <TidalCoefficients />}
+        {showSolunar && <SolunarActivity />}
       </Suspense>
 
       {/* Info Panel */}
