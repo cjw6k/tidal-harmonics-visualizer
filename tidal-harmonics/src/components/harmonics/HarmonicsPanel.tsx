@@ -1,9 +1,10 @@
 import { useState, lazy, Suspense, useMemo, useRef, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 
-// LocalStorage key for recent tools
+// LocalStorage keys
 const RECENT_TOOLS_KEY = 'tidal-harmonics-recent-tools';
 const MAX_RECENT_TOOLS = 6;
+const PANEL_MINIMIZED_KEY = 'tidal-harmonics-panel-minimized';
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
 import { StationSelector } from './StationSelector';
 import { ConstituentToggles } from './ConstituentToggles';
@@ -282,6 +283,28 @@ export function HarmonicsPanel() {
   const [activeTab, setActiveTab] = useState<TabId>('charts');
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Panel minimized state
+  const [isPanelMinimized, setIsPanelMinimized] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(PANEL_MINIMIZED_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  // Toggle panel minimized state
+  const togglePanelMinimized = useCallback(() => {
+    setIsPanelMinimized(prev => {
+      const newValue = !prev;
+      try {
+        localStorage.setItem(PANEL_MINIMIZED_KEY, String(newValue));
+      } catch {
+        // Ignore storage errors
+      }
+      return newValue;
+    });
+  }, []);
 
   // Recently used tools
   const [recentTools, setRecentTools] = useState<string[]>(() => {
@@ -742,6 +765,68 @@ export function HarmonicsPanel() {
     }
   };
 
+  // Minimized panel view
+  if (isPanelMinimized) {
+    return (
+      <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 z-10">
+        {/* Expand button */}
+        <button
+          onClick={togglePanelMinimized}
+          title="Expand control panel"
+          className="bg-slate-800/95 backdrop-blur rounded-lg p-3 shadow-lg hover:bg-slate-700/95 transition-colors flex items-center gap-2 text-slate-200"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <span className="text-sm font-medium">Tools</span>
+          {openPanelCount > 0 && (
+            <span className="bg-blue-600 text-white text-xs px-1.5 py-0.5 rounded-full">
+              {openPanelCount}
+            </span>
+          )}
+        </button>
+
+        {/* Still show active visualizations when minimized */}
+        {showPhasorDiagram && <PhasorDiagram onConstituentClick={setSelectedConstituent} />}
+        {showTideCurve && <TideCurve />}
+
+        <Suspense fallback={<LoadingFallback />}>
+          {showAccuracyComparison && <AccuracyComparison />}
+          {showKingTidePredictor && <KingTidePredictor />}
+          {showStationComparison && <StationComparison />}
+          {showRangeChart && <TidalRangeChart />}
+          {showPieChart && <ConstituentPieChart />}
+          {showWaveform && <WaveformDecomposition />}
+          {showCalendar && <SpringNeapCalendar />}
+          {showTable && <ConstituentTable />}
+          {showExtremes && <TideExtremesPanel />}
+          {showNodal && <NodalCorrectionPanel />}
+          {showSpectrum && <FrequencySpectrum />}
+          {showSeaLevelRise && <SeaLevelRisePanel />}
+          {showHistorical && <HistoricalExtremes />}
+          {showWaterShader && <WaterSurfaceShader />}
+          {showEnergy && <TidalEnergyCalculator />}
+          {showClock && <TideClock />}
+          {showTimeline && <TideTimeline />}
+          {showMap && <StationMap />}
+          {showBarometric && <BarometricPressure />}
+          {showFamilies && <ConstituentFamilies />}
+          {showAlerts && <TideAlerts />}
+          {showLunar && <LunarPhaseDisplay />}
+          {showCoefficient && <TidalCoefficients />}
+          {showSolunar && <SolunarActivity />}
+          {showTideRate && <TideRateIndicator />}
+        </Suspense>
+
+        <ConstituentInfoPanel
+          symbol={selectedConstituent}
+          onClose={() => setSelectedConstituent(null)}
+          onNavigate={setSelectedConstituent}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 flex flex-col gap-2 z-10 w-[320px] sm:w-[360px] max-h-[90vh] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent pr-1">
       {/* Station & Current Conditions */}
@@ -751,6 +836,15 @@ export function HarmonicsPanel() {
             <StationSelector />
           </div>
           <UnitToggle />
+          <button
+            onClick={togglePanelMinimized}
+            title="Minimize control panel"
+            className="p-1.5 rounded bg-slate-700 text-slate-400 hover:text-slate-200 hover:bg-slate-600 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
         </div>
         <TidalStatistics />
         <TidalCurrentIndicator />
