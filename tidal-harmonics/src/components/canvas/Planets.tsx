@@ -28,6 +28,8 @@ function Planet({ name, position, radius, color, showLabel }: PlanetProps) {
         <Html
           position={[0, radius * 1.5, 0]}
           center
+          zIndexRange={[0, 1]}
+          wrapperClass="planet-label"
           style={{
             color: 'white',
             fontSize: '10px',

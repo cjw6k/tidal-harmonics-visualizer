@@ -116,6 +116,11 @@ button:active:not(:disabled),
   }
 }
 
+/* Planet labels - keep behind UI panels */
+.planet-label {
+  z-index: 1 !important;
+}
+
 /* Animations */
 @keyframes slide-up {
   from {
