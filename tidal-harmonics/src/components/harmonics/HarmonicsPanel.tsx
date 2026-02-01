@@ -66,6 +66,7 @@ const TidalCurrentSpeed = lazy(() => import('./TidalCurrentSpeed').then(m => ({ 
 const RuleOfTwelfths = lazy(() => import('./RuleOfTwelfths').then(m => ({ default: m.RuleOfTwelfths })));
 const TidalWindowCalculator = lazy(() => import('./TidalWindowCalculator').then(m => ({ default: m.TidalWindowCalculator })));
 const DepthCorrectionTool = lazy(() => import('./DepthCorrectionTool').then(m => ({ default: m.DepthCorrectionTool })));
+const TideTypeClassifier = lazy(() => import('./TideTypeClassifier').then(m => ({ default: m.TideTypeClassifier })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -141,6 +142,7 @@ export function HarmonicsPanel() {
   const [showTwelfths, setShowTwelfths] = useState(false);
   const [showTidalWindow, setShowTidalWindow] = useState(false);
   const [showDepthCorrection, setShowDepthCorrection] = useState(false);
+  const [showTideType, setShowTideType] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -689,6 +691,14 @@ export function HarmonicsPanel() {
         >
           📐
         </button>
+        <button
+          onClick={() => setShowTideType(true)}
+          aria-label="Tide type classifier"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Semidiurnal, diurnal, or mixed?"
+        >
+          🔀
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -854,6 +864,10 @@ export function HarmonicsPanel() {
 
         {showDepthCorrection && (
           <DepthCorrectionTool onClose={() => setShowDepthCorrection(false)} />
+        )}
+
+        {showTideType && (
+          <TideTypeClassifier onClose={() => setShowTideType(false)} />
         )}
       </Suspense>
     </div>
