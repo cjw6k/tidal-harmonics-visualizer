@@ -4,6 +4,7 @@ import { StationSelector } from './StationSelector';
 import { ConstituentToggles } from './ConstituentToggles';
 import { PhasorDiagram } from './PhasorDiagram';
 import { TideCurve } from './TideCurve';
+import { TidalStatistics } from './TidalStatistics';
 import { ConstituentInfoPanel } from './ConstituentInfoPanel';
 import { DoodsonExplorer } from './DoodsonExplorer';
 
@@ -20,6 +21,7 @@ export function HarmonicsPanel() {
       {/* Controls */}
       <div className="flex flex-col gap-2">
         <StationSelector />
+        <TidalStatistics />
         <ConstituentToggles />
       </div>
 

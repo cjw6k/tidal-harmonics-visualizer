@@ -1,0 +1,142 @@
+import { useMemo } from 'react';
+import { useTimeStore } from '@/stores/timeStore';
+import { useHarmonicsStore } from '@/stores/harmonicsStore';
+import { predictTide, getTidalRange, findExtremes, predictTideSeries } from '@/lib/harmonics';
+import { getTidalType, getTidalTypeLabel } from '@/data/stations';
+import { format, formatDistanceToNow } from 'date-fns';
+
+/**
+ * Tidal Statistics Panel
+ *
+ * Shows real-time statistics about the current tide prediction:
+ * - Current height
+ * - Today's range
+ * - Next high/low tide
+ * - Tidal type classification
+ * - Dominant constituents
+ */
+export function TidalStatistics() {
+  const epoch = useTimeStore((s) => s.epoch);
+  const station = useHarmonicsStore((s) => s.selectedStation);
+
+  const stats = useMemo(() => {
+    if (!station) return null;
+
+    const now = new Date(epoch);
+    const currentHeight = predictTide(station, now);
+    const range = getTidalRange(station, now);
+
+    // Find next extremes
+    const futureStart = now;
+    const futureEnd = new Date(now.getTime() + 26 * 3600000); // Next 26 hours
+    const futureSeries = predictTideSeries(station, futureStart, futureEnd, 5);
+    const futureExtremes = findExtremes(futureSeries);
+
+    // Get dominant constituents (top 3 by amplitude)
+    const sortedConstituents = [...station.constituents]
+      .sort((a, b) => b.amplitude - a.amplitude)
+      .slice(0, 3);
+
+    const tidalType = getTidalType(station);
+
+    // Determine if tide is rising or falling
+    const nearFuture = new Date(now.getTime() + 300000); // 5 min
+    const futureHeight = predictTide(station, nearFuture);
+    const isRising = futureHeight > currentHeight;
+
+    return {
+      currentHeight,
+      range,
+      isRising,
+      nextExtremes: futureExtremes.slice(0, 2),
+      dominantConstituents: sortedConstituents,
+      tidalType,
+      tidalTypeLabel: getTidalTypeLabel(tidalType),
+    };
+  }, [epoch, station]);
+
+  if (!station || !stats) {
+    return null;
+  }
+
+  return (
+    <div className="bg-slate-800/80 backdrop-blur-sm rounded-lg p-3">
+      <h3 className="text-xs text-slate-400 mb-2">Current Conditions</h3>
+
+      {/* Current height and trend */}
+      <div className="flex items-center justify-between mb-3">
+        <div>
+          <span className="text-2xl font-bold text-white">
+            {stats.currentHeight.toFixed(2)}
+          </span>
+          <span className="text-slate-400 text-sm ml-1">m</span>
+        </div>
+        <div className={`flex items-center gap-1 px-2 py-1 rounded ${
+          stats.isRising ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'
+        }`}>
+          <span className="text-lg">{stats.isRising ? '↑' : '↓'}</span>
+          <span className="text-xs">{stats.isRising ? 'Rising' : 'Falling'}</span>
+        </div>
+      </div>
+
+      {/* Today's range */}
+      <div className="flex justify-between text-xs mb-2">
+        <span className="text-slate-500">Today's Range:</span>
+        <span className="text-white">
+          {stats.range.minHeight.toFixed(2)}m to {stats.range.maxHeight.toFixed(2)}m
+          <span className="text-slate-400 ml-1">
+            ({(stats.range.maxHeight - stats.range.minHeight).toFixed(2)}m)
+          </span>
+        </span>
+      </div>
+
+      {/* Next high/low */}
+      <div className="space-y-1 mb-3">
+        {stats.nextExtremes.map((extreme, i) => (
+          <div key={i} className="flex justify-between text-xs">
+            <span className={extreme.type === 'high' ? 'text-blue-400' : 'text-cyan-400'}>
+              {extreme.type === 'high' ? '▲ High' : '▼ Low'}:
+            </span>
+            <span className="text-white">
+              {extreme.height.toFixed(2)}m at {format(extreme.time, 'HH:mm')}
+              <span className="text-slate-500 ml-1">
+                ({formatDistanceToNow(extreme.time, { addSuffix: true })})
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Tidal type */}
+      <div className="flex justify-between text-xs mb-2">
+        <span className="text-slate-500">Type:</span>
+        <span className={`px-1.5 py-0.5 rounded text-xs ${
+          stats.tidalType === 'semidiurnal' ? 'bg-blue-500/20 text-blue-400' :
+          stats.tidalType === 'mixed-semidiurnal' ? 'bg-cyan-500/20 text-cyan-400' :
+          stats.tidalType === 'mixed-diurnal' ? 'bg-green-500/20 text-green-400' :
+          'bg-amber-500/20 text-amber-400'
+        }`}>
+          {stats.tidalType === 'semidiurnal' ? 'Semidiurnal' :
+           stats.tidalType === 'mixed-semidiurnal' ? 'Mixed (Semi)' :
+           stats.tidalType === 'mixed-diurnal' ? 'Mixed (Di)' : 'Diurnal'}
+        </span>
+      </div>
+
+      {/* Dominant constituents */}
+      <div className="text-xs">
+        <span className="text-slate-500">Dominant:</span>
+        <div className="flex gap-1 mt-1">
+          {stats.dominantConstituents.map((c) => (
+            <span
+              key={c.symbol}
+              className="px-1.5 py-0.5 bg-slate-700 text-slate-300 rounded text-xs"
+              title={`${c.amplitude.toFixed(3)}m`}
+            >
+              {c.symbol}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
