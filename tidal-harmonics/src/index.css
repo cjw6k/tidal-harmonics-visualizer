@@ -82,3 +82,27 @@ button:active:not(:disabled),
     transform: none;
   }
 }
+
+/* High contrast mode support */
+@media (prefers-contrast: more) {
+  /* Increase border visibility */
+  button,
+  select,
+  input,
+  .bg-slate-800\/80,
+  .bg-slate-700 {
+    border: 2px solid currentColor !important;
+  }
+
+  /* Ensure sufficient text contrast */
+  .text-slate-400,
+  .text-slate-500 {
+    color: #d1d5db !important; /* slate-300 */
+  }
+
+  /* Stronger focus indicators */
+  :focus-visible {
+    outline: 3px solid #fff !important;
+    outline-offset: 2px !important;
+  }
+}
