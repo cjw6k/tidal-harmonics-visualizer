@@ -35,7 +35,7 @@ export const useSceneStore = create<SceneState>((set) => ({
   scaleMode: 'exaggerated',
   showOrbits: true,
   showLabels: true,
-  showPlanets: true, // Visible by default, toggle with 'L'
+  showPlanets: false, // Hidden by default, toggle with 'L'
   // Tidal visualization defaults
   showTidalBulge: true,
   tidalExaggeration: 10000, // Educational mode: 10,000x
