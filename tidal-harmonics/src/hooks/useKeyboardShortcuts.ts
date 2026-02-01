@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useTimeStore } from '@/stores/timeStore';
 import { useSceneStore } from '@/stores/sceneStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
+import { useHarmonicsStore } from '@/stores/harmonicsStore';
 
 /**
  * Global keyboard shortcuts for the application
@@ -15,6 +16,11 @@ import { useTutorialStore } from '@/stores/tutorialStore';
  * - O: Toggle orbits
  * - T: Toggle tidal bulge
  * - F: Toggle force vectors
+ *
+ * Harmonics panel:
+ * - P: Toggle phasor diagram
+ * - C: Toggle tide curve
+ * - U: Toggle metric/imperial units
  *
  * Tutorial:
  * - ?: Start tutorial
@@ -34,6 +40,10 @@ export function useKeyboardShortcuts() {
   const isActive = useTutorialStore((s) => s.isActive);
   const startTutorial = useTutorialStore((s) => s.startTutorial);
   const exitTutorial = useTutorialStore((s) => s.exitTutorial);
+
+  const togglePhasorDiagram = useHarmonicsStore((s) => s.togglePhasorDiagram);
+  const toggleTideCurve = useHarmonicsStore((s) => s.toggleTideCurve);
+  const toggleUnitSystem = useHarmonicsStore((s) => s.toggleUnitSystem);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -100,6 +110,22 @@ export function useKeyboardShortcuts() {
           toggleForceVectors();
           break;
 
+        // Harmonics panel
+        case 'p':
+        case 'P':
+          togglePhasorDiagram();
+          break;
+
+        case 'c':
+        case 'C':
+          toggleTideCurve();
+          break;
+
+        case 'u':
+        case 'U':
+          toggleUnitSystem();
+          break;
+
         // Tutorial
         case '?':
           if (!isActive) startTutorial();
@@ -122,6 +148,9 @@ export function useKeyboardShortcuts() {
     toggleOrbits,
     toggleTidalBulge,
     toggleForceVectors,
+    togglePhasorDiagram,
+    toggleTideCurve,
+    toggleUnitSystem,
     isActive,
     startTutorial,
     exitTutorial,
@@ -141,6 +170,11 @@ export const KEYBOARD_SHORTCUTS = [
     { key: 'O', action: 'Toggle orbits' },
     { key: 'T', action: 'Toggle tidal bulge' },
     { key: 'F', action: 'Toggle force vectors' },
+  ]},
+  { category: 'Harmonics', shortcuts: [
+    { key: 'P', action: 'Toggle phasor diagram' },
+    { key: 'C', action: 'Toggle tide curve' },
+    { key: 'U', action: 'Toggle metric/imperial' },
   ]},
   { category: 'Tutorial', shortcuts: [
     { key: '?', action: 'Start tutorial' },
