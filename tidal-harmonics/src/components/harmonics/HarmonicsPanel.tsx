@@ -439,6 +439,63 @@ export function HarmonicsPanel() {
   const [showPhotoPlanner, setShowPhotoPlanner] = useState(false);
   const [showSolunar, setShowSolunar] = useState(false);
 
+  // Count open panels
+  const openPanelCount = useMemo(() => {
+    const panels = [
+      showPhasorDiagram, showTideCurve, showAccuracyComparison, showWaveform,
+      showSpectrum, showTimeline, showClock, showBeatPattern, showWaterShader,
+      showLiveTide, showTideRate, showStationComparison, showRangeChart,
+      showPieChart, showFamilies, showTable, showMap, showExtremes,
+      showKingTidePredictor, showCalendar, showNodal, showAlerts, showLunar,
+      showCoefficient, showSeaLevelRise, showHistorical, showEnergy, showBarometric,
+      showSolunar,
+    ];
+    return panels.filter(Boolean).length;
+  }, [
+    showPhasorDiagram, showTideCurve, showAccuracyComparison, showWaveform,
+    showSpectrum, showTimeline, showClock, showBeatPattern, showWaterShader,
+    showLiveTide, showTideRate, showStationComparison, showRangeChart,
+    showPieChart, showFamilies, showTable, showMap, showExtremes,
+    showKingTidePredictor, showCalendar, showNodal, showAlerts, showLunar,
+    showCoefficient, showSeaLevelRise, showHistorical, showEnergy, showBarometric,
+    showSolunar,
+  ]);
+
+  // Close all toggle panels
+  const closeAllPanels = useCallback(() => {
+    // Close store-managed panels
+    if (showPhasorDiagram) togglePhasorDiagram();
+    if (showTideCurve) toggleTideCurve();
+    // Close local state panels
+    setShowAccuracyComparison(false);
+    setShowWaveform(false);
+    setShowSpectrum(false);
+    setShowTimeline(false);
+    setShowClock(false);
+    setShowBeatPattern(false);
+    setShowWaterShader(false);
+    setShowLiveTide(false);
+    setShowTideRate(false);
+    setShowStationComparison(false);
+    setShowRangeChart(false);
+    setShowPieChart(false);
+    setShowFamilies(false);
+    setShowTable(false);
+    setShowMap(false);
+    setShowExtremes(false);
+    setShowKingTidePredictor(false);
+    setShowCalendar(false);
+    setShowNodal(false);
+    setShowAlerts(false);
+    setShowLunar(false);
+    setShowCoefficient(false);
+    setShowSeaLevelRise(false);
+    setShowHistorical(false);
+    setShowEnergy(false);
+    setShowBarometric(false);
+    setShowSolunar(false);
+  }, [showPhasorDiagram, showTideCurve, togglePhasorDiagram, toggleTideCurve]);
+
   // Handle tool activation from search
   const handleToolClick = (toolId: string) => {
     setSearchQuery('');
@@ -704,15 +761,16 @@ export function HarmonicsPanel() {
 
       {/* Search Tools */}
       <div className="bg-slate-800/90 backdrop-blur rounded-lg p-2">
-        <div className="relative">
-          <input
-            ref={searchInputRef}
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search tools... (Ctrl+K)"
-            className="w-full bg-slate-700 text-slate-200 text-xs rounded px-3 py-1.5 pl-7 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          />
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search tools... (Ctrl+K)"
+              className="w-full bg-slate-700 text-slate-200 text-xs rounded px-3 py-1.5 pl-7 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
           <svg
             className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500"
             fill="none"
@@ -729,6 +787,19 @@ export function HarmonicsPanel() {
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
+            </button>
+          )}
+          </div>
+          {openPanelCount > 0 && (
+            <button
+              onClick={closeAllPanels}
+              title={`Close ${openPanelCount} open panel${openPanelCount !== 1 ? 's' : ''}`}
+              className="px-2 py-1 rounded text-xs bg-red-900/50 text-red-300 hover:bg-red-900 transition-colors whitespace-nowrap flex items-center gap-1"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              {openPanelCount}
             </button>
           )}
         </div>
