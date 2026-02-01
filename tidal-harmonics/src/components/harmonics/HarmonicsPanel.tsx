@@ -918,232 +918,232 @@ export function HarmonicsPanel() {
       <div className="bg-slate-800/90 backdrop-blur rounded-lg">
         {/* Search Tools */}
         <div className="p-2">
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search tools... (Ctrl+K)"
-              className="w-full bg-slate-700 text-slate-200 text-xs rounded px-3 py-1.5 pl-7 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          <svg
-            className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search tools... (Ctrl+K)"
+                className="w-full bg-slate-700 text-slate-200 text-xs rounded px-3 py-1.5 pl-7 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+              <svg
+                className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-            </button>
-          )}
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+            {openPanelCount > 0 && (
+              <button
+                onClick={closeAllPanels}
+                title={`Close ${openPanelCount} open panel${openPanelCount !== 1 ? 's' : ''}`}
+                className="px-2 py-1 rounded text-xs bg-red-900/50 text-red-300 hover:bg-red-900 transition-colors whitespace-nowrap flex items-center gap-1"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                {openPanelCount}
+              </button>
+            )}
           </div>
-          {openPanelCount > 0 && (
-            <button
-              onClick={closeAllPanels}
-              title={`Close ${openPanelCount} open panel${openPanelCount !== 1 ? 's' : ''}`}
-              className="px-2 py-1 rounded text-xs bg-red-900/50 text-red-300 hover:bg-red-900 transition-colors whitespace-nowrap flex items-center gap-1"
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              {openPanelCount}
-            </button>
+          {/* Search Results */}
+          {filteredTools.length > 0 && (
+            <div className="mt-2 max-h-48 overflow-y-auto">
+              <div className="text-[10px] text-slate-500 mb-1">
+                {filteredTools.length} tool{filteredTools.length !== 1 ? 's' : ''} found
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {filteredTools.map((tool) => (
+                  <button
+                    key={tool.id}
+                    onClick={() => handleToolClick(tool.id)}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      toggleFavorite(tool.id);
+                    }}
+                    title={`${tool.tooltip} (${TABS.find(t => t.id === tool.tab)?.label})${favoriteTools.includes(tool.id) ? ' - right-click to unfavorite' : ' - right-click to favorite'}`}
+                    className={`px-2 py-1 rounded text-xs transition-colors flex items-center gap-1 ${
+                      favoriteTools.includes(tool.id)
+                        ? 'bg-yellow-900/30 text-yellow-200 hover:bg-yellow-900/50 border border-yellow-700/30'
+                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                    }`}
+                  >
+                    <span className={`text-[10px] ${favoriteTools.includes(tool.id) ? 'text-yellow-500' : 'text-slate-500'}`}>
+                      {TABS.find(t => t.id === tool.tab)?.icon}
+                    </span>
+                    {tool.label}
+                    {favoriteTools.includes(tool.id) && (
+                      <svg className="w-2.5 h-2.5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                      </svg>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          {searchQuery && filteredTools.length === 0 && (
+            <div className="mt-2 text-xs text-slate-500">No tools found</div>
+          )}
+          {/* Favorite Tools */}
+          {!searchQuery && favoriteToolObjects.length > 0 && (
+            <div className="mt-2 border-t border-slate-700 pt-2">
+              <div className="text-[10px] text-slate-500 mb-1 flex items-center gap-1">
+                <svg className="w-3 h-3 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
+                Favorites
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {favoriteToolObjects.map((tool) => (
+                  <button
+                    key={tool.id}
+                    onClick={() => handleToolClick(tool.id)}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      toggleFavorite(tool.id);
+                    }}
+                    title={`${tool.tooltip} (right-click to unfavorite)`}
+                    className="px-2 py-1 rounded text-xs bg-yellow-900/30 text-yellow-200 hover:bg-yellow-900/50 transition-colors flex items-center gap-1 border border-yellow-700/30"
+                  >
+                    <span className="text-[10px] text-yellow-500">{TABS.find(t => t.id === tool.tab)?.icon}</span>
+                    {tool.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          {/* Recent Tools */}
+          {!searchQuery && recentToolObjects.length > 0 && (
+            <div className="mt-2 border-t border-slate-700 pt-2">
+              <div className="text-[10px] text-slate-500 mb-1 flex items-center gap-1">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Recent
+                <span className="text-slate-600 ml-1">(right-click to favorite)</span>
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {recentToolObjects.map((tool) => (
+                  <button
+                    key={tool.id}
+                    onClick={() => handleToolClick(tool.id)}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      toggleFavorite(tool.id);
+                    }}
+                    title={`${tool.tooltip}${favoriteTools.includes(tool.id) ? ' (right-click to unfavorite)' : ' (right-click to favorite)'}`}
+                    className={`px-2 py-1 rounded text-xs transition-colors flex items-center gap-1 ${
+                      favoriteTools.includes(tool.id)
+                        ? 'bg-yellow-900/30 text-yellow-200 hover:bg-yellow-900/50 border border-yellow-700/30'
+                        : 'bg-slate-600 text-slate-200 hover:bg-slate-500'
+                    }`}
+                  >
+                    <span className={`text-[10px] ${favoriteTools.includes(tool.id) ? 'text-yellow-500' : 'text-slate-400'}`}>
+                      {TABS.find(t => t.id === tool.tab)?.icon}
+                    </span>
+                    {tool.label}
+                    {favoriteTools.includes(tool.id) && (
+                      <svg className="w-2.5 h-2.5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                      </svg>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
         </div>
-        {/* Search Results */}
-        {filteredTools.length > 0 && (
-          <div className="mt-2 max-h-48 overflow-y-auto">
-            <div className="text-[10px] text-slate-500 mb-1">
-              {filteredTools.length} tool{filteredTools.length !== 1 ? 's' : ''} found
-            </div>
-            <div className="flex flex-wrap gap-1">
-              {filteredTools.map((tool) => (
-                <button
-                  key={tool.id}
-                  onClick={() => handleToolClick(tool.id)}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    toggleFavorite(tool.id);
-                  }}
-                  title={`${tool.tooltip} (${TABS.find(t => t.id === tool.tab)?.label})${favoriteTools.includes(tool.id) ? ' - right-click to unfavorite' : ' - right-click to favorite'}`}
-                  className={`px-2 py-1 rounded text-xs transition-colors flex items-center gap-1 ${
-                    favoriteTools.includes(tool.id)
-                      ? 'bg-yellow-900/30 text-yellow-200 hover:bg-yellow-900/50 border border-yellow-700/30'
-                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                  }`}
-                >
-                  <span className={`text-[10px] ${favoriteTools.includes(tool.id) ? 'text-yellow-500' : 'text-slate-500'}`}>
-                    {TABS.find(t => t.id === tool.tab)?.icon}
-                  </span>
-                  {tool.label}
-                  {favoriteTools.includes(tool.id) && (
-                    <svg className="w-2.5 h-2.5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-        {searchQuery && filteredTools.length === 0 && (
-          <div className="mt-2 text-xs text-slate-500">No tools found</div>
-        )}
-        {/* Favorite Tools */}
-        {!searchQuery && favoriteToolObjects.length > 0 && (
-          <div className="mt-2 border-t border-slate-700 pt-2">
-            <div className="text-[10px] text-slate-500 mb-1 flex items-center gap-1">
-              <svg className="w-3 h-3 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-              </svg>
-              Favorites
-            </div>
-            <div className="flex flex-wrap gap-1">
-              {favoriteToolObjects.map((tool) => (
-                <button
-                  key={tool.id}
-                  onClick={() => handleToolClick(tool.id)}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    toggleFavorite(tool.id);
-                  }}
-                  title={`${tool.tooltip} (right-click to unfavorite)`}
-                  className="px-2 py-1 rounded text-xs bg-yellow-900/30 text-yellow-200 hover:bg-yellow-900/50 transition-colors flex items-center gap-1 border border-yellow-700/30"
-                >
-                  <span className="text-[10px] text-yellow-500">{TABS.find(t => t.id === tool.tab)?.icon}</span>
-                  {tool.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-        {/* Recent Tools */}
-        {!searchQuery && recentToolObjects.length > 0 && (
-          <div className="mt-2 border-t border-slate-700 pt-2">
-            <div className="text-[10px] text-slate-500 mb-1 flex items-center gap-1">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Recent
-              <span className="text-slate-600 ml-1">(right-click to favorite)</span>
-            </div>
-            <div className="flex flex-wrap gap-1">
-              {recentToolObjects.map((tool) => (
-                <button
-                  key={tool.id}
-                  onClick={() => handleToolClick(tool.id)}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    toggleFavorite(tool.id);
-                  }}
-                  title={`${tool.tooltip}${favoriteTools.includes(tool.id) ? ' (right-click to unfavorite)' : ' (right-click to favorite)'}`}
-                  className={`px-2 py-1 rounded text-xs transition-colors flex items-center gap-1 ${
-                    favoriteTools.includes(tool.id)
-                      ? 'bg-yellow-900/30 text-yellow-200 hover:bg-yellow-900/50 border border-yellow-700/30'
-                      : 'bg-slate-600 text-slate-200 hover:bg-slate-500'
-                  }`}
-                >
-                  <span className={`text-[10px] ${favoriteTools.includes(tool.id) ? 'text-yellow-500' : 'text-slate-400'}`}>
-                    {TABS.find(t => t.id === tool.tab)?.icon}
-                  </span>
-                  {tool.label}
-                  {favoriteTools.includes(tool.id) && (
-                    <svg className="w-2.5 h-2.5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
 
         {/* Tab Navigation */}
         <div className="flex flex-col max-h-[280px] border-t border-slate-700">
-        <div
-          className="flex shrink-0 overflow-x-auto scrollbar-none border-b border-slate-700"
-          role="tablist"
-          aria-label="Tool categories"
-        >
-          {TABS.map((tab, index) => (
-            <button
-              key={tab.id}
-              role="tab"
-              aria-selected={activeTab === tab.id}
-              aria-controls={`tabpanel-${tab.id}`}
-              id={`tab-${tab.id}`}
-              tabIndex={activeTab === tab.id ? 0 : -1}
-              onClick={() => setActiveTab(tab.id)}
-              onKeyDown={(e) => {
-                const currentIndex = TABS.findIndex(t => t.id === activeTab);
-                let newIndex = currentIndex;
-                if (e.key === 'ArrowRight') {
-                  newIndex = (currentIndex + 1) % TABS.length;
-                } else if (e.key === 'ArrowLeft') {
-                  newIndex = (currentIndex - 1 + TABS.length) % TABS.length;
-                } else if (e.key === 'Home') {
-                  newIndex = 0;
-                } else if (e.key === 'End') {
-                  newIndex = TABS.length - 1;
-                } else {
-                  return;
-                }
-                const newTab = TABS[newIndex];
-                if (newTab) {
-                  setActiveTab(newTab.id);
-                  (e.currentTarget.parentElement?.children[newIndex] as HTMLElement)?.focus();
-                }
-              }}
-              title={`${tab.label} (Press ${index + 1})`}
-              className={`flex-1 min-w-[64px] px-2 py-2 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset ${
-                activeTab === tab.id
-                  ? 'bg-slate-700 text-white border-b-2 border-blue-500'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
-              }`}
-            >
-              <span className="block relative" aria-hidden="true">
-                {tab.icon}
-                {activeCountByTab[tab.id] > 0 && (
-                  <span className="absolute -top-1 -right-2 bg-blue-500 text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold">
-                    {activeCountByTab[tab.id]}
+          <div
+            className="flex shrink-0 overflow-x-auto scrollbar-none"
+            role="tablist"
+            aria-label="Tool categories"
+          >
+            {TABS.map((tab, index) => (
+              <button
+                key={tab.id}
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                aria-controls={`tabpanel-${tab.id}`}
+                id={`tab-${tab.id}`}
+                tabIndex={activeTab === tab.id ? 0 : -1}
+                onClick={() => setActiveTab(tab.id)}
+                onKeyDown={(e) => {
+                  const currentIndex = TABS.findIndex(t => t.id === activeTab);
+                  let newIndex = currentIndex;
+                  if (e.key === 'ArrowRight') {
+                    newIndex = (currentIndex + 1) % TABS.length;
+                  } else if (e.key === 'ArrowLeft') {
+                    newIndex = (currentIndex - 1 + TABS.length) % TABS.length;
+                  } else if (e.key === 'Home') {
+                    newIndex = 0;
+                  } else if (e.key === 'End') {
+                    newIndex = TABS.length - 1;
+                  } else {
+                    return;
+                  }
+                  const newTab = TABS[newIndex];
+                  if (newTab) {
+                    setActiveTab(newTab.id);
+                    (e.currentTarget.parentElement?.children[newIndex] as HTMLElement)?.focus();
+                  }
+                }}
+                title={`${tab.label} (Press ${index + 1})`}
+                className={`flex-1 min-w-[64px] px-2 py-2 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset ${
+                  activeTab === tab.id
+                    ? 'bg-slate-700 text-white border-b-2 border-blue-500'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+                }`}
+              >
+                <span className="block relative" aria-hidden="true">
+                  {tab.icon}
+                  {activeCountByTab[tab.id] > 0 && (
+                    <span className="absolute -top-1 -right-2 bg-blue-500 text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold">
+                      {activeCountByTab[tab.id]}
+                    </span>
+                  )}
+                  <span className="absolute -bottom-0.5 -left-1 text-[9px] text-slate-500 font-mono opacity-60">
+                    {index + 1}
                   </span>
-                )}
-                <span className="absolute -bottom-0.5 -left-1 text-[9px] text-slate-500 font-mono opacity-60">
-                  {index + 1}
                 </span>
-              </span>
-              <span className="block mt-0.5">{tab.label}</span>
-              <span className={`block text-[10px] ${activeTab === tab.id ? 'text-slate-300' : 'text-slate-500'}`}>
-                {tab.count}
-              </span>
-            </button>
-          ))}
+                <span className="block mt-0.5">{tab.label}</span>
+                <span className={`block text-[10px] ${activeTab === tab.id ? 'text-slate-300' : 'text-slate-500'}`}>
+                  {tab.count}
+                </span>
+              </button>
+            ))}
+          </div>
+          <div
+            key={activeTab}
+            role="tabpanel"
+            id={`tabpanel-${activeTab}`}
+            aria-labelledby={`tab-${activeTab}`}
+            className="p-3 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600"
+            style={{ animation: 'fadeIn 150ms ease-out' }}
+          >
+            <p className="text-xs text-slate-500 mb-2">
+              {TABS.find(t => t.id === activeTab)?.desc}
+            </p>
+            {renderTabContent()}
+          </div>
         </div>
-        <div
-          key={activeTab}
-          role="tabpanel"
-          id={`tabpanel-${activeTab}`}
-          aria-labelledby={`tab-${activeTab}`}
-          className="p-3 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600"
-          style={{ animation: 'fadeIn 150ms ease-out' }}
-        >
-          <p className="text-xs text-slate-500 mb-2">
-            {TABS.find(t => t.id === activeTab)?.desc}
-          </p>
-          {renderTabContent()}
-        </div>
-      </div>
       </div>
 
       {/* Core visualizations (not lazy) */}

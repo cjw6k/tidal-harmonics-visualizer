@@ -65,7 +65,7 @@ export function TidalStatistics() {
   }
 
   return (
-    <div className="bg-slate-800/80 backdrop-blur-sm rounded-lg p-3">
+    <div>
       <h3 className="text-xs text-slate-400 mb-2">Current Conditions</h3>
 
       {/* Current height and trend */}

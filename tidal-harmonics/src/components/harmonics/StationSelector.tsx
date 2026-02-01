@@ -223,7 +223,7 @@ export function StationSelector() {
   const matchCount = filteredStations.length;
 
   return (
-    <div className="bg-slate-800/80 backdrop-blur-sm rounded-lg p-3">
+    <div>
       <label className="block text-xs text-slate-400 mb-1">Tide Station</label>
       <div className="relative mb-2">
         <input
