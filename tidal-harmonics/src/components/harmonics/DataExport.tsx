@@ -13,8 +13,18 @@ import { predictTideSeries, findExtremes, getConstituentContributions } from '@/
  * - Full state as JSON (for developers/researchers)
  */
 
-type ExportFormat = 'predictions' | 'extremes' | 'constituents' | 'json';
+type ExportFormat = 'predictions' | 'extremes' | 'calendar' | 'constituents' | 'json';
 type DateRange = '24h' | '48h' | '7d' | '30d' | 'custom';
+
+// Generate ICS-formatted date (UTC)
+function formatICSDate(date: Date): string {
+  return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+}
+
+// Generate a unique ID for ICS events
+function generateUID(): string {
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}@tidal-harmonics`;
+}
 
 interface DataExportProps {
   onClose?: () => void;
@@ -128,6 +138,53 @@ export function DataExport({ onClose }: DataExportProps) {
             csv,
             `tide_extremes_${stationId}_${timestamp}.csv`,
             'text/csv'
+          );
+          break;
+        }
+
+        case 'calendar': {
+          const series = predictTideSeries(station, startDate, endDate, 6);
+          const extremes = findExtremes(series);
+
+          const icsEvents = extremes.map((e) => {
+            const eventStart = formatICSDate(e.time);
+            // Events last 30 minutes for visibility
+            const eventEnd = formatICSDate(new Date(e.time.getTime() + 30 * 60000));
+            const heightM = e.height.toFixed(2);
+            const heightFt = (e.height * 3.28084).toFixed(2);
+            const typeLabel = e.type === 'high' ? 'High Tide' : 'Low Tide';
+            const emoji = e.type === 'high' ? '🌊' : '🏖️';
+
+            return [
+              'BEGIN:VEVENT',
+              `UID:${generateUID()}`,
+              `DTSTAMP:${formatICSDate(new Date())}`,
+              `DTSTART:${eventStart}`,
+              `DTEND:${eventEnd}`,
+              `SUMMARY:${emoji} ${typeLabel} - ${station.name}`,
+              `DESCRIPTION:${typeLabel} at ${station.name}\\nHeight: ${heightM}m (${heightFt}ft)\\nDatum: ${station.datum}`,
+              `LOCATION:${station.name}, ${station.state || station.country}`,
+              `CATEGORIES:TIDES,${e.type.toUpperCase()}`,
+              'END:VEVENT',
+            ].join('\r\n');
+          });
+
+          const icsContent = [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//Tidal Harmonics//Tide Predictions//EN',
+            'CALSCALE:GREGORIAN',
+            'METHOD:PUBLISH',
+            `X-WR-CALNAME:Tides - ${station.name}`,
+            'X-WR-TIMEZONE:UTC',
+            ...icsEvents,
+            'END:VCALENDAR',
+          ].join('\r\n');
+
+          downloadFile(
+            icsContent,
+            `tides_${stationId}_${timestamp}.ics`,
+            'text/calendar'
           );
           break;
         }
@@ -251,7 +308,8 @@ export function DataExport({ onClose }: DataExportProps) {
             <div className="grid grid-cols-2 gap-2">
               {[
                 { value: 'predictions', label: 'Predictions', desc: 'Time series of heights' },
-                { value: 'extremes', label: 'High/Low', desc: 'High and low tides only' },
+                { value: 'extremes', label: 'High/Low CSV', desc: 'High and low tides only' },
+                { value: 'calendar', label: 'Calendar', desc: 'ICS for calendar apps' },
                 { value: 'constituents', label: 'Constituents', desc: 'Harmonic constants' },
                 { value: 'json', label: 'Full JSON', desc: 'Complete data package' },
               ].map((opt) => (
@@ -273,8 +331,8 @@ export function DataExport({ onClose }: DataExportProps) {
             </div>
           </div>
 
-          {/* Time Range (for predictions and extremes) */}
-          {(exportFormat === 'predictions' || exportFormat === 'extremes' || exportFormat === 'json') && (
+          {/* Time Range (for predictions, extremes, and calendar) */}
+          {(exportFormat === 'predictions' || exportFormat === 'extremes' || exportFormat === 'calendar' || exportFormat === 'json') && (
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
                 Time Range
@@ -367,6 +425,14 @@ export function DataExport({ onClose }: DataExportProps) {
                   <p>From: {startDate.toLocaleString()}</p>
                   <p>To: {endDate.toLocaleString()}</p>
                   <p>Format: CSV (datetime, type, height)</p>
+                </>
+              )}
+              {exportFormat === 'calendar' && (
+                <>
+                  <p>Events: ~{Math.ceil((endDate.getTime() - startDate.getTime()) / (6 * 3600000))} high/low tides</p>
+                  <p>From: {startDate.toLocaleString()}</p>
+                  <p>To: {endDate.toLocaleString()}</p>
+                  <p>Format: ICS (Apple Calendar, Google Calendar, Outlook)</p>
                 </>
               )}
               {exportFormat === 'constituents' && (
