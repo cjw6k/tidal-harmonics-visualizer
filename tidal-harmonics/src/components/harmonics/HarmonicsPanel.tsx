@@ -5,6 +5,7 @@ import { ConstituentToggles } from './ConstituentToggles';
 import { PhasorDiagram } from './PhasorDiagram';
 import { TideCurve } from './TideCurve';
 import { TidalStatistics } from './TidalStatistics';
+import { TidalCurrentIndicator } from './TidalCurrentIndicator';
 import { ConstituentInfoPanel } from './ConstituentInfoPanel';
 import { UnitToggle } from './UnitToggle';
 
@@ -69,6 +70,7 @@ export function HarmonicsPanel() {
           <UnitToggle />
         </div>
         <TidalStatistics />
+        <TidalCurrentIndicator />
         <ConstituentToggles />
       </div>
 
