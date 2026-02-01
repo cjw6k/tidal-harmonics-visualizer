@@ -16,8 +16,8 @@ export function AboutPanel() {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-12 left-4 z-40 px-3 py-1.5 bg-slate-800/80 backdrop-blur-sm
-          text-slate-400 text-xs rounded-lg hover:bg-slate-700 transition-colors"
+        className="fixed bottom-[4.5rem] left-4 z-40 px-2 py-1 bg-slate-800/80 backdrop-blur-sm
+          text-slate-400 text-[11px] rounded hover:bg-slate-700 transition-colors"
         title="About this project"
       >
         ℹ️ About

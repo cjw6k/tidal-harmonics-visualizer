@@ -47,16 +47,6 @@ function App() {
       <div className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10">
         <ThemeToggle />
       </div>
-      {/* Credit - positioned to not overlap with buttons */}
-      <a
-        href="https://github.com/cjw6k"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="absolute bottom-1 left-1 text-[9px] text-slate-700 hover:text-slate-500 transition-colors z-5 opacity-60 hover:opacity-100"
-        title="Made by cjw6k"
-      >
-        cjw6k
-      </a>
     </div>
   );
 }
