@@ -32,6 +32,7 @@ const WaterSurfaceShader = lazy(() => import('./WaterSurfaceShader').then(m => (
 const TidalEnergyCalculator = lazy(() => import('./TidalEnergyCalculator').then(m => ({ default: m.TidalEnergyCalculator })));
 const TideClock = lazy(() => import('./TideClock').then(m => ({ default: m.TideClock })));
 const TideTimeline = lazy(() => import('./TideTimeline').then(m => ({ default: m.TideTimeline })));
+const SharePanel = lazy(() => import('./SharePanel').then(m => ({ default: m.SharePanel })));
 
 // Loading fallback for lazy components
 function LoadingFallback() {
@@ -70,6 +71,7 @@ export function HarmonicsPanel() {
   const [showEnergy, setShowEnergy] = useState(false);
   const [showClock, setShowClock] = useState(false);
   const [showTimeline, setShowTimeline] = useState(false);
+  const [showShare, setShowShare] = useState(false);
 
   return (
     <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 flex flex-col gap-2 sm:gap-3 z-10 max-w-[320px] sm:max-w-[380px]">
@@ -144,6 +146,14 @@ export function HarmonicsPanel() {
           title="Export data"
         >
           ↓
+        </button>
+        <button
+          onClick={() => setShowShare(true)}
+          aria-label="Share this view"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Share this view"
+        >
+          🔗
         </button>
       </div>
 
@@ -358,6 +368,10 @@ export function HarmonicsPanel() {
 
         {showComparison && (
           <ConstituentComparison onClose={() => setShowComparison(false)} />
+        )}
+
+        {showShare && (
+          <SharePanel onClose={() => setShowShare(false)} />
         )}
       </Suspense>
     </div>

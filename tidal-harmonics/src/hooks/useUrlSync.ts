@@ -1,30 +1,51 @@
 import { useEffect, useRef } from 'react';
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
+import { useTimeStore } from '@/stores/timeStore';
 
 /**
  * Syncs selected station with URL hash for deep linking
  * Enables sharing URLs like: https://app.com/#station=san-francisco
+ * Supports additional params: constituents, time
  */
 export function useUrlSync() {
-  const { selectedStation, selectStation, stations } = useHarmonicsStore();
+  const { selectedStation, selectStation, stations, setAllConstituentsVisible } = useHarmonicsStore();
+  const setDate = useTimeStore((s) => s.setDate);
   const isInitialLoad = useRef(true);
 
-  // On mount, check URL for station parameter
+  // On mount, check URL for parameters
   useEffect(() => {
     const hash = window.location.hash.slice(1); // Remove #
     const params = new URLSearchParams(hash);
-    const stationId = params.get('station');
 
+    // Handle station
+    const stationId = params.get('station');
     if (stationId) {
-      // Validate station exists before selecting
       const stationExists = stations.some((s) => s.id === stationId);
       if (stationExists) {
         selectStation(stationId);
       }
     }
 
+    // Handle constituents
+    const constituentsParam = params.get('constituents');
+    if (constituentsParam) {
+      const constituents = constituentsParam.split(',').filter(Boolean);
+      if (constituents.length > 0) {
+        setAllConstituentsVisible(constituents);
+      }
+    }
+
+    // Handle time
+    const timeParam = params.get('time');
+    if (timeParam) {
+      const time = new Date(timeParam);
+      if (!isNaN(time.getTime())) {
+        setDate(time);
+      }
+    }
+
     isInitialLoad.current = false;
-  }, [stations, selectStation]);
+  }, [stations, selectStation, setAllConstituentsVisible, setDate]);
 
   // Update URL when station changes (but not on initial load)
   useEffect(() => {
