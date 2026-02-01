@@ -22,6 +22,8 @@ const NodalCorrectionPanel = lazy(() => import('./NodalCorrectionPanel').then(m 
 const FrequencySpectrum = lazy(() => import('./FrequencySpectrum').then(m => ({ default: m.FrequencySpectrum })));
 const PhaseAnimation = lazy(() => import('./PhaseAnimation').then(m => ({ default: m.PhaseAnimation })));
 const DataExport = lazy(() => import('./DataExport').then(m => ({ default: m.DataExport })));
+const TidalDatumExplainer = lazy(() => import('./TidalDatumExplainer').then(m => ({ default: m.TidalDatumExplainer })));
+const ConstituentComparison = lazy(() => import('./ConstituentComparison').then(m => ({ default: m.ConstituentComparison })));
 
 // Loading fallback for lazy components
 function LoadingFallback() {
@@ -52,6 +54,8 @@ export function HarmonicsPanel() {
   const [showSpectrum, setShowSpectrum] = useState(false);
   const [showPhaseAnimation, setShowPhaseAnimation] = useState(false);
   const [showExport, setShowExport] = useState(false);
+  const [showDatumExplainer, setShowDatumExplainer] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
 
   return (
     <div className="absolute bottom-4 right-4 flex flex-col gap-3 z-10 max-w-[380px]">
@@ -101,6 +105,13 @@ export function HarmonicsPanel() {
           ▶
         </button>
         <button
+          onClick={() => setShowComparison(true)}
+          className="px-3 py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 transition-colors"
+          title="Compare constituents"
+        >
+          ⚖
+        </button>
+        <button
           onClick={() => setShowExport(true)}
           className="px-3 py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 transition-colors"
           title="Export data"
@@ -142,6 +153,13 @@ export function HarmonicsPanel() {
           title="Constituent breakdown"
         >
           Pie
+        </button>
+        <button
+          onClick={() => setShowDatumExplainer(true)}
+          className="px-3 py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 transition-colors"
+          title="Learn about tidal datums"
+        >
+          📏
         </button>
       </div>
 
@@ -234,6 +252,14 @@ export function HarmonicsPanel() {
 
         {showExport && (
           <DataExport onClose={() => setShowExport(false)} />
+        )}
+
+        {showDatumExplainer && (
+          <TidalDatumExplainer onClose={() => setShowDatumExplainer(false)} />
+        )}
+
+        {showComparison && (
+          <ConstituentComparison onClose={() => setShowComparison(false)} />
         )}
       </Suspense>
     </div>
