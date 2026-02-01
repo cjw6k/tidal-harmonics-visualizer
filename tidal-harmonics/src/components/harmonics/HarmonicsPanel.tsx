@@ -8,6 +8,7 @@ import { TidalStatistics } from './TidalStatistics';
 import { ConstituentInfoPanel } from './ConstituentInfoPanel';
 import { DoodsonExplorer } from './DoodsonExplorer';
 import { AccuracyComparison } from './AccuracyComparison';
+import { KingTidePredictor } from './KingTidePredictor';
 
 export function HarmonicsPanel() {
   const showPhasorDiagram = useHarmonicsStore((s) => s.showPhasorDiagram);
@@ -17,6 +18,7 @@ export function HarmonicsPanel() {
   const [selectedConstituent, setSelectedConstituent] = useState<string | null>(null);
   const [showDoodsonExplorer, setShowDoodsonExplorer] = useState(false);
   const [showAccuracyComparison, setShowAccuracyComparison] = useState(false);
+  const [showKingTidePredictor, setShowKingTidePredictor] = useState(false);
 
   return (
     <div className="absolute bottom-4 right-4 flex flex-col gap-3 z-10 max-w-[380px]">
@@ -27,7 +29,7 @@ export function HarmonicsPanel() {
         <ConstituentToggles />
       </div>
 
-      {/* Toggle buttons */}
+      {/* Toggle buttons - row 1 */}
       <div className="flex gap-2">
         <button
           onClick={togglePhasorDiagram}
@@ -60,10 +62,23 @@ export function HarmonicsPanel() {
         </button>
       </div>
 
+      {/* Toggle buttons - row 2 */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => setShowKingTidePredictor(!showKingTidePredictor)}
+          className={`flex-1 px-3 py-1 rounded text-xs transition-colors
+            ${showKingTidePredictor ? 'bg-amber-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="Predict king tides (perigean spring tides)"
+        >
+          👑 King Tides
+        </button>
+      </div>
+
       {/* Visualizations */}
       {showPhasorDiagram && <PhasorDiagram onConstituentClick={setSelectedConstituent} />}
       {showTideCurve && <TideCurve />}
       {showAccuracyComparison && <AccuracyComparison />}
+      {showKingTidePredictor && <KingTidePredictor />}
 
       {/* Info Panel */}
       <ConstituentInfoPanel
