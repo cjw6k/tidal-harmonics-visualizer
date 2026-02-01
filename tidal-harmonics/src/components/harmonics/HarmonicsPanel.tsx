@@ -28,6 +28,7 @@ const TidalDatumExplainer = lazy(() => import('./TidalDatumExplainer').then(m =>
 const ConstituentComparison = lazy(() => import('./ConstituentComparison').then(m => ({ default: m.ConstituentComparison })));
 const SeaLevelRisePanel = lazy(() => import('./SeaLevelRisePanel').then(m => ({ default: m.SeaLevelRisePanel })));
 const HistoricalExtremes = lazy(() => import('./HistoricalExtremes').then(m => ({ default: m.HistoricalExtremes })));
+const WaterSurfaceShader = lazy(() => import('./WaterSurfaceShader').then(m => ({ default: m.WaterSurfaceShader })));
 
 // Loading fallback for lazy components
 function LoadingFallback() {
@@ -62,6 +63,7 @@ export function HarmonicsPanel() {
   const [showComparison, setShowComparison] = useState(false);
   const [showSeaLevelRise, setShowSeaLevelRise] = useState(false);
   const [showHistorical, setShowHistorical] = useState(false);
+  const [showWaterShader, setShowWaterShader] = useState(false);
 
   return (
     <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 flex flex-col gap-2 sm:gap-3 z-10 max-w-[320px] sm:max-w-[380px]">
@@ -261,6 +263,15 @@ export function HarmonicsPanel() {
         >
           Records
         </button>
+        <button
+          onClick={() => setShowWaterShader(!showWaterShader)}
+          aria-pressed={showWaterShader}
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900
+            ${showWaterShader ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="WebGL water surface animation"
+        >
+          Shader
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -282,6 +293,7 @@ export function HarmonicsPanel() {
         {showSpectrum && <FrequencySpectrum />}
         {showSeaLevelRise && <SeaLevelRisePanel />}
         {showHistorical && <HistoricalExtremes />}
+        {showWaterShader && <WaterSurfaceShader />}
       </Suspense>
 
       {/* Info Panel */}
