@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 const RECENT_TOOLS_KEY = 'tidal-harmonics-recent-tools';
 const MAX_RECENT_TOOLS = 6;
 const PANEL_MINIMIZED_KEY = 'tidal-harmonics-panel-minimized';
+const FAVORITE_TOOLS_KEY = 'tidal-harmonics-favorite-tools';
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
 import { StationSelector } from './StationSelector';
 import { ConstituentToggles } from './ConstituentToggles';
@@ -336,6 +337,39 @@ export function HarmonicsPanel() {
       .map(id => TOOLS.find(t => t.id === id))
       .filter((t): t is ToolDef => t !== undefined);
   }, [recentTools]);
+
+  // Favorite tools
+  const [favoriteTools, setFavoriteTools] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem(FAVORITE_TOOLS_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Toggle favorite status
+  const toggleFavorite = useCallback((toolId: string) => {
+    setFavoriteTools(prev => {
+      const isFavorite = prev.includes(toolId);
+      const updated = isFavorite
+        ? prev.filter(id => id !== toolId)
+        : [...prev, toolId];
+      try {
+        localStorage.setItem(FAVORITE_TOOLS_KEY, JSON.stringify(updated));
+      } catch {
+        // Ignore storage errors
+      }
+      return updated;
+    });
+  }, []);
+
+  // Get favorite tool objects
+  const favoriteToolObjects = useMemo(() => {
+    return favoriteTools
+      .map(id => TOOLS.find(t => t.id === id))
+      .filter((t): t is ToolDef => t !== undefined);
+  }, [favoriteTools]);
 
   // Filter tools based on search query
   const filteredTools = useMemo(() => {
@@ -933,6 +967,34 @@ export function HarmonicsPanel() {
         {searchQuery && filteredTools.length === 0 && (
           <div className="mt-2 text-xs text-slate-500">No tools found</div>
         )}
+        {/* Favorite Tools */}
+        {!searchQuery && favoriteToolObjects.length > 0 && (
+          <div className="mt-2 border-t border-slate-700 pt-2">
+            <div className="text-[10px] text-slate-500 mb-1 flex items-center gap-1">
+              <svg className="w-3 h-3 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+              </svg>
+              Favorites
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {favoriteToolObjects.map((tool) => (
+                <button
+                  key={tool.id}
+                  onClick={() => handleToolClick(tool.id)}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    toggleFavorite(tool.id);
+                  }}
+                  title={`${tool.tooltip} (right-click to unfavorite)`}
+                  className="px-2 py-1 rounded text-xs bg-yellow-900/30 text-yellow-200 hover:bg-yellow-900/50 transition-colors flex items-center gap-1 border border-yellow-700/30"
+                >
+                  <span className="text-[10px] text-yellow-500">{TABS.find(t => t.id === tool.tab)?.icon}</span>
+                  {tool.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         {/* Recent Tools */}
         {!searchQuery && recentToolObjects.length > 0 && (
           <div className="mt-2 border-t border-slate-700 pt-2">
@@ -941,17 +1003,33 @@ export function HarmonicsPanel() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               Recent
+              <span className="text-slate-600 ml-1">(right-click to favorite)</span>
             </div>
             <div className="flex flex-wrap gap-1">
               {recentToolObjects.map((tool) => (
                 <button
                   key={tool.id}
                   onClick={() => handleToolClick(tool.id)}
-                  title={tool.tooltip}
-                  className="px-2 py-1 rounded text-xs bg-slate-600 text-slate-200 hover:bg-slate-500 transition-colors flex items-center gap-1"
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    toggleFavorite(tool.id);
+                  }}
+                  title={`${tool.tooltip}${favoriteTools.includes(tool.id) ? ' (right-click to unfavorite)' : ' (right-click to favorite)'}`}
+                  className={`px-2 py-1 rounded text-xs transition-colors flex items-center gap-1 ${
+                    favoriteTools.includes(tool.id)
+                      ? 'bg-yellow-900/30 text-yellow-200 hover:bg-yellow-900/50 border border-yellow-700/30'
+                      : 'bg-slate-600 text-slate-200 hover:bg-slate-500'
+                  }`}
                 >
-                  <span className="text-[10px] text-slate-400">{TABS.find(t => t.id === tool.tab)?.icon}</span>
+                  <span className={`text-[10px] ${favoriteTools.includes(tool.id) ? 'text-yellow-500' : 'text-slate-400'}`}>
+                    {TABS.find(t => t.id === tool.tab)?.icon}
+                  </span>
                   {tool.label}
+                  {favoriteTools.includes(tool.id) && (
+                    <svg className="w-2.5 h-2.5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                  )}
                 </button>
               ))}
             </div>
