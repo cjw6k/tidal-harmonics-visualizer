@@ -4,6 +4,46 @@ import { getTidalType, getTidalTypeLabel } from '@/data/stations';
 import { copyStationUrl } from '@/hooks/useUrlSync';
 import type { TideStation } from '@/types/harmonics';
 
+// Fuzzy match score - returns score (higher is better) or -1 if no match
+function fuzzyMatch(text: string, query: string): number {
+  const textLower = text.toLowerCase();
+  const queryLower = query.toLowerCase();
+
+  // Exact match gets highest score
+  if (textLower.includes(queryLower)) {
+    return 1000 - textLower.indexOf(queryLower);
+  }
+
+  // Fuzzy match - characters must appear in order
+  let queryIdx = 0;
+  let score = 0;
+  let consecutiveBonus = 0;
+  let lastMatchIdx = -1;
+
+  for (let i = 0; i < textLower.length && queryIdx < queryLower.length; i++) {
+    if (textLower[i] === queryLower[queryIdx]) {
+      // Bonus for consecutive matches
+      if (lastMatchIdx === i - 1) {
+        consecutiveBonus += 5;
+      }
+      // Bonus for matching at word boundaries
+      if (i === 0 || text[i - 1] === ' ' || text[i - 1] === ',') {
+        score += 10;
+      }
+      score += 1 + consecutiveBonus;
+      lastMatchIdx = i;
+      queryIdx++;
+    }
+  }
+
+  // All query chars must match
+  if (queryIdx < queryLower.length) {
+    return -1;
+  }
+
+  return score;
+}
+
 const TIDAL_TYPE_COLORS = {
   'semidiurnal': 'bg-blue-500/20 text-blue-400',
   'mixed-semidiurnal': 'bg-cyan-500/20 text-cyan-400',
@@ -147,20 +187,29 @@ export function StationSelector() {
   const tidalType = selectedStation ? getTidalType(selectedStation) : null;
   const isCurrentFavorite = selectedStation ? favoriteStations.includes(selectedStation.id) : false;
 
-  // Filter stations based on search query
+  // Filter and sort stations based on fuzzy search query
   const filteredStations = useMemo(() => {
     if (!searchQuery.trim()) return stations;
-    const query = searchQuery.toLowerCase();
-    return stations.filter((s) => {
-      const searchableText = [
-        s.name,
-        s.state || '',
-        s.country,
-        COUNTRY_NAMES[s.country] || s.country,
-        getTidalTypeLabel(getTidalType(s)),
-      ].join(' ').toLowerCase();
-      return searchableText.includes(query);
-    });
+    const query = searchQuery.trim();
+
+    // Calculate fuzzy match scores and filter
+    const scored = stations
+      .map((s) => {
+        const searchableFields = [
+          s.name,
+          s.state || '',
+          s.country,
+          COUNTRY_NAMES[s.country] || s.country,
+          getTidalTypeLabel(getTidalType(s)),
+        ];
+        // Use best match across all fields
+        const bestScore = Math.max(...searchableFields.map((field) => fuzzyMatch(field, query)));
+        return { station: s, score: bestScore };
+      })
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score);
+
+    return scored.map((item) => item.station);
   }, [stations, searchQuery]);
 
   // Get favorite stations list
