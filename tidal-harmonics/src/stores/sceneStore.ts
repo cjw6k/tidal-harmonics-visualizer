@@ -38,7 +38,7 @@ export const useSceneStore = create<SceneState>((set) => ({
   showOrbits: true,
   showLabels: true,
   showPlanets: false,
-  showStarfield: true, // Starfield enabled by default for realism
+  showStarfield: false, // Press 'S' to enable subtle starfield
   // Tidal visualization defaults
   showTidalBulge: true,
   tidalExaggeration: 10000, // Educational mode: 10,000x
