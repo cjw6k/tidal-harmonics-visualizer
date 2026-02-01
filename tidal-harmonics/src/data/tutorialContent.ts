@@ -3,442 +3,287 @@ import type { TutorialChapter } from '@/types/tutorial';
 export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
   {
     id: 'ch1-moon-gravity',
-    title: 'Why Do Tides Happen?',
-    description: "Understanding the Moon's gravitational pull on Earth's oceans",
+    title: 'The Moon\'s Pull',
+    description: "Understanding gravitational tides",
     steps: [
       {
         id: 'ch1-intro',
-        title: 'Welcome to Tidal Harmonics',
-        content:
-          "Watch the Earth and Moon in their eternal dance. The Moon's gravity reaches across space to pull on our oceans.",
-        camera: {
-          position: [100, 60, 100],
-          target: [0, 0, 0],
-          duration: 2.5,
-        },
+        title: 'The Eternal Dance',
+        content: "Watch the Moon orbit Earth. Its gravity reaches across 384,000 km to pull on our oceans.",
+        duration: 6,
+        camera: { position: [80, 50, 80], target: [0, 0, 0], duration: 2 },
         showTidalBulge: false,
         showForceVectors: false,
         showOrbits: true,
-        timeSpeed: 86400, // 1 day per second - watch the Moon orbit
-        tidalExaggeration: 10000,
+        timeSpeed: 172800, // 2 days/sec
       },
       {
-        id: 'ch1-zoom-earth',
-        title: 'Focus on Earth',
-        content:
-          "Let's zoom in on Earth. Notice the Moon's position - it's constantly pulling water toward itself.",
-        camera: {
-          position: [40, 15, 40],
-          target: [0, 0, 0],
-          duration: 2,
-        },
+        id: 'ch1-zoom',
+        title: 'Zooming In',
+        content: "The Moon pulls water toward itself, but something surprising happens...",
+        duration: 5,
+        camera: { position: [35, 12, 35], target: [0, 0, 0], duration: 2 },
         showTidalBulge: false,
-        timeSpeed: 3600, // Slow down to 1 hour per second
+        timeSpeed: 3600,
       },
       {
-        id: 'ch1-show-bulge',
-        title: 'The Tidal Bulge Appears',
-        content:
-          "Now watch as we reveal the tidal bulge. The ocean water is pulled toward the Moon, creating a bulge on the near side.",
-        camera: {
-          position: [25, 10, 25],
-          target: [0, 0, 0],
-          duration: 1.5,
-        },
+        id: 'ch1-bulge-reveal',
+        title: 'The Tidal Bulge',
+        content: "Water bulges toward the Moon. We're exaggerating this 50,000× — the real bulge is only half a meter!",
+        duration: 7,
+        camera: { position: [20, 8, 20], target: [0, 0, 0], duration: 1.5 },
         showTidalBulge: true,
-        tidalExaggeration: 50000, // Very exaggerated for visibility
-        timeSpeed: 0, // Pause to see the bulge
+        tidalExaggeration: 50000,
+        timeSpeed: 0,
+        highlightMoon: true,
         annotations: [
-          {
-            id: 'near-bulge',
-            text: '← Water pulled toward Moon',
-            position: [4, 0, 0],
-            style: 'highlight',
-          },
+          { id: 'bulge1', text: '← Pulled toward Moon', position: [3.5, 0, 0], style: 'highlight' },
         ],
       },
       {
-        id: 'ch1-exaggerate-bulge',
-        title: 'Exaggerating for Clarity',
-        content:
-          "In reality, the bulge is only about 0.5 meters high in open ocean. We're exaggerating it 100,000× so you can see it clearly!",
-        camera: {
-          position: [20, 5, 20],
-          target: [0, 0, 0],
-          duration: 1.5,
-        },
+        id: 'ch1-second-bulge',
+        title: 'The Surprising Second Bulge',
+        content: "There's also a bulge on the OPPOSITE side! Earth accelerates toward the Moon faster than this distant water.",
+        duration: 8,
+        camera: { position: [-20, 12, 25], target: [0, 0, 0], duration: 2.5 },
         showTidalBulge: true,
-        tidalExaggeration: 100000, // Maximum exaggeration
-        timeSpeed: 0,
-      },
-      {
-        id: 'ch1-far-bulge',
-        title: 'The Mysterious Far-Side Bulge',
-        content:
-          "Rotate around... there's ALSO a bulge on the opposite side! This is because Earth is pulled toward the Moon more than the water on the far side.",
-        camera: {
-          position: [-25, 10, 25],
-          target: [0, 0, 0],
-          duration: 2.5,
-        },
-        showTidalBulge: true,
-        tidalExaggeration: 100000,
+        tidalExaggeration: 70000,
         showForceVectors: true,
         timeSpeed: 0,
         annotations: [
-          {
-            id: 'far-bulge',
-            text: 'Far-side bulge →',
-            position: [-4, 0, 0],
-            style: 'highlight',
-          },
+          { id: 'bulge2', text: 'Second bulge →', position: [-3.5, 0, 0], style: 'highlight' },
         ],
       },
       {
-        id: 'ch1-force-vectors',
+        id: 'ch1-differential',
         title: 'Differential Gravity',
-        content:
-          "The arrows show the DIFFERENCE in gravitational pull across Earth. Notice they point AWAY from center on both sides - that's what creates two bulges!",
-        camera: {
-          position: [0, 40, 40],
-          target: [0, 0, 0],
-          duration: 2,
-        },
+        content: "The arrows show tidal forces — they point OUTWARD on both sides. This stretches Earth into an egg shape.",
+        duration: 7,
+        camera: { position: [0, 35, 35], target: [0, 0, 0], duration: 2 },
         showTidalBulge: true,
-        tidalExaggeration: 80000,
+        tidalExaggeration: 60000,
         showForceVectors: true,
         timeSpeed: 0,
       },
       {
         id: 'ch1-rotation',
-        title: 'Earth Rotates Through the Bulges',
-        content:
-          "Now watch Earth rotate. The bulges stay aligned with the Moon while Earth spins beneath them. Any point passes through TWO high tides per day!",
-        camera: {
-          position: [0, 50, 50],
-          target: [0, 0, 0],
-          duration: 1.5,
-        },
+        title: 'Two Tides Per Day',
+        content: "Earth rotates beneath the bulges. Any coastal point passes through TWO high tides every 24 hours 50 minutes.",
+        duration: 10,
+        camera: { position: [0, 45, 45], target: [0, 0, 0], duration: 1.5 },
         showTidalBulge: true,
-        tidalExaggeration: 80000,
+        tidalExaggeration: 60000,
         showForceVectors: false,
-        timeSpeed: 7200, // 2 hours per second - watch Earth rotate
+        timeSpeed: 10800, // 3 hrs/sec - watch rotation clearly
+        pulseEffect: true,
       },
     ],
   },
   {
-    id: 'ch2-sun-contribution',
-    title: "The Sun's Contribution",
-    description: 'How the Sun creates spring and neap tides',
+    id: 'ch2-sun',
+    title: 'The Sun\'s Role',
+    description: 'Spring and neap tides',
     steps: [
       {
-        id: 'ch2-zoom-out',
-        title: 'Zooming Out',
-        content:
-          "Let's zoom out to see the Sun. Though much farther away, its massive gravity also pulls on Earth's oceans.",
-        camera: {
-          position: [150, 80, 150],
-          target: [0, 0, 0],
-          duration: 2.5,
-        },
+        id: 'ch2-intro',
+        title: 'Another Player',
+        content: "The Sun also pulls on our oceans. Its tidal effect is 46% as strong as the Moon's.",
+        duration: 6,
+        camera: { position: [120, 60, 120], target: [0, 0, 0], duration: 2.5 },
+        showTidalBulge: true,
+        tidalExaggeration: 40000,
+        showOrbits: true,
+        timeSpeed: 86400,
+      },
+      {
+        id: 'ch2-alignment',
+        title: 'When They Align',
+        content: "At new and full Moon, Sun and Moon pull together. Their forces ADD up.",
+        duration: 7,
+        camera: { position: [60, 25, 0], target: [0, 0, 0], duration: 2 },
+        showTidalBulge: true,
+        tidalExaggeration: 90000,
+        timeSpeed: 0,
+        annotations: [
+          { id: 'spring', text: 'SPRING TIDE', position: [0, 6, 0], style: 'highlight' },
+        ],
+      },
+      {
+        id: 'ch2-spring',
+        title: 'Spring Tides',
+        content: "Maximum tidal range! 'Spring' means to leap up — nothing to do with the season.",
+        duration: 6,
+        camera: { position: [50, 20, 10], target: [0, 0, 0], duration: 1.5 },
+        showTidalBulge: true,
+        tidalExaggeration: 100000,
+        timeSpeed: 0,
+        pulseEffect: true,
+      },
+      {
+        id: 'ch2-watch-cycle',
+        title: 'The Lunar Month',
+        content: "Watch the Moon orbit. Every ~14 days, alignment shifts between spring and neap.",
+        duration: 12,
+        camera: { position: [0, 100, 70], target: [0, 0, 0], duration: 2 },
         showTidalBulge: true,
         tidalExaggeration: 50000,
         showOrbits: true,
-        timeSpeed: 86400, // 1 day per second
+        timeSpeed: 518400, // 6 days/sec
       },
       {
-        id: 'ch2-sun-effect',
-        title: "The Sun's Tidal Pull",
-        content:
-          "The Sun's tidal effect is about 46% as strong as the Moon's. When they align, their pulls ADD together!",
-        camera: {
-          position: [100, 40, 0],
-          target: [0, 0, 0],
-          duration: 2,
-        },
+        id: 'ch2-neap',
+        title: 'Neap Tides',
+        content: "At quarter Moon, Sun and Moon pull at 90°. Their forces partially CANCEL. Minimum tidal range.",
+        duration: 7,
+        camera: { position: [50, 35, 50], target: [0, 0, 0], duration: 2 },
         showTidalBulge: true,
-        tidalExaggeration: 60000,
+        tidalExaggeration: 35000,
         timeSpeed: 0,
         annotations: [
-          {
-            id: 'sun-pull',
-            text: '← Sun pulls this way',
-            position: [-50, 0, 0],
-            style: 'highlight',
-          },
-        ],
-      },
-      {
-        id: 'ch2-spring-tide',
-        title: 'Spring Tides: Maximum Range',
-        content:
-          "At new moon and full moon, Sun and Moon align. Their forces combine for the LARGEST tidal range - called 'spring' tides (nothing to do with the season!).",
-        camera: {
-          position: [80, 30, 0],
-          target: [0, 0, 0],
-          duration: 2,
-        },
-        showTidalBulge: true,
-        tidalExaggeration: 100000, // Max bulge for spring tide visualization
-        timeSpeed: 0,
-        annotations: [
-          {
-            id: 'spring-label',
-            text: 'SPRING TIDE - Maximum bulge',
-            position: [0, 8, 0],
-            style: 'highlight',
-          },
-        ],
-      },
-      {
-        id: 'ch2-watch-month',
-        title: 'Watch the Lunar Month',
-        content:
-          "Now let's speed up time and watch a full lunar month. See how the Moon orbits Earth, changing the alignment with the Sun.",
-        camera: {
-          position: [0, 120, 80],
-          target: [0, 0, 0],
-          duration: 2,
-        },
-        showTidalBulge: true,
-        tidalExaggeration: 60000,
-        showOrbits: true,
-        timeSpeed: 604800, // 1 week per second
-      },
-      {
-        id: 'ch2-neap-tide',
-        title: 'Neap Tides: Minimum Range',
-        content:
-          "At first and third quarter moon, Sun and Moon are at 90°. Their pulls partially CANCEL, giving the smallest tidal range - 'neap' tides.",
-        camera: {
-          position: [60, 40, 60],
-          target: [0, 0, 0],
-          duration: 2,
-        },
-        showTidalBulge: true,
-        tidalExaggeration: 40000, // Smaller bulge for neap visualization
-        timeSpeed: 0,
-        annotations: [
-          {
-            id: 'neap-label',
-            text: 'NEAP TIDE - Reduced bulge',
-            position: [0, 6, 0],
-            style: 'highlight',
-          },
+          { id: 'neap', text: 'NEAP TIDE', position: [0, 5, 0], style: 'default' },
         ],
       },
     ],
   },
   {
-    id: 'ch3-harmonics-intro',
-    title: 'Breaking It Down',
-    description: 'Introduction to harmonic analysis',
+    id: 'ch3-harmonics',
+    title: 'Harmonic Analysis',
+    description: 'Breaking down complexity',
     steps: [
       {
-        id: 'ch3-complexity',
-        title: 'The Real Picture is Complex',
-        content:
-          "Real tides aren't this simple. The Moon's orbit is tilted and elliptical. Earth's axis is tilted. Continents block water flow. It's complicated!",
-        camera: {
-          position: [50, 30, 50],
-          target: [0, 0, 0],
-          duration: 2,
-        },
+        id: 'ch3-complex',
+        title: 'Reality is Messy',
+        content: "Real tides are complex. Elliptical orbits, tilted axes, continental shelves — many factors combine.",
+        duration: 6,
+        camera: { position: [45, 25, 45], target: [0, 0, 0], duration: 2 },
         showTidalBulge: true,
-        tidalExaggeration: 50000,
-        timeSpeed: 86400, // Show daily variation
+        tidalExaggeration: 40000,
+        timeSpeed: 86400,
       },
       {
-        id: 'ch3-decompose',
-        title: 'Decomposing into Cycles',
-        content:
-          "The brilliant insight: we can break down the complex tide into many simple, overlapping cycles. Each cycle has a specific period and amplitude.",
-        camera: {
-          position: [40, 20, 40],
-          target: [0, 0, 0],
-          duration: 1.5,
-        },
+        id: 'ch3-fourier',
+        title: 'The Key Insight',
+        content: "Any complex wave can be decomposed into simple sine waves. Each has its own frequency and amplitude.",
+        duration: 7,
+        camera: { position: [35, 18, 35], target: [0, 0, 0], duration: 1.5 },
         showTidalBulge: true,
-        tidalExaggeration: 30000,
+        tidalExaggeration: 35000,
         timeSpeed: 3600,
-      },
-      {
-        id: 'ch3-phasor-concept',
-        title: 'Rotating Vectors',
-        content:
-          "Look at the phasor diagram (bottom right). Each colored line is a 'constituent' - a single tidal cycle. They rotate at different speeds. The RED vector is their sum - the actual tide!",
-        camera: {
-          position: [35, 15, 35],
-          target: [0, 0, 0],
-          duration: 1.5,
-        },
-        highlightConstituents: ['M2', 'S2'],
-        timeSpeed: 3600,
-      },
-      {
-        id: 'ch3-m2-dominant',
-        title: 'M2: The Dominant Cycle',
-        content:
-          "The BLUE vector labeled 'M2' is the biggest. It completes one rotation in 12 hours 25 minutes - half a lunar day. This is the main lunar tide.",
-        camera: {
-          position: [30, 15, 30],
-          target: [0, 0, 0],
-          duration: 1.5,
-        },
         highlightConstituents: ['M2'],
+      },
+      {
+        id: 'ch3-phasor',
+        title: 'The Phasor Diagram',
+        content: "Look at the bottom-right panel. Each vector rotates at a different speed. The RED sum is the actual tide!",
+        duration: 8,
+        camera: { position: [30, 15, 30], target: [0, 0, 0], duration: 1.5 },
+        highlightConstituents: ['M2', 'S2'],
         timeSpeed: 7200,
       },
+      {
+        id: 'ch3-m2',
+        title: 'M2: The Biggest',
+        content: "M2 (Principal Lunar) is typically 60-70% of the tide. Period: 12h 25m — half a lunar day.",
+        duration: 7,
+        camera: { position: [30, 15, 30], target: [0, 0, 0], duration: 1 },
+        highlightConstituents: ['M2'],
+        timeSpeed: 7200,
+        showTidalBulge: true,
+        tidalExaggeration: 45000,
+      },
     ],
   },
   {
-    id: 'ch4-major-constituents',
-    title: 'The Major Players',
-    description: 'Understanding M2, S2, K1, and O1',
+    id: 'ch4-constituents',
+    title: 'Major Constituents',
+    description: 'The tidal orchestra',
     steps: [
       {
-        id: 'ch4-m2-detail',
-        title: 'M2: Principal Lunar Semidiurnal',
-        content:
-          "M2 is caused by the Moon. Period: 12h 25m. At most locations, M2 is responsible for 60-70% of the total tidal range. Watch it rotate in the phasor diagram!",
-        camera: {
-          position: [30, 20, 30],
-          target: [0, 0, 0],
-          duration: 1.5,
-        },
-        highlightConstituents: ['M2'],
-        timeSpeed: 3600,
-        showTidalBulge: true,
-        tidalExaggeration: 50000,
-      },
-      {
-        id: 'ch4-s2-detail',
-        title: 'S2: Principal Solar Semidiurnal',
-        content:
-          "S2 is caused by the Sun. Period: exactly 12 hours. It's smaller than M2 but creates the spring/neap cycle by going in and out of phase with M2.",
-        camera: {
-          position: [30, 20, 30],
-          target: [0, 0, 0],
-          duration: 1.5,
-        },
+        id: 'ch4-s2',
+        title: 'S2: The Solar Twin',
+        content: "S2 (Principal Solar) has exactly 12h period. When M2 and S2 align: spring tide. When opposed: neap.",
+        duration: 8,
+        camera: { position: [30, 18, 30], target: [0, 0, 0], duration: 1.5 },
         highlightConstituents: ['M2', 'S2'],
-        timeSpeed: 3600,
-      },
-      {
-        id: 'ch4-spring-neap-phasor',
-        title: 'Spring & Neap in the Phasor',
-        content:
-          "When M2 and S2 point the same direction: spring tide (big sum). When they point opposite: neap tide (small sum). This takes ~14 days to cycle.",
-        camera: {
-          position: [30, 20, 30],
-          target: [0, 0, 0],
-          duration: 1.5,
-        },
-        highlightConstituents: ['M2', 'S2'],
-        timeSpeed: 86400, // 1 day/sec to see spring/neap cycle
+        timeSpeed: 86400,
       },
       {
         id: 'ch4-diurnal',
-        title: 'K1 and O1: The Diurnals',
-        content:
-          "K1 and O1 have ~24 hour periods. They cause 'diurnal inequality' - when the two daily high tides are different heights. Important on the US West Coast!",
-        camera: {
-          position: [30, 20, 30],
-          target: [0, 0, 0],
-          duration: 1.5,
-        },
+        title: 'K1 & O1: The Diurnals',
+        content: "These ~24h constituents cause 'diurnal inequality' — when the two daily highs aren't equal.",
+        duration: 7,
+        camera: { position: [30, 18, 30], target: [0, 0, 0], duration: 1 },
         highlightConstituents: ['K1', 'O1'],
-        timeSpeed: 3600,
+        timeSpeed: 7200,
       },
       {
-        id: 'ch4-all-major',
-        title: 'All Major Constituents',
-        content:
-          "Together, M2 + S2 + K1 + O1 capture about 85% of the tide at most locations. Watch how they combine in the phasor diagram!",
-        camera: {
-          position: [35, 25, 35],
-          target: [0, 0, 0],
-          duration: 1.5,
-        },
+        id: 'ch4-together',
+        title: 'The Symphony',
+        content: "M2 + S2 + K1 + O1 capture ~85% of most tides. Watch them dance together.",
+        duration: 10,
+        camera: { position: [35, 22, 35], target: [0, 0, 0], duration: 1.5 },
         highlightConstituents: ['M2', 'S2', 'K1', 'O1'],
-        timeSpeed: 7200,
+        timeSpeed: 10800,
+        showTidalBulge: true,
+        tidalExaggeration: 50000,
       },
     ],
   },
   {
     id: 'ch5-prediction',
-    title: 'Predicting the Future',
-    description: 'How harmonic constants enable tide prediction',
+    title: 'Tide Prediction',
+    description: 'From analysis to forecast',
     steps: [
       {
-        id: 'ch5-station-intro',
-        title: 'Every Location is Different',
-        content:
-          "Each coastal location has unique tidal behavior. Try selecting different stations in the dropdown - see how the tide curve changes!",
-        camera: {
-          position: [40, 25, 40],
-          target: [0, 0, 0],
-          duration: 1.5,
-        },
+        id: 'ch5-local',
+        title: 'Every Place is Different',
+        content: "Local geography shapes how tides behave. Try different stations in the dropdown!",
+        duration: 0, // Manual advance - interactive
+        camera: { position: [40, 22, 40], target: [0, 0, 0], duration: 1.5 },
         highlightConstituents: ['M2', 'S2', 'K1', 'O1', 'N2'],
         timeSpeed: 3600,
         interactive: true,
       },
       {
-        id: 'ch5-harmonic-constants',
+        id: 'ch5-constants',
         title: 'Harmonic Constants',
-        content:
-          "For each station, scientists measure years of tides and extract the amplitude and phase of each constituent. These 'harmonic constants' are unique to each location.",
-        camera: {
-          position: [40, 25, 40],
-          target: [0, 0, 0],
-          duration: 1.5,
-        },
+        content: "Scientists measure years of data to extract each location's unique amplitudes and phases.",
+        duration: 6,
+        camera: { position: [40, 22, 40], target: [0, 0, 0], duration: 1 },
         highlightConstituents: ['M2', 'S2', 'K1', 'O1', 'N2', 'K2'],
         timeSpeed: 3600,
       },
       {
-        id: 'ch5-prediction-formula',
+        id: 'ch5-formula',
         title: 'The Prediction',
-        content:
-          "To predict: sum up all constituents at any future time. Each one contributes amplitude × cos(speed × time + phase). The result is remarkably accurate!",
-        camera: {
-          position: [40, 25, 40],
-          target: [0, 0, 0],
-          duration: 1.5,
-        },
+        content: "Sum all constituents: height = Σ Aᵢ cos(ωᵢt + φᵢ). Simple math, remarkably accurate!",
+        duration: 7,
+        camera: { position: [40, 22, 40], target: [0, 0, 0], duration: 1 },
         highlightConstituents: ['M2', 'S2', 'K1', 'O1', 'N2', 'K2', 'P1', 'Q1'],
-        timeSpeed: 7200,
+        timeSpeed: 10800,
       },
     ],
   },
   {
-    id: 'ch6-full-picture',
-    title: 'The Full Picture',
-    description: 'The complete 37+ constituent model',
+    id: 'ch6-explore',
+    title: 'Your Turn',
+    description: 'Explore freely',
     steps: [
       {
-        id: 'ch6-37-constituents',
-        title: '37 Major Constituents',
-        content:
-          "NOAA uses 37 major constituents for official predictions. Each captures a specific effect: lunar ellipticity, solar declination, shallow water effects, and more.",
-        camera: {
-          position: [45, 30, 45],
-          target: [0, 0, 0],
-          duration: 1.5,
-        },
+        id: 'ch6-full',
+        title: '37 Constituents',
+        content: "NOAA uses 37 major constituents. Each captures a specific astronomical effect.",
+        duration: 6,
+        camera: { position: [45, 28, 45], target: [0, 0, 0], duration: 1.5 },
         highlightConstituents: ['M2', 'S2', 'N2', 'K1', 'O1', 'K2', 'P1', 'Q1', 'M4', 'Mf', 'Mm'],
-        timeSpeed: 3600,
+        timeSpeed: 7200,
       },
       {
-        id: 'ch6-explore',
+        id: 'ch6-go',
         title: 'Explore!',
-        content:
-          "You now understand harmonic tidal analysis! Toggle constituents on/off to see their individual effects. Change stations. Speed up time. The ocean's rhythm is yours to explore.",
-        camera: {
-          position: [60, 40, 60],
-          target: [0, 0, 0],
-          duration: 2,
-        },
+        content: "Toggle constituents. Change stations. Speed up time. The ocean's rhythm is yours.",
+        duration: 0,
+        camera: { position: [55, 35, 55], target: [0, 0, 0], duration: 2 },
         showTidalBulge: true,
         tidalExaggeration: 50000,
         showOrbits: true,

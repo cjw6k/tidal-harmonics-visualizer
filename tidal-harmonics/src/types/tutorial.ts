@@ -19,6 +19,7 @@ export interface TutorialStep {
   id: string;
   title: string;
   content: string; // Markdown or plain text
+  duration?: number; // Auto-advance after this many seconds (0 = wait for click)
   camera?: CameraKeyframe;
   annotations?: Annotation[];
   interactive?: boolean;
@@ -29,6 +30,10 @@ export interface TutorialStep {
   timeSpeed?: number;
   pauseTime?: boolean;
   showOrbits?: boolean;
+  highlightMoon?: boolean;
+  highlightEarth?: boolean;
+  highlightSun?: boolean;
+  pulseEffect?: boolean; // Pulse the tidal bulge for emphasis
 }
 
 export interface TutorialChapter {

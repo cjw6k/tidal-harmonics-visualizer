@@ -12,6 +12,10 @@ interface SceneSnapshot {
   playing: boolean;
   speed: number;
   visibleConstituents: string[];
+  highlightMoon: boolean;
+  highlightSun: boolean;
+  highlightEarth: boolean;
+  pulseEffect: boolean;
 }
 
 export function useTutorialEffects() {
@@ -27,6 +31,14 @@ export function useTutorialEffects() {
   const showForceVectors = useSceneStore((s) => s.showForceVectors);
   const showOrbits = useSceneStore((s) => s.showOrbits);
   const tidalExaggeration = useSceneStore((s) => s.tidalExaggeration);
+  const highlightMoon = useSceneStore((s) => s.highlightMoon);
+  const highlightSun = useSceneStore((s) => s.highlightSun);
+  const highlightEarth = useSceneStore((s) => s.highlightEarth);
+  const pulseEffect = useSceneStore((s) => s.pulseEffect);
+  const setHighlightMoon = useSceneStore((s) => s.setHighlightMoon);
+  const setHighlightSun = useSceneStore((s) => s.setHighlightSun);
+  const setHighlightEarth = useSceneStore((s) => s.setHighlightEarth);
+  const setPulseEffect = useSceneStore((s) => s.setPulseEffect);
 
   // Time store actions
   const play = useTimeStore((s) => s.play);
@@ -53,6 +65,10 @@ export function useTutorialEffects() {
         playing,
         speed,
         visibleConstituents: [...visibleConstituents],
+        highlightMoon,
+        highlightSun,
+        highlightEarth,
+        pulseEffect,
       };
     }
 
@@ -68,6 +84,10 @@ export function useTutorialEffects() {
       else pause();
       setSpeed(orig.speed);
       setAllConstituentsVisible(orig.visibleConstituents);
+      setHighlightMoon(orig.highlightMoon);
+      setHighlightSun(orig.highlightSun);
+      setHighlightEarth(orig.highlightEarth);
+      setPulseEffect(orig.pulseEffect);
 
       originalSettings.current = null;
     }
@@ -122,5 +142,11 @@ export function useTutorialEffects() {
     if (step.highlightConstituents) {
       setAllConstituentsVisible(step.highlightConstituents);
     }
+
+    // Apply highlight effects
+    setHighlightMoon(step.highlightMoon ?? false);
+    setHighlightSun(step.highlightSun ?? false);
+    setHighlightEarth(step.highlightEarth ?? false);
+    setPulseEffect(step.pulseEffect ?? false);
   }, [isActive, progress.chapterIndex, progress.stepIndex]);
 }

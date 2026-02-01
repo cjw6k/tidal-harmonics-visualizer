@@ -12,7 +12,10 @@ import { CameraController } from './CameraController';
 import { MoonOrbitPath } from './OrbitPath';
 import { ForceField } from './ForceField';
 import { AnnotationLayer } from '../tutorial/AnnotationLayer';
-import { useTutorialCamera } from '@/hooks/useTutorialCamera';
+import { HighlightRing, PulsingGlow } from './HighlightRing';
+import { useSmoothCamera } from '@/hooks/useSmoothCamera';
+import { useCelestialPositions } from '@/hooks/useCelestialPositions';
+import { useScene } from '@/hooks/useScene';
 
 function TimeUpdater() {
   const tick = useTimeStore((s) => s.tick);
@@ -42,8 +45,33 @@ function EarthWithTides() {
 }
 
 function TutorialCameraController() {
-  useTutorialCamera();
+  useSmoothCamera();
   return null;
+}
+
+function CelestialHighlights() {
+  const { moon } = useCelestialPositions();
+  const { scale } = useScene();
+  const highlightMoon = useSceneStore((s) => s.highlightMoon);
+  const highlightEarth = useSceneStore((s) => s.highlightEarth);
+  const pulseEffect = useSceneStore((s) => s.pulseEffect);
+
+  return (
+    <>
+      <HighlightRing
+        position={moon}
+        radius={scale.MOON_RADIUS}
+        color="#60a5fa"
+        visible={highlightMoon}
+      />
+      <PulsingGlow
+        position={[0, 0, 0]}
+        radius={scale.EARTH_RADIUS}
+        color="#22d3ee"
+        visible={highlightEarth || pulseEffect}
+      />
+    </>
+  );
 }
 
 function SceneContent() {
@@ -62,6 +90,7 @@ function SceneContent() {
         <Sun />
         {showOrbits && <MoonOrbitPath />}
         {showForceVectors && <ForceField />}
+        <CelestialHighlights />
         <AnnotationLayer />
       </Suspense>
     </>
