@@ -47,6 +47,16 @@ function App() {
       <div className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10">
         <ThemeToggle />
       </div>
+      {/* Credit */}
+      <a
+        href="https://github.com/cjw6k"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="absolute bottom-2 left-2 text-[10px] text-slate-600 hover:text-slate-400 transition-colors z-10"
+        title="Made by cjw6k"
+      >
+        cjw6k
+      </a>
     </div>
   );
 }

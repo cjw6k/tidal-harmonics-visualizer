@@ -176,7 +176,15 @@ export function AboutPanel() {
             </button>
           </div>
           <span className="text-xs text-slate-500">
-            Educational use only
+            Made by{' '}
+            <a
+              href="https://github.com/cjw6k"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-400 hover:text-white transition-colors"
+            >
+              cjw6k
+            </a>
           </span>
         </div>
       </div>
