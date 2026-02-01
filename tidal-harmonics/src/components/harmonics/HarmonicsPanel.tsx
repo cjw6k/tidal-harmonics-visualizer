@@ -15,6 +15,7 @@ import { ConstituentPieChart } from './ConstituentPieChart';
 import { WaveformDecomposition } from './WaveformDecomposition';
 import { SpringNeapCalendar } from './SpringNeapCalendar';
 import { ConstituentTable } from './ConstituentTable';
+import { TideExtremesPanel } from './TideExtremesPanel';
 
 export function HarmonicsPanel() {
   const showPhasorDiagram = useHarmonicsStore((s) => s.showPhasorDiagram);
@@ -31,6 +32,7 @@ export function HarmonicsPanel() {
   const [showWaveform, setShowWaveform] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [showTable, setShowTable] = useState(false);
+  const [showExtremes, setShowExtremes] = useState(false);
 
   return (
     <div className="absolute bottom-4 right-4 flex flex-col gap-3 z-10 max-w-[380px]">
@@ -136,6 +138,14 @@ export function HarmonicsPanel() {
         >
           Table
         </button>
+        <button
+          onClick={() => setShowExtremes(!showExtremes)}
+          className={`flex-1 px-3 py-1 rounded text-xs transition-colors
+            ${showExtremes ? 'bg-sky-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="High/low tide predictions"
+        >
+          Hi/Lo
+        </button>
       </div>
 
       {/* Visualizations */}
@@ -149,6 +159,7 @@ export function HarmonicsPanel() {
       {showWaveform && <WaveformDecomposition />}
       {showCalendar && <SpringNeapCalendar />}
       {showTable && <ConstituentTable />}
+      {showExtremes && <TideExtremesPanel />}
 
       {/* Info Panel */}
       <ConstituentInfoPanel
