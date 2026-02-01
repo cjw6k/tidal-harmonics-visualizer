@@ -846,7 +846,7 @@ export function HarmonicsPanel() {
         <button
           onClick={togglePanelMinimized}
           title="Expand control panel (press `)"
-          className="bg-slate-800/95 backdrop-blur rounded-lg p-3 shadow-lg hover:bg-slate-700/95 transition-colors flex items-center gap-2 text-slate-200"
+          className="bg-slate-800/95 backdrop-blur rounded-lg p-3 shadow-lg hover:bg-slate-700/95 transition-colors flex items-center gap-2 text-slate-200 relative group"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -857,6 +857,9 @@ export function HarmonicsPanel() {
               {openPanelCount}
             </span>
           )}
+          <kbd className="absolute -top-1.5 -right-1.5 bg-slate-700 text-slate-400 text-[9px] px-1 py-0.5 rounded font-mono opacity-0 group-hover:opacity-100 transition-opacity">
+            `
+          </kbd>
         </button>
 
         {/* Still show active visualizations when minimized */}
