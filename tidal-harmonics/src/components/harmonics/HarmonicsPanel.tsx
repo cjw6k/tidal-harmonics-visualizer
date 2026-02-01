@@ -907,8 +907,8 @@ export function HarmonicsPanel() {
     <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 flex flex-col gap-2 z-10 w-[320px] sm:w-[360px] max-h-[90vh] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent pr-1">
       {/* Station & Current Conditions */}
       <div className="bg-slate-800/90 backdrop-blur rounded-lg p-3 space-y-2">
-        <div className="flex gap-2 items-center min-w-0">
-          <div className="flex-1 min-w-0 overflow-hidden">
+        <div className="flex gap-2 items-center">
+          <div className="flex-1 min-w-0">
             <StationSelector />
           </div>
           <UnitToggle />
