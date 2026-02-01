@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
 import { getTidalType, getTidalTypeLabel } from '@/data/stations';
+import { copyStationUrl } from '@/hooks/useUrlSync';
 import type { TideStation } from '@/types/harmonics';
 
 const TIDAL_TYPE_COLORS = {
@@ -64,6 +65,15 @@ export function StationSelector() {
   const favoriteStations = useHarmonicsStore((s) => s.favoriteStations);
   const toggleFavorite = useHarmonicsStore((s) => s.toggleFavorite);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showCopied, setShowCopied] = useState(false);
+
+  const handleShare = useCallback(async () => {
+    const success = await copyStationUrl();
+    if (success) {
+      setShowCopied(true);
+      setTimeout(() => setShowCopied(false), 2000);
+    }
+  }, []);
 
   const tidalType = selectedStation ? getTidalType(selectedStation) : null;
   const isCurrentFavorite = selectedStation ? favoriteStations.includes(selectedStation.id) : false;
@@ -164,19 +174,36 @@ export function StationSelector() {
           )}
         </select>
         {selectedStation && (
-          <button
-            onClick={() => toggleFavorite(selectedStation.id)}
-            className={`px-2 py-2 rounded border transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 ${
-              isCurrentFavorite
-                ? 'bg-amber-500/20 border-amber-500 text-amber-400'
-                : 'bg-slate-700 border-slate-600 text-slate-400 hover:text-amber-400'
-            }`}
-            title={isCurrentFavorite ? 'Remove from favorites' : 'Add to favorites'}
-            aria-label={isCurrentFavorite ? 'Remove from favorites' : 'Add to favorites'}
-            aria-pressed={isCurrentFavorite}
-          >
-            {isCurrentFavorite ? '★' : '☆'}
-          </button>
+          <>
+            <button
+              onClick={() => toggleFavorite(selectedStation.id)}
+              className={`px-2 py-2 rounded border transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 ${
+                isCurrentFavorite
+                  ? 'bg-amber-500/20 border-amber-500 text-amber-400'
+                  : 'bg-slate-700 border-slate-600 text-slate-400 hover:text-amber-400'
+              }`}
+              title={isCurrentFavorite ? 'Remove from favorites' : 'Add to favorites'}
+              aria-label={isCurrentFavorite ? 'Remove from favorites' : 'Add to favorites'}
+              aria-pressed={isCurrentFavorite}
+            >
+              {isCurrentFavorite ? '★' : '☆'}
+            </button>
+            <button
+              onClick={handleShare}
+              className="px-2 py-2 rounded border bg-slate-700 border-slate-600 text-slate-400 hover:text-blue-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 relative"
+              title="Copy link to this station"
+              aria-label="Copy link to this station"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+              {showCopied && (
+                <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-green-600 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                  Link copied!
+                </span>
+              )}
+            </button>
+          </>
         )}
       </div>
       {selectedStation && (

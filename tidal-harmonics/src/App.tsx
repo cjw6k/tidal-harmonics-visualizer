@@ -10,10 +10,14 @@ import { TutorialButton } from '@/components/tutorial/TutorialButton';
 import { ChapterNavigation } from '@/components/tutorial/ChapterNavigation';
 import { TutorialController } from '@/components/tutorial/TutorialController';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { useUrlSync } from '@/hooks/useUrlSync';
 
 function App() {
   // Enable global keyboard shortcuts
   useKeyboardShortcuts();
+
+  // Sync selected station with URL for deep linking
+  useUrlSync();
 
   return (
     <div className="w-full h-full relative">
