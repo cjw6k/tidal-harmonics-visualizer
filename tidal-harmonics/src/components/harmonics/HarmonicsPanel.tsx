@@ -35,6 +35,10 @@ const TideTimeline = lazy(() => import('./TideTimeline').then(m => ({ default: m
 const SharePanel = lazy(() => import('./SharePanel').then(m => ({ default: m.SharePanel })));
 const StationMap = lazy(() => import('./StationMap').then(m => ({ default: m.StationMap })));
 const BarometricPressure = lazy(() => import('./BarometricPressure').then(m => ({ default: m.BarometricPressure })));
+const KeyboardShortcuts = lazy(() => import('./KeyboardShortcuts').then(m => ({ default: m.KeyboardShortcuts })));
+
+// Import hook directly since it's not lazy-loadable
+import { useKeyboardNavigation } from './KeyboardShortcuts';
 
 // Loading fallback for lazy components
 function LoadingFallback() {
@@ -76,6 +80,36 @@ export function HarmonicsPanel() {
   const [showShare, setShowShare] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [showBarometric, setShowBarometric] = useState(false);
+  const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
+
+  // Enable keyboard navigation
+  useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
+    setShowDoodsonExplorer,
+    setShowAccuracyComparison,
+    setShowKingTidePredictor,
+    setShowStationComparison,
+    setShowRangeChart,
+    setShowPieChart,
+    setShowWaveform,
+    setShowCalendar,
+    setShowTable,
+    setShowExtremes,
+    setShowNodal,
+    setShowSpectrum,
+    setShowPhaseAnimation,
+    setShowExport,
+    setShowDatumExplainer,
+    setShowComparison,
+    setShowSeaLevelRise,
+    setShowHistorical,
+    setShowWaterShader,
+    setShowEnergy,
+    setShowClock,
+    setShowTimeline,
+    setShowShare,
+    setShowMap,
+    setShowBarometric,
+  });
 
   return (
     <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 flex flex-col gap-2 sm:gap-3 z-10 max-w-[320px] sm:max-w-[380px]">
@@ -158,6 +192,14 @@ export function HarmonicsPanel() {
           title="Share this view"
         >
           🔗
+        </button>
+        <button
+          onClick={() => setShowKeyboardHelp(true)}
+          aria-label="Keyboard shortcuts"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Keyboard shortcuts (?)"
+        >
+          ⌨
         </button>
       </div>
 
@@ -396,6 +438,10 @@ export function HarmonicsPanel() {
 
         {showShare && (
           <SharePanel onClose={() => setShowShare(false)} />
+        )}
+
+        {showKeyboardHelp && (
+          <KeyboardShortcuts onClose={() => setShowKeyboardHelp(false)} />
         )}
       </Suspense>
     </div>
