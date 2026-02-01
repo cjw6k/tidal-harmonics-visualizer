@@ -315,6 +315,15 @@ function getStepInfo(globalStep: number): { chapterIndex: number; stepIndex: num
 
 test.describe('Tutorial Animation Capture', () => {
   test.beforeEach(async ({ page }) => {
+    // Force dark mode color scheme
+    await page.emulateMedia({ colorScheme: 'dark' });
+
+    // Dismiss welcome modal and force dark theme via localStorage
+    await page.addInitScript(() => {
+      localStorage.setItem('welcome-dismissed', 'true');
+      localStorage.setItem('theme', 'dark');
+    });
+
     // Navigate to the app
     await page.goto('/');
 
