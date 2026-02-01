@@ -1,219 +1,246 @@
 import { useMemo } from 'react';
 import { Vector3 } from 'three';
-import { Line, Html, Cone } from '@react-three/drei';
+import { Line, Html } from '@react-three/drei';
 import { useCelestialPositions } from '@/hooks/useCelestialPositions';
 import { useScene } from '@/hooks/useScene';
-import { useSceneStore } from '@/stores/sceneStore';
-import { generateFibonacciSphere } from '@/lib/fibonacciSphere';
 
-// Moon and Sun masses in kg
-const MOON_MASS = 7.342e22;
-const SUN_MASS = 1.989e30;
-
-// Gravitational constant
-const G = 6.674e-11;
-
-// Calculate tidal force from a single body
-// Tidal force = gravitational acceleration at surface point - gravitational acceleration at Earth center
-function calculateSingleBodyTidalForce(
-  surfacePoint: Vector3,  // in km from Earth center
-  bodyPosition: Vector3,  // in km from Earth center
-  bodyMass: number
-): Vector3 {
-  const earthCenter = new Vector3(0, 0, 0);
-
-  // Vector FROM surface point TO body (direction gravity pulls)
-  const surfaceToBody = bodyPosition.clone().sub(surfacePoint);
-  const distSurfaceM = surfaceToBody.length() * 1000; // km to m
-
-  // Vector FROM Earth center TO body
-  const centerToBody = bodyPosition.clone().sub(earthCenter);
-  const distCenterM = centerToBody.length() * 1000; // km to m
-
-  // Gravitational acceleration at surface point (points toward body)
-  const accSurface = surfaceToBody.clone().normalize().multiplyScalar(
-    G * bodyMass / (distSurfaceM * distSurfaceM)
-  );
-
-  // Gravitational acceleration at Earth center (points toward body)
-  const accCenter = centerToBody.clone().normalize().multiplyScalar(
-    G * bodyMass / (distCenterM * distCenterM)
-  );
-
-  // Tidal acceleration = acceleration at surface - acceleration at center
-  // This is what causes the bulge: differential gravity
-  return accSurface.clone().sub(accCenter);
+interface ForceArrow {
+  start: [number, number, number];
+  end: [number, number, number];
+  label: string;
+  color: string;
+  type: 'stretch' | 'compress';
 }
 
 export function ForceField() {
-  const { moonRaw, sunRaw } = useCelestialPositions();
+  const { moonRaw } = useCelestialPositions();
   const { scale } = useScene();
-  const forceVectorCount = useSceneStore((s) => s.forceVectorCount);
 
-  const { moonVectors, sunVectors, combinedVectors } = useMemo(() => {
-    // Use fewer points for clearer visualization
-    const numPoints = Math.min(forceVectorCount, 24);
-    const earthRadiusKm = scale.EARTH_RADIUS * 10000;
-    const samplePoints = generateFibonacciSphere(numPoints, earthRadiusKm);
+  const arrows = useMemo(() => {
+    const earthR = scale.EARTH_RADIUS;
+    const arrowLength = earthR * 1.2;
 
-    const moonVec = new Vector3(moonRaw.x, moonRaw.y, moonRaw.z);
-    const sunVec = new Vector3(sunRaw.x, sunRaw.y, sunRaw.z);
+    // Direction to Moon (normalized)
+    const toMoon = new Vector3(moonRaw.x, moonRaw.y, moonRaw.z).normalize();
 
-    // Max arrow length in scene units (relative to Earth radius)
-    const maxArrowLength = scale.EARTH_RADIUS * 1.5;
+    // Perpendicular directions (for compression zones)
+    const up = new Vector3(0, 1, 0);
+    const perp1 = new Vector3().crossVectors(toMoon, up).normalize();
+    if (perp1.length() < 0.1) {
+      perp1.crossVectors(toMoon, new Vector3(1, 0, 0)).normalize();
+    }
+    const perp2 = new Vector3().crossVectors(toMoon, perp1).normalize();
 
-    // Scale factor to convert tiny accelerations to visible arrows
-    // Tidal acceleration is ~10^-6 m/s², we want arrows of a few Earth radii
-    const arrowScale = 5e11;
+    const result: ForceArrow[] = [];
 
-    const moonResults: { start: Vector3; end: Vector3; magnitude: number }[] = [];
-    const sunResults: { start: Vector3; end: Vector3; magnitude: number }[] = [];
-    const combinedResults: { start: Vector3; end: Vector3; magnitude: number }[] = [];
-
-    samplePoints.forEach((point) => {
-      const moonForce = calculateSingleBodyTidalForce(point, moonVec, MOON_MASS);
-      const sunForce = calculateSingleBodyTidalForce(point, sunVec, SUN_MASS);
-      const combinedForce = moonForce.clone().add(sunForce);
-
-      const startScene = point.clone().divideScalar(10000);
-
-      // Moon vector
-      const moonDir = moonForce.clone().multiplyScalar(arrowScale);
-      let moonLength = moonDir.length();
-      if (moonLength > maxArrowLength * 10000) {
-        moonDir.normalize().multiplyScalar(maxArrowLength * 10000);
-        moonLength = maxArrowLength * 10000;
-      }
-      const moonEnd = point.clone().add(moonDir).divideScalar(10000);
-      moonResults.push({ start: startScene.clone(), end: moonEnd, magnitude: moonForce.length() });
-
-      // Sun vector
-      const sunDir = sunForce.clone().multiplyScalar(arrowScale);
-      let sunLength = sunDir.length();
-      if (sunLength > maxArrowLength * 10000) {
-        sunDir.normalize().multiplyScalar(maxArrowLength * 10000);
-        sunLength = maxArrowLength * 10000;
-      }
-      const sunEnd = point.clone().add(sunDir).divideScalar(10000);
-      sunResults.push({ start: startScene.clone(), end: sunEnd, magnitude: sunForce.length() });
-
-      // Combined vector
-      const combDir = combinedForce.clone().multiplyScalar(arrowScale);
-      let combLength = combDir.length();
-      if (combLength > maxArrowLength * 10000) {
-        combDir.normalize().multiplyScalar(maxArrowLength * 10000);
-        combLength = maxArrowLength * 10000;
-      }
-      const combEnd = point.clone().add(combDir).divideScalar(10000);
-      combinedResults.push({ start: startScene.clone(), end: combEnd, magnitude: combinedForce.length() });
+    // === NEAR SIDE (facing Moon) - STRETCH OUTWARD ===
+    const nearPos = toMoon.clone().multiplyScalar(earthR);
+    const nearEnd = toMoon.clone().multiplyScalar(earthR + arrowLength);
+    result.push({
+      start: [nearPos.x, nearPos.y, nearPos.z],
+      end: [nearEnd.x, nearEnd.y, nearEnd.z],
+      label: 'Pulled toward Moon',
+      color: '#ef4444', // red
+      type: 'stretch',
     });
 
-    return {
-      moonVectors: moonResults,
-      sunVectors: sunResults,
-      combinedVectors: combinedResults,
-    };
-  }, [moonRaw, sunRaw, scale, forceVectorCount]);
+    // === FAR SIDE (opposite Moon) - STRETCH OUTWARD (away from Moon) ===
+    const farPos = toMoon.clone().multiplyScalar(-earthR);
+    const farEnd = toMoon.clone().multiplyScalar(-earthR - arrowLength);
+    result.push({
+      start: [farPos.x, farPos.y, farPos.z],
+      end: [farEnd.x, farEnd.y, farEnd.z],
+      label: 'Pulled less, bulges out',
+      color: '#ef4444', // red
+      type: 'stretch',
+    });
+
+    // === PERPENDICULAR ZONES - COMPRESSION (arrows point toward center) ===
+    const compressLength = earthR * 0.8;
+
+    // Top
+    const topPos = perp2.clone().multiplyScalar(earthR);
+    const topEnd = perp2.clone().multiplyScalar(earthR - compressLength);
+    result.push({
+      start: [topPos.x, topPos.y, topPos.z],
+      end: [topEnd.x, topEnd.y, topEnd.z],
+      label: 'Compressed',
+      color: '#3b82f6', // blue
+      type: 'compress',
+    });
+
+    // Bottom
+    const botPos = perp2.clone().multiplyScalar(-earthR);
+    const botEnd = perp2.clone().multiplyScalar(-earthR + compressLength);
+    result.push({
+      start: [botPos.x, botPos.y, botPos.z],
+      end: [botEnd.x, botEnd.y, botEnd.z],
+      label: 'Compressed',
+      color: '#3b82f6', // blue
+      type: 'compress',
+    });
+
+    // Side 1
+    const side1Pos = perp1.clone().multiplyScalar(earthR);
+    const side1End = perp1.clone().multiplyScalar(earthR - compressLength);
+    result.push({
+      start: [side1Pos.x, side1Pos.y, side1Pos.z],
+      end: [side1End.x, side1End.y, side1End.z],
+      label: 'Compressed',
+      color: '#3b82f6', // blue
+      type: 'compress',
+    });
+
+    // Side 2
+    const side2Pos = perp1.clone().multiplyScalar(-earthR);
+    const side2End = perp1.clone().multiplyScalar(-earthR + compressLength);
+    result.push({
+      start: [side2Pos.x, side2Pos.y, side2Pos.z],
+      end: [side2End.x, side2End.y, side2End.z],
+      label: 'Compressed',
+      color: '#3b82f6', // blue
+      type: 'compress',
+    });
+
+    return result;
+  }, [moonRaw, scale]);
 
   return (
     <group>
-      {/* Legend */}
+      {/* Explanation panel */}
       <Html
-        position={[scale.EARTH_RADIUS * 3, scale.EARTH_RADIUS * 2, 0]}
+        position={[scale.EARTH_RADIUS * 4, scale.EARTH_RADIUS * 2.5, 0]}
         center
         zIndexRange={[1, 10]}
         style={{
-          background: 'rgba(0,0,0,0.8)',
-          padding: '8px 12px',
-          borderRadius: '6px',
-          fontSize: '11px',
-          whiteSpace: 'nowrap',
+          background: 'rgba(15, 23, 42, 0.95)',
+          padding: '12px 16px',
+          borderRadius: '8px',
+          fontSize: '12px',
+          maxWidth: '220px',
+          border: '1px solid rgba(100, 116, 139, 0.3)',
           pointerEvents: 'none',
         }}
       >
-        <div style={{ color: '#60a5fa', marginBottom: '4px' }}>● Moon tidal force</div>
-        <div style={{ color: '#fbbf24', marginBottom: '4px' }}>● Sun tidal force</div>
-        <div style={{ color: '#f87171' }}>● Combined force</div>
+        <div style={{ color: 'white', fontWeight: 'bold', marginBottom: '8px' }}>
+          Tidal Forces
+        </div>
+        <div style={{ color: '#ef4444', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ fontSize: '16px' }}>→</span>
+          <span>Stretched outward (bulge)</span>
+        </div>
+        <div style={{ color: '#3b82f6', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ fontSize: '16px' }}>←</span>
+          <span>Compressed inward</span>
+        </div>
+        <div style={{ color: '#94a3b8', fontSize: '11px', lineHeight: '1.4' }}>
+          The Moon pulls the near side more than Earth's center, and the center more than the far side. This creates TWO bulges.
+        </div>
       </Html>
 
-      {/* Moon tidal forces - blue */}
-      {moonVectors.map((v, i) => (
-        <group key={`moon-${i}`}>
-          <Line
-            points={[v.start.toArray(), v.end.toArray()]}
-            color="#60a5fa"
-            lineWidth={2}
-            transparent
-            opacity={0.8}
-          />
-          <Cone
-            args={[0.15, 0.4, 8]}
-            position={v.end.toArray()}
-            rotation={[
-              Math.atan2(
-                Math.sqrt((v.end.x - v.start.x) ** 2 + (v.end.z - v.start.z) ** 2),
-                v.end.y - v.start.y
-              ),
-              0,
-              Math.atan2(-(v.end.x - v.start.x), v.end.z - v.start.z),
-            ]}
-          >
-            <meshBasicMaterial color="#60a5fa" />
-          </Cone>
-        </group>
-      ))}
+      {/* Force arrows */}
+      {arrows.map((arrow, i) => {
+        const dir = new Vector3(
+          arrow.end[0] - arrow.start[0],
+          arrow.end[1] - arrow.start[1],
+          arrow.end[2] - arrow.start[2]
+        );
+        const len = dir.length();
+        const headSize = len * 0.15;
 
-      {/* Sun tidal forces - yellow/amber */}
-      {sunVectors.map((v, i) => (
-        <group key={`sun-${i}`}>
-          <Line
-            points={[v.start.toArray(), v.end.toArray()]}
-            color="#fbbf24"
-            lineWidth={2}
-            transparent
-            opacity={0.8}
-          />
-          <Cone
-            args={[0.15, 0.4, 8]}
-            position={v.end.toArray()}
-            rotation={[
-              Math.atan2(
-                Math.sqrt((v.end.x - v.start.x) ** 2 + (v.end.z - v.start.z) ** 2),
-                v.end.y - v.start.y
-              ),
-              0,
-              Math.atan2(-(v.end.x - v.start.x), v.end.z - v.start.z),
-            ]}
-          >
-            <meshBasicMaterial color="#fbbf24" />
-          </Cone>
-        </group>
-      ))}
+        // Arrowhead position (slightly back from end)
+        const headPos = new Vector3(...arrow.end);
+        const headDir = dir.clone().normalize();
+        const headBase = headPos.clone().sub(headDir.clone().multiplyScalar(headSize));
 
-      {/* Combined tidal forces - red/coral */}
-      {combinedVectors.map((v, i) => (
-        <group key={`combined-${i}`}>
-          <Line
-            points={[v.start.toArray(), v.end.toArray()]}
-            color="#f87171"
-            lineWidth={3}
-          />
-          <Cone
-            args={[0.2, 0.5, 8]}
-            position={v.end.toArray()}
-            rotation={[
-              Math.atan2(
-                Math.sqrt((v.end.x - v.start.x) ** 2 + (v.end.z - v.start.z) ** 2),
-                v.end.y - v.start.y
-              ),
-              0,
-              Math.atan2(-(v.end.x - v.start.x), v.end.z - v.start.z),
-            ]}
-          >
-            <meshBasicMaterial color="#f87171" />
-          </Cone>
-        </group>
-      ))}
+        // Perpendicular vectors for arrowhead
+        const up = new Vector3(0, 1, 0);
+        let perp = new Vector3().crossVectors(headDir, up);
+        if (perp.length() < 0.1) perp.crossVectors(headDir, new Vector3(1, 0, 0));
+        perp.normalize().multiplyScalar(headSize * 0.4);
+
+        const headLeft = headBase.clone().add(perp);
+        const headRight = headBase.clone().sub(perp);
+
+        return (
+          <group key={i}>
+            {/* Arrow shaft */}
+            <Line
+              points={[arrow.start, arrow.end]}
+              color={arrow.color}
+              lineWidth={4}
+            />
+            {/* Arrowhead */}
+            <Line
+              points={[headLeft.toArray(), arrow.end, headRight.toArray()]}
+              color={arrow.color}
+              lineWidth={4}
+            />
+            {/* Label */}
+            <Html
+              position={arrow.end}
+              center
+              zIndexRange={[1, 10]}
+              style={{
+                color: arrow.color,
+                fontSize: '10px',
+                fontWeight: 'bold',
+                textShadow: '0 0 4px black, 0 0 4px black',
+                whiteSpace: 'nowrap',
+                pointerEvents: 'none',
+                transform: 'translateY(-12px)',
+              }}
+            >
+              {arrow.label}
+            </Html>
+          </group>
+        );
+      })}
+
+      {/* Tidal bulge outline (ellipse) */}
+      <TidalBulgeOutline moonDirection={new Vector3(moonRaw.x, moonRaw.y, moonRaw.z).normalize()} earthRadius={scale.EARTH_RADIUS} />
     </group>
+  );
+}
+
+// Dotted ellipse showing the tidal bulge shape
+function TidalBulgeOutline({ moonDirection, earthRadius }: { moonDirection: Vector3; earthRadius: number }) {
+  const points = useMemo(() => {
+    const result: [number, number, number][] = [];
+    const segments = 64;
+
+    // Semi-major axis (stretched toward/away from Moon)
+    const a = earthRadius * 1.15;
+    // Semi-minor axis (compressed)
+    const b = earthRadius * 0.92;
+
+    // Get perpendicular vectors
+    const up = new Vector3(0, 1, 0);
+    let perp = new Vector3().crossVectors(moonDirection, up);
+    if (perp.length() < 0.1) perp.crossVectors(moonDirection, new Vector3(1, 0, 0));
+    perp.normalize();
+
+    for (let i = 0; i <= segments; i++) {
+      const angle = (i / segments) * Math.PI * 2;
+      // Ellipse in the plane of Moon-Earth
+      const point = moonDirection.clone().multiplyScalar(Math.cos(angle) * a)
+        .add(perp.clone().multiplyScalar(Math.sin(angle) * b));
+      result.push([point.x, point.y, point.z]);
+    }
+
+    return result;
+  }, [moonDirection, earthRadius]);
+
+  return (
+    <Line
+      points={points}
+      color="#fbbf24"
+      lineWidth={2}
+      dashed
+      dashSize={0.3}
+      gapSize={0.2}
+      transparent
+      opacity={0.6}
+    />
   );
 }
