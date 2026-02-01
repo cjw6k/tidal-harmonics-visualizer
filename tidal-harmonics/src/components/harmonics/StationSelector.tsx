@@ -265,7 +265,7 @@ export function StationSelector() {
           value={selectedStation?.id || ''}
           onChange={(e) => selectStation(e.target.value)}
           className="flex-1 bg-slate-700 text-white text-sm px-3 py-2 rounded border border-slate-600 focus:border-blue-500 focus:outline-none"
-          style={{ minWidth: 0 }}
+          style={{ minWidth: '120px' }}
           aria-label="Select tide station"
         >
           {matchCount === 0 ? (
