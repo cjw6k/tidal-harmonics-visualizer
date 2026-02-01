@@ -11,7 +11,7 @@ const TIDAL_TYPE_COLORS = {
 };
 
 // Country display order and names
-const COUNTRY_ORDER = ['US', 'Canada', 'UK', 'France', 'Netherlands', 'Japan', 'Vietnam', 'Australia'];
+const COUNTRY_ORDER = ['US', 'Canada', 'UK', 'France', 'Netherlands', 'Japan', 'Vietnam', 'Australia', 'Brazil', 'South Africa', 'India', 'China', 'Gibraltar', 'Sweden'];
 const COUNTRY_NAMES: Record<string, string> = {
   'US': 'United States',
   'Canada': 'Canada',
@@ -21,6 +21,12 @@ const COUNTRY_NAMES: Record<string, string> = {
   'Japan': 'Japan',
   'Vietnam': 'Vietnam',
   'Australia': 'Australia',
+  'Brazil': 'Brazil',
+  'South Africa': 'South Africa',
+  'India': 'India',
+  'China': 'China',
+  'Gibraltar': 'Gibraltar',
+  'Sweden': 'Sweden',
 };
 
 function groupStationsByCountry(stations: TideStation[]): Map<string, TideStation[]> {
@@ -55,9 +61,12 @@ export function StationSelector() {
   const stations = useHarmonicsStore((s) => s.stations);
   const selectedStation = useHarmonicsStore((s) => s.selectedStation);
   const selectStation = useHarmonicsStore((s) => s.selectStation);
+  const favoriteStations = useHarmonicsStore((s) => s.favoriteStations);
+  const toggleFavorite = useHarmonicsStore((s) => s.toggleFavorite);
   const [searchQuery, setSearchQuery] = useState('');
 
   const tidalType = selectedStation ? getTidalType(selectedStation) : null;
+  const isCurrentFavorite = selectedStation ? favoriteStations.includes(selectedStation.id) : false;
 
   // Filter stations based on search query
   const filteredStations = useMemo(() => {
@@ -74,6 +83,11 @@ export function StationSelector() {
       return searchableText.includes(query);
     });
   }, [stations, searchQuery]);
+
+  // Get favorite stations list
+  const favoriteStationsList = useMemo(() => {
+    return filteredStations.filter((s) => favoriteStations.includes(s.id));
+  }, [filteredStations, favoriteStations]);
 
   const groupedStations = useMemo(() => groupStationsByCountry(filteredStations), [filteredStations]);
 
@@ -117,26 +131,54 @@ export function StationSelector() {
           {matchCount === 0 ? 'No stations found' : `${matchCount} station${matchCount !== 1 ? 's' : ''} found`}
         </div>
       )}
-      <select
-        value={selectedStation?.id || ''}
-        onChange={(e) => selectStation(e.target.value)}
-        className="w-full bg-slate-700 text-white text-sm px-3 py-2 rounded border border-slate-600 focus:border-blue-500 focus:outline-none"
-        aria-label="Select tide station"
-      >
-        {matchCount === 0 ? (
-          <option value="" disabled>No matching stations</option>
-        ) : (
-          Array.from(groupedStations.entries()).map(([country, stationList]) => (
-            <optgroup key={country} label={COUNTRY_NAMES[country] || country}>
-              {stationList.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.state ? `${s.name}, ${s.state}` : s.name}
-                </option>
+      <div className="flex gap-2">
+        <select
+          value={selectedStation?.id || ''}
+          onChange={(e) => selectStation(e.target.value)}
+          className="flex-1 bg-slate-700 text-white text-sm px-3 py-2 rounded border border-slate-600 focus:border-blue-500 focus:outline-none"
+          aria-label="Select tide station"
+        >
+          {matchCount === 0 ? (
+            <option value="" disabled>No matching stations</option>
+          ) : (
+            <>
+              {favoriteStationsList.length > 0 && (
+                <optgroup label="★ Favorites">
+                  {favoriteStationsList.map((s) => (
+                    <option key={`fav-${s.id}`} value={s.id}>
+                      {s.state ? `${s.name}, ${s.state}` : s.name}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+              {Array.from(groupedStations.entries()).map(([country, stationList]) => (
+                <optgroup key={country} label={COUNTRY_NAMES[country] || country}>
+                  {stationList.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {favoriteStations.includes(s.id) ? '★ ' : ''}{s.state ? `${s.name}, ${s.state}` : s.name}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
-            </optgroup>
-          ))
+            </>
+          )}
+        </select>
+        {selectedStation && (
+          <button
+            onClick={() => toggleFavorite(selectedStation.id)}
+            className={`px-2 py-2 rounded border transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 ${
+              isCurrentFavorite
+                ? 'bg-amber-500/20 border-amber-500 text-amber-400'
+                : 'bg-slate-700 border-slate-600 text-slate-400 hover:text-amber-400'
+            }`}
+            title={isCurrentFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            aria-label={isCurrentFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            aria-pressed={isCurrentFavorite}
+          >
+            {isCurrentFavorite ? '★' : '☆'}
+          </button>
         )}
-      </select>
+      </div>
       {selectedStation && (
         <div className="mt-2 space-y-1">
           <div className="text-xs text-slate-500">

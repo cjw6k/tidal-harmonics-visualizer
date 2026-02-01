@@ -5,6 +5,28 @@ import { MAJOR_CONSTITUENTS } from '@/data/constituents';
 
 export type UnitSystem = 'metric' | 'imperial';
 
+// Load favorites from localStorage
+function loadFavorites(): string[] {
+  try {
+    const stored = localStorage.getItem('tidal-harmonics-favorites');
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch {
+    // Ignore localStorage errors
+  }
+  return [];
+}
+
+// Save favorites to localStorage
+function saveFavorites(favorites: string[]) {
+  try {
+    localStorage.setItem('tidal-harmonics-favorites', JSON.stringify(favorites));
+  } catch {
+    // Ignore localStorage errors
+  }
+}
+
 interface HarmonicsState {
   stations: TideStation[];
   selectedStation: TideStation | null;
@@ -13,6 +35,7 @@ interface HarmonicsState {
   showPhasorDiagram: boolean;
   showTideCurve: boolean;
   unitSystem: UnitSystem;
+  favoriteStations: string[];
 
   selectStation: (id: string) => void;
   toggleConstituent: (symbol: string) => void;
@@ -22,6 +45,8 @@ interface HarmonicsState {
   toggleTideCurve: () => void;
   setUnitSystem: (system: UnitSystem) => void;
   toggleUnitSystem: () => void;
+  toggleFavorite: (id: string) => void;
+  isFavorite: (id: string) => boolean;
 }
 
 export const useHarmonicsStore = create<HarmonicsState>((set, get) => ({
@@ -32,6 +57,7 @@ export const useHarmonicsStore = create<HarmonicsState>((set, get) => ({
   showPhasorDiagram: true,
   showTideCurve: true,
   unitSystem: 'metric',
+  favoriteStations: loadFavorites(),
 
   selectStation: (id) => {
     const station = get().stations.find((s) => s.id === id);
@@ -71,5 +97,18 @@ export const useHarmonicsStore = create<HarmonicsState>((set, get) => ({
     set((state) => ({
       unitSystem: state.unitSystem === 'metric' ? 'imperial' : 'metric',
     }));
+  },
+
+  toggleFavorite: (id) => {
+    const favorites = get().favoriteStations;
+    const newFavorites = favorites.includes(id)
+      ? favorites.filter((f) => f !== id)
+      : [...favorites, id];
+    saveFavorites(newFavorites);
+    set({ favoriteStations: newFavorites });
+  },
+
+  isFavorite: (id) => {
+    return get().favoriteStations.includes(id);
   },
 }));
