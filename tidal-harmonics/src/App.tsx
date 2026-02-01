@@ -3,6 +3,7 @@ import { ControlPanel } from '@/components/ui/ControlPanel';
 import { HarmonicsPanel } from '@/components/harmonics/HarmonicsPanel';
 import { KeyboardShortcutsHelp } from '@/components/ui/KeyboardShortcutsHelp';
 import { AboutPanel } from '@/components/ui/AboutPanel';
+import { WelcomeModal } from '@/components/ui/WelcomeModal';
 import { TidalFactsWidget } from '@/components/ui/TidalFactsWidget';
 import { InstallPrompt } from '@/components/ui/InstallPrompt';
 import { OfflineIndicator } from '@/components/ui/OfflineIndicator';
@@ -41,6 +42,7 @@ function App() {
       <TutorialController />
       <KeyboardShortcutsHelp />
       <AboutPanel />
+      <WelcomeModal />
       <TidalFactsWidget />
       <InstallPrompt />
       <OfflineIndicator />
