@@ -33,6 +33,7 @@ const TidalEnergyCalculator = lazy(() => import('./TidalEnergyCalculator').then(
 const TideClock = lazy(() => import('./TideClock').then(m => ({ default: m.TideClock })));
 const TideTimeline = lazy(() => import('./TideTimeline').then(m => ({ default: m.TideTimeline })));
 const SharePanel = lazy(() => import('./SharePanel').then(m => ({ default: m.SharePanel })));
+const StationMap = lazy(() => import('./StationMap').then(m => ({ default: m.StationMap })));
 
 // Loading fallback for lazy components
 function LoadingFallback() {
@@ -72,6 +73,7 @@ export function HarmonicsPanel() {
   const [showClock, setShowClock] = useState(false);
   const [showTimeline, setShowTimeline] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  const [showMap, setShowMap] = useState(false);
 
   return (
     <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 flex flex-col gap-2 sm:gap-3 z-10 max-w-[320px] sm:max-w-[380px]">
@@ -315,6 +317,15 @@ export function HarmonicsPanel() {
         >
           Timeline
         </button>
+        <button
+          onClick={() => setShowMap(!showMap)}
+          aria-pressed={showMap}
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-slate-900
+            ${showMap ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="Station map"
+        >
+          Map
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -340,6 +351,7 @@ export function HarmonicsPanel() {
         {showEnergy && <TidalEnergyCalculator />}
         {showClock && <TideClock />}
         {showTimeline && <TideTimeline />}
+        {showMap && <StationMap />}
       </Suspense>
 
       {/* Info Panel */}
