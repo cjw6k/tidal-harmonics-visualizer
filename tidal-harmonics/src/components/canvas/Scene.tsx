@@ -7,6 +7,7 @@ import { Earth } from './Earth';
 import { TidalEarth } from './TidalEarth';
 import { Moon } from './Moon';
 import { Sun } from './Sun';
+import { Planets } from './Planets';
 import { Lighting } from './Lighting';
 import { CameraController } from './CameraController';
 import { MoonOrbitPath } from './OrbitPath';
@@ -77,6 +78,7 @@ function CelestialHighlights() {
 function SceneContent() {
   const showOrbits = useSceneStore((s) => s.showOrbits);
   const showForceVectors = useSceneStore((s) => s.showForceVectors);
+  const showPlanets = useSceneStore((s) => s.showPlanets);
 
   return (
     <>
@@ -88,6 +90,7 @@ function SceneContent() {
         <EarthWithTides />
         <Moon />
         <Sun />
+        {showPlanets && <Planets />}
         {showOrbits && <MoonOrbitPath />}
         {showForceVectors && <ForceField />}
         <CelestialHighlights />

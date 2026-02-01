@@ -32,6 +32,48 @@ export function getSunPosition(date: Date): CelestialPosition {
   return getBodyPosition(Astronomy.Body.Sun, date);
 }
 
+// Planetary positions
+export function getMercuryPosition(date: Date): CelestialPosition {
+  return getBodyPosition(Astronomy.Body.Mercury, date);
+}
+
+export function getVenusPosition(date: Date): CelestialPosition {
+  return getBodyPosition(Astronomy.Body.Venus, date);
+}
+
+export function getMarsPosition(date: Date): CelestialPosition {
+  return getBodyPosition(Astronomy.Body.Mars, date);
+}
+
+export function getJupiterPosition(date: Date): CelestialPosition {
+  return getBodyPosition(Astronomy.Body.Jupiter, date);
+}
+
+export function getSaturnPosition(date: Date): CelestialPosition {
+  return getBodyPosition(Astronomy.Body.Saturn, date);
+}
+
+export function getUranusPosition(date: Date): CelestialPosition {
+  return getBodyPosition(Astronomy.Body.Uranus, date);
+}
+
+export function getNeptunePosition(date: Date): CelestialPosition {
+  return getBodyPosition(Astronomy.Body.Neptune, date);
+}
+
+// All planets in one call
+export function getAllPlanetPositions(date: Date): Record<string, CelestialPosition> {
+  return {
+    mercury: getMercuryPosition(date),
+    venus: getVenusPosition(date),
+    mars: getMarsPosition(date),
+    jupiter: getJupiterPosition(date),
+    saturn: getSaturnPosition(date),
+    uranus: getUranusPosition(date),
+    neptune: getNeptunePosition(date),
+  };
+}
+
 // Astronomical event types for tidal analysis
 export interface AstronomicalEvent {
   type: 'new_moon' | 'full_moon' | 'first_quarter' | 'third_quarter' | 'perigee' | 'apogee' | 'equinox' | 'solstice';
