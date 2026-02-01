@@ -41,6 +41,7 @@ const TideAlerts = lazy(() => import('./TideAlerts').then(m => ({ default: m.Tid
 const LunarPhaseDisplay = lazy(() => import('./LunarPhaseDisplay').then(m => ({ default: m.LunarPhaseDisplay })));
 const TidalCoefficients = lazy(() => import('./TidalCoefficients').then(m => ({ default: m.TidalCoefficients })));
 const ConstituentQuiz = lazy(() => import('./ConstituentQuiz').then(m => ({ default: m.ConstituentQuiz })));
+const TidalBoreInfo = lazy(() => import('./TidalBoreInfo').then(m => ({ default: m.TidalBoreInfo })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -91,6 +92,7 @@ export function HarmonicsPanel() {
   const [showLunar, setShowLunar] = useState(false);
   const [showCoefficient, setShowCoefficient] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
+  const [showBoreInfo, setShowBoreInfo] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -279,6 +281,14 @@ export function HarmonicsPanel() {
           title="Learn about tidal datums"
         >
           📏
+        </button>
+        <button
+          onClick={() => setShowBoreInfo(true)}
+          aria-label="Learn about tidal bores"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Learn about tidal bores"
+        >
+          🌊
         </button>
       </div>
 
@@ -508,6 +518,10 @@ export function HarmonicsPanel() {
 
         {showQuiz && (
           <ConstituentQuiz onClose={() => setShowQuiz(false)} />
+        )}
+
+        {showBoreInfo && (
+          <TidalBoreInfo onClose={() => setShowBoreInfo(false)} />
         )}
       </Suspense>
     </div>
