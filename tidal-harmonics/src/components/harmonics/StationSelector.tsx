@@ -223,7 +223,7 @@ export function StationSelector() {
   const matchCount = filteredStations.length;
 
   return (
-    <div className="bg-slate-800/80 backdrop-blur-sm rounded-lg p-3">
+    <div className="bg-slate-800/80 backdrop-blur-sm rounded-lg p-3 overflow-hidden">
       <label className="block text-xs text-slate-400 mb-1">Tide Station</label>
       <div className="relative mb-2">
         <input
@@ -260,11 +260,11 @@ export function StationSelector() {
           {matchCount === 0 ? 'No stations found' : `${matchCount} station${matchCount !== 1 ? 's' : ''} found`}
         </div>
       )}
-      <div className="flex gap-2">
+      <div className="flex gap-2 min-w-0">
         <select
           value={selectedStation?.id || ''}
           onChange={(e) => selectStation(e.target.value)}
-          className="flex-1 bg-slate-700 text-white text-sm px-3 py-2 rounded border border-slate-600 focus:border-blue-500 focus:outline-none"
+          className="flex-1 min-w-0 bg-slate-700 text-white text-sm px-3 py-2 rounded border border-slate-600 focus:border-blue-500 focus:outline-none truncate"
           aria-label="Select tide station"
         >
           {matchCount === 0 ? (
