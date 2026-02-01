@@ -146,6 +146,33 @@ export function AboutPanel() {
             </ul>
           </section>
 
+          {/* License */}
+          <section>
+            <h3 className="text-lg font-semibold text-white mb-2">License</h3>
+            <div className="text-sm text-slate-300">
+              <p className="mb-2">
+                <strong className="text-white">MIT License</strong> — Copyright © 2026 cjw6k
+              </p>
+              <p className="text-slate-400 text-xs leading-relaxed">
+                Permission is hereby granted, free of charge, to any person obtaining a copy
+                of this software and associated documentation files (the "Software"), to deal
+                in the Software without restriction, including without limitation the rights
+                to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+                copies of the Software, and to permit persons to whom the Software is
+                furnished to do so, subject to the following conditions:
+              </p>
+              <p className="text-slate-400 text-xs leading-relaxed mt-2">
+                The above copyright notice and this permission notice shall be included in all
+                copies or substantial portions of the Software.
+              </p>
+              <p className="text-slate-500 text-xs leading-relaxed mt-2 italic">
+                THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+                IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+                FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+              </p>
+            </div>
+          </section>
+
           {/* Technology */}
           <section>
             <h3 className="text-lg font-semibold text-white mb-2">Built With</h3>
