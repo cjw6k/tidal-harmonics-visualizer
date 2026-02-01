@@ -72,6 +72,7 @@ const AgeOfTide = lazy(() => import('./AgeOfTide').then(m => ({ default: m.AgeOf
 const AnchorScopeCalculator = lazy(() => import('./AnchorScopeCalculator').then(m => ({ default: m.AnchorScopeCalculator })));
 const TidalPrismCalculator = lazy(() => import('./TidalPrismCalculator').then(m => ({ default: m.TidalPrismCalculator })));
 const MarinaAccessPlanner = lazy(() => import('./MarinaAccessPlanner').then(m => ({ default: m.MarinaAccessPlanner })));
+const BridgeClearanceCalculator = lazy(() => import('./BridgeClearanceCalculator').then(m => ({ default: m.BridgeClearanceCalculator })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -153,6 +154,7 @@ export function HarmonicsPanel() {
   const [showAnchorScope, setShowAnchorScope] = useState(false);
   const [showTidalPrism, setShowTidalPrism] = useState(false);
   const [showMarinaAccess, setShowMarinaAccess] = useState(false);
+  const [showBridgeClearance, setShowBridgeClearance] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -749,6 +751,14 @@ export function HarmonicsPanel() {
         >
           🏗️
         </button>
+        <button
+          onClick={() => setShowBridgeClearance(true)}
+          aria-label="Bridge clearance calculator"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Calculate bridge passage windows based on tide and mast height"
+        >
+          🌉
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -938,6 +948,10 @@ export function HarmonicsPanel() {
 
         {showMarinaAccess && (
           <MarinaAccessPlanner onClose={() => setShowMarinaAccess(false)} />
+        )}
+
+        {showBridgeClearance && (
+          <BridgeClearanceCalculator onClose={() => setShowBridgeClearance(false)} />
         )}
       </Suspense>
     </div>
