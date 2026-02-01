@@ -411,23 +411,57 @@ export function HarmonicsPanel() {
 
       {/* Tab Navigation */}
       <div className="bg-slate-800/90 backdrop-blur rounded-lg overflow-hidden">
-        <div className="flex border-b border-slate-700">
+        <div
+          className="flex border-b border-slate-700"
+          role="tablist"
+          aria-label="Tool categories"
+        >
           {TABS.map((tab) => (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              aria-controls={`tabpanel-${tab.id}`}
+              id={`tab-${tab.id}`}
+              tabIndex={activeTab === tab.id ? 0 : -1}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 px-2 py-2 text-xs font-medium transition-colors ${
+              onKeyDown={(e) => {
+                const currentIndex = TABS.findIndex(t => t.id === activeTab);
+                let newIndex = currentIndex;
+                if (e.key === 'ArrowRight') {
+                  newIndex = (currentIndex + 1) % TABS.length;
+                } else if (e.key === 'ArrowLeft') {
+                  newIndex = (currentIndex - 1 + TABS.length) % TABS.length;
+                } else if (e.key === 'Home') {
+                  newIndex = 0;
+                } else if (e.key === 'End') {
+                  newIndex = TABS.length - 1;
+                } else {
+                  return;
+                }
+                const newTab = TABS[newIndex];
+                if (newTab) {
+                  setActiveTab(newTab.id);
+                  (e.currentTarget.parentElement?.children[newIndex] as HTMLElement)?.focus();
+                }
+              }}
+              className={`flex-1 px-2 py-2 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset ${
                 activeTab === tab.id
                   ? 'bg-slate-700 text-white border-b-2 border-blue-500'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
               }`}
             >
-              <span className="block">{tab.icon}</span>
+              <span className="block" aria-hidden="true">{tab.icon}</span>
               <span className="block mt-0.5">{tab.label}</span>
             </button>
           ))}
         </div>
-        <div className="p-3">
+        <div
+          role="tabpanel"
+          id={`tabpanel-${activeTab}`}
+          aria-labelledby={`tab-${activeTab}`}
+          className="p-3"
+        >
           {renderTabContent()}
         </div>
       </div>
