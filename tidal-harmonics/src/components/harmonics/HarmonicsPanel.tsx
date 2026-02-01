@@ -26,6 +26,7 @@ const PhaseAnimation = lazy(() => import('./PhaseAnimation').then(m => ({ defaul
 const DataExport = lazy(() => import('./DataExport').then(m => ({ default: m.DataExport })));
 const TidalDatumExplainer = lazy(() => import('./TidalDatumExplainer').then(m => ({ default: m.TidalDatumExplainer })));
 const ConstituentComparison = lazy(() => import('./ConstituentComparison').then(m => ({ default: m.ConstituentComparison })));
+const SeaLevelRisePanel = lazy(() => import('./SeaLevelRisePanel').then(m => ({ default: m.SeaLevelRisePanel })));
 
 // Loading fallback for lazy components
 function LoadingFallback() {
@@ -58,6 +59,7 @@ export function HarmonicsPanel() {
   const [showExport, setShowExport] = useState(false);
   const [showDatumExplainer, setShowDatumExplainer] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
+  const [showSeaLevelRise, setShowSeaLevelRise] = useState(false);
 
   return (
     <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 flex flex-col gap-2 sm:gap-3 z-10 max-w-[320px] sm:max-w-[380px]">
@@ -239,6 +241,15 @@ export function HarmonicsPanel() {
         >
           Freq
         </button>
+        <button
+          onClick={() => setShowSeaLevelRise(!showSeaLevelRise)}
+          aria-pressed={showSeaLevelRise}
+          className={`flex-1 px-3 py-2 sm:py-1 rounded text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-1 focus:ring-offset-slate-900
+            ${showSeaLevelRise ? 'bg-cyan-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="Sea level rise projections"
+        >
+          SLR
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -258,6 +269,7 @@ export function HarmonicsPanel() {
         {showExtremes && <TideExtremesPanel />}
         {showNodal && <NodalCorrectionPanel />}
         {showSpectrum && <FrequencySpectrum />}
+        {showSeaLevelRise && <SeaLevelRisePanel />}
       </Suspense>
 
       {/* Info Panel */}
