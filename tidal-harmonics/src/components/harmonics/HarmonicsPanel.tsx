@@ -87,6 +87,7 @@ const VoyageLogGenerator = lazy(() => import('./VoyageLogGenerator').then(m => (
 const GroundingRiskAnalyzer = lazy(() => import('./GroundingRiskAnalyzer').then(m => ({ default: m.GroundingRiskAnalyzer })));
 const TidalStrandingTimer = lazy(() => import('./TidalStrandingTimer').then(m => ({ default: m.TidalStrandingTimer })));
 const TideHeightLookup = lazy(() => import('./TideHeightLookup').then(m => ({ default: m.TideHeightLookup })));
+const LunarDistancePanel = lazy(() => import('./LunarDistancePanel').then(m => ({ default: m.LunarDistancePanel })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -183,6 +184,7 @@ export function HarmonicsPanel() {
   const [showGroundingRisk, setShowGroundingRisk] = useState(false);
   const [showStrandingTimer, setShowStrandingTimer] = useState(false);
   const [showHeightLookup, setShowHeightLookup] = useState(false);
+  const [showLunarDistance, setShowLunarDistance] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -899,6 +901,14 @@ export function HarmonicsPanel() {
         >
           🔍
         </button>
+        <button
+          onClick={() => setShowLunarDistance(true)}
+          aria-label="Lunar distance and tidal effects"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="How Moon distance affects tides (perigee/apogee)"
+        >
+          🌙
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -1148,6 +1158,10 @@ export function HarmonicsPanel() {
 
         {showHeightLookup && (
           <TideHeightLookup onClose={() => setShowHeightLookup(false)} />
+        )}
+
+        {showLunarDistance && (
+          <LunarDistancePanel onClose={() => setShowLunarDistance(false)} />
         )}
       </Suspense>
     </div>
