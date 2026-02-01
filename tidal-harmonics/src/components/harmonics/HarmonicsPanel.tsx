@@ -53,6 +53,7 @@ const EstuaryDynamics = lazy(() => import('./EstuaryDynamics').then(m => ({ defa
 const NavigationSafety = lazy(() => import('./NavigationSafety').then(m => ({ default: m.NavigationSafety })));
 const TidalResonance = lazy(() => import('./TidalResonance').then(m => ({ default: m.TidalResonance })));
 const MoonPhaseCalendar = lazy(() => import('./MoonPhaseCalendar').then(m => ({ default: m.MoonPhaseCalendar })));
+const EmbeddableTideWidget = lazy(() => import('./EmbeddableTideWidget').then(m => ({ default: m.EmbeddableTideWidget })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -115,6 +116,7 @@ export function HarmonicsPanel() {
   const [showNavSafety, setShowNavSafety] = useState(false);
   const [showResonance, setShowResonance] = useState(false);
   const [showMoonCalendar, setShowMoonCalendar] = useState(false);
+  const [showEmbedWidget, setShowEmbedWidget] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -392,6 +394,14 @@ export function HarmonicsPanel() {
           title="Moon phase calendar with tides"
         >
           📆
+        </button>
+        <button
+          onClick={() => setShowEmbedWidget(true)}
+          aria-label="Get embeddable tide widget"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Embeddable widget code"
+        >
+          📤
         </button>
       </div>
 
@@ -672,6 +682,10 @@ export function HarmonicsPanel() {
 
         {showMoonCalendar && (
           <MoonPhaseCalendar onClose={() => setShowMoonCalendar(false)} />
+        )}
+
+        {showEmbedWidget && (
+          <EmbeddableTideWidget onClose={() => setShowEmbedWidget(false)} />
         )}
       </Suspense>
     </div>
