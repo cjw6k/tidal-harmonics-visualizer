@@ -18,6 +18,7 @@ import { ConstituentTable } from './ConstituentTable';
 import { TideExtremesPanel } from './TideExtremesPanel';
 import { NodalCorrectionPanel } from './NodalCorrectionPanel';
 import { FrequencySpectrum } from './FrequencySpectrum';
+import { PhaseAnimation } from './PhaseAnimation';
 
 export function HarmonicsPanel() {
   const showPhasorDiagram = useHarmonicsStore((s) => s.showPhasorDiagram);
@@ -37,6 +38,7 @@ export function HarmonicsPanel() {
   const [showExtremes, setShowExtremes] = useState(false);
   const [showNodal, setShowNodal] = useState(false);
   const [showSpectrum, setShowSpectrum] = useState(false);
+  const [showPhaseAnimation, setShowPhaseAnimation] = useState(false);
 
   return (
     <div className="absolute bottom-4 right-4 flex flex-col gap-3 z-10 max-w-[380px]">
@@ -77,6 +79,13 @@ export function HarmonicsPanel() {
           title="Learn about Doodson numbers"
         >
           ?
+        </button>
+        <button
+          onClick={() => setShowPhaseAnimation(true)}
+          className="px-3 py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 transition-colors"
+          title="Animated phasor rotation"
+        >
+          ▶
         </button>
       </div>
 
@@ -192,6 +201,11 @@ export function HarmonicsPanel() {
       {/* Doodson Explorer */}
       {showDoodsonExplorer && (
         <DoodsonExplorer onClose={() => setShowDoodsonExplorer(false)} />
+      )}
+
+      {/* Phase Animation */}
+      {showPhaseAnimation && (
+        <PhaseAnimation onClose={() => setShowPhaseAnimation(false)} />
       )}
     </div>
   );
