@@ -4,11 +4,13 @@ import { TextureLoader } from 'three';
 import type { Mesh } from 'three';
 import { useScene } from '@/hooks/useScene';
 import { useTimeStore } from '@/stores/timeStore';
+import { useCelestialPositions } from '@/hooks/useCelestialPositions';
 import { TEXTURE_URLS, ROTATION_SPEEDS } from '@/lib/constants';
 
 export function Moon() {
   const meshRef = useRef<Mesh>(null);
   const { scale } = useScene();
+  const { moon } = useCelestialPositions();
   const playing = useTimeStore((s) => s.playing);
   const speed = useTimeStore((s) => s.speed);
 
@@ -21,7 +23,7 @@ export function Moon() {
   });
 
   return (
-    <mesh ref={meshRef} position={[scale.MOON_DISTANCE, 0, 0]}>
+    <mesh ref={meshRef} position={moon}>
       <sphereGeometry args={[scale.MOON_RADIUS, 32, 32]} />
       <meshStandardMaterial map={texture} />
     </mesh>

@@ -2,11 +2,15 @@ import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { useFrame } from '@react-three/fiber';
 import { useTimeStore } from '@/stores/timeStore';
+import { useSceneStore } from '@/stores/sceneStore';
 import { Earth } from './Earth';
+import { TidalEarth } from './TidalEarth';
 import { Moon } from './Moon';
 import { Sun } from './Sun';
 import { Lighting } from './Lighting';
 import { CameraController } from './CameraController';
+import { MoonOrbitPath } from './OrbitPath';
+import { ForceField } from './ForceField';
 
 function TimeUpdater() {
   const tick = useTimeStore((s) => s.tick);
@@ -30,16 +34,26 @@ function Loader() {
   );
 }
 
+function EarthWithTides() {
+  const showTidalBulge = useSceneStore((s) => s.showTidalBulge);
+  return showTidalBulge ? <TidalEarth /> : <Earth />;
+}
+
 function SceneContent() {
+  const showOrbits = useSceneStore((s) => s.showOrbits);
+  const showForceVectors = useSceneStore((s) => s.showForceVectors);
+
   return (
     <>
       <TimeUpdater />
       <Lighting />
       <CameraController />
       <Suspense fallback={<Loader />}>
-        <Earth />
+        <EarthWithTides />
         <Moon />
         <Sun />
+        {showOrbits && <MoonOrbitPath />}
+        {showForceVectors && <ForceField />}
       </Suspense>
     </>
   );
