@@ -2,6 +2,7 @@ import { Scene } from '@/components/canvas/Scene';
 import { ControlPanel } from '@/components/ui/ControlPanel';
 import { HarmonicsPanel } from '@/components/harmonics/HarmonicsPanel';
 import { KeyboardShortcutsHelp } from '@/components/ui/KeyboardShortcutsHelp';
+import { AboutPanel } from '@/components/ui/AboutPanel';
 import { TutorialOverlay } from '@/components/tutorial/TutorialOverlay';
 import { TutorialOverlayEffects } from '@/components/tutorial/TutorialOverlayEffects';
 import { TutorialButton } from '@/components/tutorial/TutorialButton';
@@ -24,6 +25,7 @@ function App() {
       <TutorialOverlay />
       <TutorialController />
       <KeyboardShortcutsHelp />
+      <AboutPanel />
     </div>
   );
 }
