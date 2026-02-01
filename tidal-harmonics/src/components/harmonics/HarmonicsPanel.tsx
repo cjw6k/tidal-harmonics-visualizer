@@ -9,6 +9,7 @@ import { ConstituentInfoPanel } from './ConstituentInfoPanel';
 import { DoodsonExplorer } from './DoodsonExplorer';
 import { AccuracyComparison } from './AccuracyComparison';
 import { KingTidePredictor } from './KingTidePredictor';
+import { StationComparison } from './StationComparison';
 
 export function HarmonicsPanel() {
   const showPhasorDiagram = useHarmonicsStore((s) => s.showPhasorDiagram);
@@ -19,6 +20,7 @@ export function HarmonicsPanel() {
   const [showDoodsonExplorer, setShowDoodsonExplorer] = useState(false);
   const [showAccuracyComparison, setShowAccuracyComparison] = useState(false);
   const [showKingTidePredictor, setShowKingTidePredictor] = useState(false);
+  const [showStationComparison, setShowStationComparison] = useState(false);
 
   return (
     <div className="absolute bottom-4 right-4 flex flex-col gap-3 z-10 max-w-[380px]">
@@ -72,6 +74,14 @@ export function HarmonicsPanel() {
         >
           👑 King Tides
         </button>
+        <button
+          onClick={() => setShowStationComparison(!showStationComparison)}
+          className={`flex-1 px-3 py-1 rounded text-xs transition-colors
+            ${showStationComparison ? 'bg-purple-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="Compare stations"
+        >
+          Compare
+        </button>
       </div>
 
       {/* Visualizations */}
@@ -79,6 +89,7 @@ export function HarmonicsPanel() {
       {showTideCurve && <TideCurve />}
       {showAccuracyComparison && <AccuracyComparison />}
       {showKingTidePredictor && <KingTidePredictor />}
+      {showStationComparison && <StationComparison />}
 
       {/* Info Panel */}
       <ConstituentInfoPanel
