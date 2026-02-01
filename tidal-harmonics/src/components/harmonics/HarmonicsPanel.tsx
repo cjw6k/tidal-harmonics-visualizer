@@ -85,6 +85,7 @@ const MooringLineCalculator = lazy(() => import('./MooringLineCalculator').then(
 const SwellImpactCalculator = lazy(() => import('./SwellImpactCalculator').then(m => ({ default: m.SwellImpactCalculator })));
 const VoyageLogGenerator = lazy(() => import('./VoyageLogGenerator').then(m => ({ default: m.VoyageLogGenerator })));
 const GroundingRiskAnalyzer = lazy(() => import('./GroundingRiskAnalyzer').then(m => ({ default: m.GroundingRiskAnalyzer })));
+const TidalStrandingTimer = lazy(() => import('./TidalStrandingTimer').then(m => ({ default: m.TidalStrandingTimer })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -179,6 +180,7 @@ export function HarmonicsPanel() {
   const [showSwellImpact, setShowSwellImpact] = useState(false);
   const [showVoyageLog, setShowVoyageLog] = useState(false);
   const [showGroundingRisk, setShowGroundingRisk] = useState(false);
+  const [showStrandingTimer, setShowStrandingTimer] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -879,6 +881,14 @@ export function HarmonicsPanel() {
         >
           ⚠️
         </button>
+        <button
+          onClick={() => setShowStrandingTimer(true)}
+          aria-label="Tidal stranding timer"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Calculate stranding duration and refloat time"
+        >
+          ⏱️
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -1120,6 +1130,10 @@ export function HarmonicsPanel() {
 
         {showGroundingRisk && (
           <GroundingRiskAnalyzer onClose={() => setShowGroundingRisk(false)} />
+        )}
+
+        {showStrandingTimer && (
+          <TidalStrandingTimer onClose={() => setShowStrandingTimer(false)} />
         )}
       </Suspense>
     </div>
