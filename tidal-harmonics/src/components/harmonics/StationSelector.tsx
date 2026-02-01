@@ -260,12 +260,12 @@ export function StationSelector() {
           {matchCount === 0 ? 'No stations found' : `${matchCount} station${matchCount !== 1 ? 's' : ''} found`}
         </div>
       )}
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <select
           value={selectedStation?.id || ''}
           onChange={(e) => selectStation(e.target.value)}
           className="flex-1 bg-slate-700 text-white text-sm px-3 py-2 rounded border border-slate-600 focus:border-blue-500 focus:outline-none"
-          style={{ minWidth: '120px' }}
+          style={{ minWidth: '140px' }}
           aria-label="Select tide station"
         >
           {matchCount === 0 ? (
