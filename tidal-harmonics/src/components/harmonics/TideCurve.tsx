@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import {
   LineChart,
   Line,
@@ -19,6 +19,7 @@ import {
   findExtremes,
   type ConstituentSeriesData,
 } from '@/lib/harmonics';
+import { useTouchGesturesRef } from '@/hooks/useTouchGestures';
 
 type ViewMode = 'total' | 'constituents' | 'groups';
 
@@ -42,10 +43,45 @@ const TIME_RANGES = [
 
 export function TideCurve() {
   const epoch = useTimeStore((s) => s.epoch);
+  const setDate = useTimeStore((s) => s.setDate);
   const station = useHarmonicsStore((s) => s.selectedStation);
   const hoursRange = useHarmonicsStore((s) => s.chartHoursRange);
   const setChartHoursRange = useHarmonicsStore((s) => s.setChartHoursRange);
   const [viewMode, setViewMode] = useState<ViewMode>('total');
+
+  // Touch gestures for mobile
+  const zoomIn = useCallback(() => {
+    const currentIdx = TIME_RANGES.findIndex((r) => r.hours === hoursRange);
+    if (currentIdx > 0) {
+      setChartHoursRange(TIME_RANGES[currentIdx - 1]!.hours);
+    }
+  }, [hoursRange, setChartHoursRange]);
+
+  const zoomOut = useCallback(() => {
+    const currentIdx = TIME_RANGES.findIndex((r) => r.hours === hoursRange);
+    if (currentIdx < TIME_RANGES.length - 1) {
+      setChartHoursRange(TIME_RANGES[currentIdx + 1]!.hours);
+    }
+  }, [hoursRange, setChartHoursRange]);
+
+  const panForward = useCallback(() => {
+    // Pan forward by 1/4 of the current range
+    const panMs = (hoursRange / 4) * 3600000;
+    setDate(new Date(epoch + panMs));
+  }, [epoch, hoursRange, setDate]);
+
+  const panBackward = useCallback(() => {
+    // Pan backward by 1/4 of the current range
+    const panMs = (hoursRange / 4) * 3600000;
+    setDate(new Date(epoch - panMs));
+  }, [epoch, hoursRange, setDate]);
+
+  const chartRef = useTouchGesturesRef<HTMLDivElement>({
+    onSwipeLeft: panForward,
+    onSwipeRight: panBackward,
+    onPinchIn: zoomOut,
+    onPinchOut: zoomIn,
+  });
 
   const { data, extremes, nowLabel, minHeight, maxHeight } = useMemo(() => {
     if (!station) {
@@ -171,7 +207,7 @@ export function TideCurve() {
           </div>
         </div>
       </div>
-      <div className="w-full h-48">
+      <div ref={chartRef} className="w-full h-48 touch-action-manipulation">
         <ResponsiveContainer>
           <LineChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
