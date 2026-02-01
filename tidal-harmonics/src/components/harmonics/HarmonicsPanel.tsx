@@ -98,6 +98,7 @@ const TidalRaceWarning = lazy(() => import('./TidalRaceWarning').then(m => ({ de
 const FerryTimingOptimizer = lazy(() => import('./FerryTimingOptimizer').then(m => ({ default: m.FerryTimingOptimizer })));
 const TidalGlossary = lazy(() => import('./TidalGlossary').then(m => ({ default: m.TidalGlossary })));
 const MarineWeatherPanel = lazy(() => import('./MarineWeatherPanel').then(m => ({ default: m.MarineWeatherPanel })));
+const LiveTideDisplay = lazy(() => import('./LiveTideDisplay').then(m => ({ default: m.LiveTideDisplay })));
 
 // Import hook directly since it's not lazy-loadable
 import { useKeyboardNavigation } from './KeyboardShortcuts';
@@ -205,6 +206,7 @@ export function HarmonicsPanel() {
   const [showFerryTiming, setShowFerryTiming] = useState(false);
   const [showGlossary, setShowGlossary] = useState(false);
   const [showMarineWeather, setShowMarineWeather] = useState(false);
+  const [showLiveTide, setShowLiveTide] = useState(false);
 
   // Enable keyboard navigation
   useKeyboardNavigation(showKeyboardHelp, setShowKeyboardHelp, {
@@ -1009,6 +1011,14 @@ export function HarmonicsPanel() {
         >
           🌤️
         </button>
+        <button
+          onClick={() => setShowLiveTide(true)}
+          aria-label="Live tide display"
+          className="px-3 py-2 sm:py-1 rounded text-xs bg-slate-700 text-slate-400 hover:bg-slate-600 active:bg-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-900"
+          title="Live tide height display"
+        >
+          📺
+        </button>
       </div>
 
       {/* Core visualizations (not lazy) */}
@@ -1302,6 +1312,10 @@ export function HarmonicsPanel() {
 
         {showMarineWeather && (
           <MarineWeatherPanel onClose={() => setShowMarineWeather(false)} />
+        )}
+
+        {showLiveTide && (
+          <LiveTideDisplay onClose={() => setShowLiveTide(false)} />
         )}
       </Suspense>
     </div>
