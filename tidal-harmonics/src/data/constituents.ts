@@ -50,7 +50,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 28.512583,
     period: 12.6260,
     family: 'semidiurnal',
-    description: 'Due to lunar evection',
+    description: 'Arises from lunar evection—the largest perturbation in the Moon\'s orbit caused by the Sun\'s gravitational pull. Evection makes the lunar orbit alternately more and less elliptical with a period of ~31.8 days. NU2 modulates the strength of lunar tides throughout this cycle, making it important for accurate monthly predictions.',
   },
   MU2: {
     symbol: 'MU2',
@@ -59,7 +59,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 27.968208,
     period: 12.8718,
     family: 'semidiurnal',
-    description: 'Due to variation in Moon speed',
+    description: 'Caused by the "variation"—a speeding up and slowing down of the Moon as it orbits Earth. The Moon moves faster when between Earth and Sun (new moon) and slower when opposite (full moon). This ~14.8-day cycle slightly alters the timing and height of tides, requiring MU2 for sub-centimeter accuracy.',
   },
   '2N2': {
     symbol: '2N2',
@@ -68,7 +68,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 27.895355,
     period: 12.9054,
     family: 'semidiurnal',
-    description: 'Second-order elliptic effect',
+    description: 'A second-order correction for the Moon\'s elliptical orbit. While N2 captures the main perigee-apogee effect, 2N2 accounts for higher-order terms in the orbital mathematics. Though small, 2N2 improves predictions during extreme perigee events when the Moon is exceptionally close to Earth.',
   },
   L2: {
     symbol: 'L2',
@@ -77,7 +77,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 29.528479,
     period: 12.1916,
     family: 'semidiurnal',
-    description: 'Smaller elliptic constituent',
+    description: 'The smaller counterpart to N2, arising from the Moon\'s orbital eccentricity. L2 represents the opposite phase of the elliptic variation—while N2 peaks near perigee, L2 captures effects that peak near apogee. Together, N2 and L2 fully describe the first-order elliptic modulation of lunar tides.',
   },
   T2: {
     symbol: 'T2',
@@ -86,7 +86,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 29.958933,
     period: 12.0164,
     family: 'semidiurnal',
-    description: 'Due to Earth orbital eccentricity',
+    description: 'Accounts for the elliptical shape of Earth\'s orbit around the Sun. Earth is ~3% closer to the Sun at perihelion (January) than aphelion (July), causing solar tidal forces to vary by about 6% annually. T2 captures this seasonal modulation of the solar semidiurnal tide.',
   },
   R2: {
     symbol: 'R2',
@@ -95,7 +95,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 30.041067,
     period: 11.9836,
     family: 'semidiurnal',
-    description: 'Smaller solar elliptic effect',
+    description: 'The smaller companion to T2, completing the description of how Earth\'s elliptical orbit modulates solar tides. R2 captures the phase-shifted component of the annual orbital variation. It\'s small but necessary for precise modeling of the solar contribution to tides.',
   },
   LAM2: {
     symbol: 'LAM2',
@@ -104,7 +104,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 29.455625,
     period: 12.2218,
     family: 'semidiurnal',
-    description: 'Due to lunar evection',
+    description: 'The smaller component of lunar evection effects, complementing NU2. While NU2 captures the main evection signal, LAM2 represents a phase-shifted term needed for complete representation. Together they account for how the Sun\'s gravity distorts the Moon\'s orbit over the ~31.8-day evection cycle.',
   },
 
   // ===== DIURNAL (period ~24 hours) =====
@@ -151,7 +151,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 15.585443,
     period: 23.0985,
     family: 'diurnal',
-    description: 'Smaller elliptic effect',
+    description: 'The diurnal counterpart to L2, capturing how the Moon\'s elliptical orbit affects the diurnal tide. J1 represents the faster-rotating component of elliptic modulation, while Q1 represents the slower component. Together they fully describe the perigee-apogee effect on daily tide inequality.',
   },
   M1: {
     symbol: 'M1',
@@ -160,7 +160,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 14.496694,
     period: 24.8332,
     family: 'diurnal',
-    description: 'Small lunar diurnal constituent',
+    description: 'A small diurnal constituent arising from the interaction between the Moon\'s orbital motion and Earth\'s rotation. M1 is generated through nonlinear ocean response and is typically small except in certain resonant basins. Its period matches the mean lunar day (24h 50m).',
   },
   OO1: {
     symbol: 'OO1',
@@ -169,7 +169,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 16.139102,
     period: 22.3061,
     family: 'diurnal',
-    description: 'Second-order lunar diurnal',
+    description: 'A second-order diurnal constituent arising from the Moon\'s declination. While K1 captures the primary effect of lunar declination, OO1 represents higher-order terms that become important when the Moon reaches maximum declination (±28.5° during major lunar standstills). Has the shortest period of the major diurnal constituents.',
   },
   S1: {
     symbol: 'S1',
@@ -178,7 +178,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 15.0,
     period: 24.0,
     family: 'diurnal',
-    description: 'Radiational tide (thermal)',
+    description: 'A unique "radiational tide" driven primarily by the daily heating cycle of the Sun rather than direct gravitational attraction. Solar heating causes sea surface temperature and atmospheric pressure to vary with an exact 24-hour period, creating a tide indistinguishable from a gravitational S1. Often the largest non-gravitational tidal signal.',
   },
   RHO1: {
     symbol: 'RHO1',
@@ -187,7 +187,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 13.471514,
     period: 26.7231,
     family: 'diurnal',
-    description: 'Due to lunar evection',
+    description: 'The diurnal signature of lunar evection—the ~31.8-day variation in the Moon\'s orbital shape caused by solar perturbation. RHO1 modulates the diurnal tide inequality throughout the evection cycle. Most noticeable in regions with strong diurnal tides where subtle modulations accumulate.',
   },
   '2Q1': {
     symbol: '2Q1',
@@ -196,7 +196,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 12.854286,
     period: 28.0062,
     family: 'diurnal',
-    description: 'Second-order elliptic diurnal',
+    description: 'A second-order elliptic constituent with the longest period of the major diurnal tides (~28 hours). 2Q1 captures the combined effect of the Moon\'s elliptical orbit and its declination variation. Though small, it\'s necessary for accurate predictions of extreme diurnal tides during perigee.',
   },
 
   // ===== LONG-PERIOD (period > 1 day) =====
@@ -243,7 +243,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 1.015896,
     period: 354.3671,
     family: 'long-period',
-    description: 'Due to spring-neap variation',
+    description: 'Tracks the spring-neap cycle by measuring the ~14.8-day synodic month (new moon to new moon). MSf is the long-period component of the beat between M2 and S2—as these semidiurnal tides go in and out of phase, they create both the familiar spring-neap variation and this slow oscillation in mean sea level.',
   },
 
   // ===== SHALLOW-WATER (compound/overtides) =====
@@ -281,7 +281,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 57.423834,
     period: 6.2692,
     family: 'shallow-water',
-    description: 'Compound of M2 and N2',
+    description: 'A compound tide from the nonlinear interaction between M2 and N2 in shallow water. MN4 varies with the lunar perigee-apogee cycle, being strongest when the Moon is closest to Earth. It adds a fortnightly modulation to the quarter-diurnal tides, important for predicting maximum tidal currents.',
   },
   S4: {
     symbol: 'S4',
@@ -290,7 +290,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 60.0,
     period: 6.0,
     family: 'shallow-water',
-    description: 'First harmonic of S2 in shallow water',
+    description: 'The first overtide of the solar semidiurnal tide S2, generated by nonlinear shallow water effects. With its exact 6-hour period (4 cycles per day), S4 has a simple relationship with clock time. It modulates with the spring-neap cycle, being largest when S2 is strongest (at spring tides).',
   },
   S6: {
     symbol: 'S6',
@@ -299,7 +299,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 90.0,
     period: 4.0,
     family: 'shallow-water',
-    description: 'Second harmonic of S2 in shallow water',
+    description: 'The second overtide of S2, with an exact 4-hour period (6 cycles per day). S6 indicates strongly nonlinear distortion of the solar tide and is typically only significant in very shallow estuaries where the tide wave becomes severely asymmetric. Rarely used except in detailed harbor models.',
   },
   MK3: {
     symbol: 'MK3',
@@ -308,7 +308,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 44.025173,
     period: 8.1771,
     family: 'shallow-water',
-    description: 'Compound of M2 and K1',
+    description: 'A terdiurnal (3 cycles/day) compound tide from the interaction between M2 and K1 in shallow water. MK3 is the dominant ~8-hour constituent and indicates coupling between semidiurnal and diurnal tides. Particularly important in channels where both tidal types have significant amplitude.',
   },
   '2MK3': {
     symbol: '2MK3',
@@ -317,7 +317,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 42.927139,
     period: 8.3863,
     family: 'shallow-water',
-    description: 'Compound of 2M2 minus K1',
+    description: 'The second major terdiurnal constituent, arising from the difference interaction (2×M2 - K1) in shallow water. Together with MK3, 2MK3 fully describes the terdiurnal tide. The pair produces a beat pattern that modulates with the declination cycle, affecting tidal currents at ~8-hour periods.',
   },
   M8: {
     symbol: 'M8',
@@ -326,7 +326,7 @@ export const CONSTITUENTS: Record<string, Constituent> = {
     speed: 115.936417,
     period: 3.1052,
     family: 'shallow-water',
-    description: 'Third harmonic of M2 in shallow water',
+    description: 'The third overtide of M2, indicating extreme nonlinear distortion in very shallow water. With 8 cycles per lunar day (~3.1-hour period), M8 is only measurable in the shallowest estuaries where the tidal curve becomes sawtooth-shaped. Its presence signals conditions challenging for navigation.',
   },
 };
 
