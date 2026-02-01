@@ -59,7 +59,7 @@ export function HarmonicsPanel() {
   const [showComparison, setShowComparison] = useState(false);
 
   return (
-    <div className="absolute bottom-4 right-4 flex flex-col gap-3 z-10 max-w-[380px]">
+    <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 flex flex-col gap-2 sm:gap-3 z-10 max-w-[320px] sm:max-w-[380px]">
       {/* Controls */}
       <div className="flex flex-col gap-2">
         <div className="flex gap-2 items-center">
@@ -73,7 +73,7 @@ export function HarmonicsPanel() {
       </div>
 
       {/* Toggle buttons - row 1 */}
-      <div className="flex gap-2" role="group" aria-label="Visualization controls - primary">
+      <div className="flex flex-wrap gap-1 sm:gap-2" role="group" aria-label="Visualization controls - primary">
         <button
           onClick={togglePhasorDiagram}
           aria-pressed={showPhasorDiagram}
@@ -134,7 +134,7 @@ export function HarmonicsPanel() {
       </div>
 
       {/* Toggle buttons - row 2 */}
-      <div className="flex gap-2" role="group" aria-label="Visualization controls - secondary">
+      <div className="flex flex-wrap gap-1 sm:gap-2" role="group" aria-label="Visualization controls - secondary">
         <button
           onClick={() => setShowKingTidePredictor(!showKingTidePredictor)}
           aria-pressed={showKingTidePredictor}
@@ -182,7 +182,7 @@ export function HarmonicsPanel() {
       </div>
 
       {/* Toggle buttons - row 3 */}
-      <div className="flex gap-2" role="group" aria-label="Visualization controls - tertiary">
+      <div className="flex flex-wrap gap-1 sm:gap-2" role="group" aria-label="Visualization controls - tertiary">
         <button
           onClick={() => setShowWaveform(!showWaveform)}
           aria-pressed={showWaveform}

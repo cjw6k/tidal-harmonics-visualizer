@@ -7,7 +7,7 @@ import { AstronomicalEventsPanel } from './AstronomicalEventsPanel';
 
 export function ControlPanel() {
   return (
-    <div className="absolute top-4 left-4 flex flex-col gap-4 z-10 max-w-[280px]">
+    <div className="absolute top-2 left-2 sm:top-4 sm:left-4 flex flex-col gap-2 sm:gap-4 z-10 max-w-[220px] sm:max-w-[280px]">
       <TimeControls />
       <LunarPhaseIndicator />
       <AstronomicalEventsPanel />
