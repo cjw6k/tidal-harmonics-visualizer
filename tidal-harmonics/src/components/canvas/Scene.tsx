@@ -97,18 +97,24 @@ function SceneContent() {
   );
 }
 
-export function Scene() {
+interface SceneProps {
+  id?: string;
+}
+
+export function Scene({ id }: SceneProps) {
   return (
-    <Canvas
-      camera={{
-        position: [50, 30, 50],
-        fov: 60,
-        near: 0.1,
-        far: 20000,
-      }}
-      style={{ background: '#0a0a0f' }}
-    >
-      <SceneContent />
-    </Canvas>
+    <main id={id} className="w-full h-full" tabIndex={-1}>
+      <Canvas
+        camera={{
+          position: [50, 30, 50],
+          fov: 60,
+          near: 0.1,
+          far: 20000,
+        }}
+        style={{ background: '#0a0a0f' }}
+      >
+        <SceneContent />
+      </Canvas>
+    </main>
   );
 }

@@ -17,7 +17,14 @@ function App() {
 
   return (
     <div className="w-full h-full relative">
-      <Scene />
+      {/* Skip link for screen readers and keyboard users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-slate-800 focus:text-white focus:rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+      >
+        Skip to main content
+      </a>
+      <Scene id="main-content" />
       <TutorialOverlayEffects />
       <ControlPanel />
       <HarmonicsPanel />
