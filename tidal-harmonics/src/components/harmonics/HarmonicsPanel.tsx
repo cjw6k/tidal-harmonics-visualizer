@@ -11,6 +11,7 @@ import { AccuracyComparison } from './AccuracyComparison';
 import { KingTidePredictor } from './KingTidePredictor';
 import { StationComparison } from './StationComparison';
 import { TidalRangeChart } from './TidalRangeChart';
+import { ConstituentPieChart } from './ConstituentPieChart';
 
 export function HarmonicsPanel() {
   const showPhasorDiagram = useHarmonicsStore((s) => s.showPhasorDiagram);
@@ -23,6 +24,7 @@ export function HarmonicsPanel() {
   const [showKingTidePredictor, setShowKingTidePredictor] = useState(false);
   const [showStationComparison, setShowStationComparison] = useState(false);
   const [showRangeChart, setShowRangeChart] = useState(false);
+  const [showPieChart, setShowPieChart] = useState(false);
 
   return (
     <div className="absolute bottom-4 right-4 flex flex-col gap-3 z-10 max-w-[380px]">
@@ -92,6 +94,14 @@ export function HarmonicsPanel() {
         >
           Ranges
         </button>
+        <button
+          onClick={() => setShowPieChart(!showPieChart)}
+          className={`flex-1 px-3 py-1 rounded text-xs transition-colors
+            ${showPieChart ? 'bg-green-600 text-white' : 'bg-slate-700 text-slate-400'}`}
+          title="Constituent breakdown"
+        >
+          Pie
+        </button>
       </div>
 
       {/* Visualizations */}
@@ -101,6 +111,7 @@ export function HarmonicsPanel() {
       {showKingTidePredictor && <KingTidePredictor />}
       {showStationComparison && <StationComparison />}
       {showRangeChart && <TidalRangeChart />}
+      {showPieChart && <ConstituentPieChart />}
 
       {/* Info Panel */}
       <ConstituentInfoPanel
