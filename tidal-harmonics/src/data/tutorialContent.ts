@@ -70,9 +70,9 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
         title: 'Two Tides Per Day',
         content: "Earth rotates beneath the bulges. Any coastal point passes through TWO high tides every 24 hours 50 minutes.",
         duration: 10,
-        camera: { position: [0, 45, 45], target: [0, 0, 0], duration: 1.5 },
+        camera: { position: [0, 30, 35], target: [0, 0, 0], duration: 1.5 },
         showTidalBulge: true,
-        tidalExaggeration: 60000,
+        tidalExaggeration: 75000,
         showForceVectors: false,
         timeSpeed: 10800, // 3 hrs/sec - watch rotation clearly
         pulseEffect: true,
