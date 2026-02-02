@@ -251,6 +251,7 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
         duration: 10,
         camera: { position: [35, 22, 35], target: [0, 0, 0], duration: 1.5 },
         highlightConstituents: ['M2', 'S2', 'K1', 'O1'],
+        showPhasorDiagram: true,
         timeSpeed: 10800,
         showTidalBulge: true,
         tidalExaggeration: 50000,
