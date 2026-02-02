@@ -392,10 +392,14 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
       {
         id: 'ch7-m4',
         title: 'M4: The First Overtide',
-        content: "M4 has twice M2's frequency (4 peaks/day). It appears when tides enter shallow bays.",
+        content: "M4 is M2's second harmonic—exactly twice the frequency (4 peaks/day instead of 2). It doesn't come from the Moon; it's BORN when M2 steepens in shallow water. The asymmetric waveform (sharp rise, slow fall) can't be represented by a single sinusoid. Fourier analysis reveals hidden harmonics: M4, M6, M8... This is the same physics as audio clipping creating overtones. M4 is pure nonlinear magic.",
         duration: 8,
         camera: { position: [35, 18, 35], target: [0, 0, 0], duration: 1.5 },
+        showTidalBulge: true,
+        tidalExaggeration: 60000,
         highlightConstituents: ['M2', 'M4'],
+        emphasizedConstituent: 'M4',
+        showPhasorDiagram: true,
         timeSpeed: 10800,
       },
       {
