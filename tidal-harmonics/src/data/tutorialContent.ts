@@ -499,10 +499,14 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
       {
         id: 'ch9-local',
         title: 'Every Place is Different',
-        content: "Local geography shapes how tides behave. Try different stations in the dropdown!",
+        content: "The open ocean tide is barely a meter. But coastlines transform it. Funnel-shaped bays like the Bay of Fundy amplify tides to 16 meters — because its natural resonance matches the 12.5-hour M2 period! Meanwhile, amphidromic points have almost no tide at all. Each location's unique geometry creates unique harmonic constants that must be measured locally.",
         duration: 0, // Manual advance - interactive
         camera: { position: [40, 22, 40], target: [0, 0, 0], duration: 1.5 },
+        showTidalBulge: true,
+        tidalExaggeration: 50000,
+        showPhasorDiagram: true,
         highlightConstituents: ['M2', 'S2', 'K1', 'O1', 'N2'],
+        emphasizedConstituent: 'M2',
         timeSpeed: 3600,
         interactive: true,
       },
