@@ -365,24 +365,16 @@ test.describe('Tutorial Animation Capture', () => {
 
     await startTutorial(page);
 
-    // For step 0, no navigation needed
-    if (STEP > 0) {
-      // Navigate to step by using nextStep() repeatedly
-      for (let i = 0; i < STEP; i++) {
-        console.log(`Navigating to step ${i + 1}...`);
-        await nextStep(page);
-        await waitForCameraAnimation(page);
-        console.log(`Arrived at step ${i + 1}, waiting for render...`);
-      }
-      // Extra wait for scene to fully render after navigation
-      await page.waitForTimeout(3000);
-      console.log('Starting capture...');
-    }
+    // Navigate directly to the target step using goToStep
+    console.log(`Navigating to chapter ${CHAPTER + 1}, step ${STEP + 1}...`);
+    await goToStep(page, CHAPTER, STEP);
+    await waitForCameraAnimation(page, 3000);
+    console.log('Starting capture...');
 
     const result = await captureFullStep(page, CHAPTER, STEP, {
       transitionFrames: 10,
       steadyStateDuration: 2000,
-      frameInterval: 150, // Original interval restored
+      frameInterval: 150,
       skipNavigation: true,
     });
 

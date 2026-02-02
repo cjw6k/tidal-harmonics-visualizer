@@ -272,18 +272,19 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
         showOrbits: true,
         timeSpeed: 259200, // 3 days/sec
         annotations: [
-          { id: 'perigee', text: 'Perigee (356,000 km)', position: [25, 2, -20], style: 'info' },
-          { id: 'apogee', text: 'Apogee (407,000 km)', position: [-28, 2, 22], style: 'info' },
+          { id: 'perigee', text: 'Perigee (356,000 km)', position: [25, 2, -20], style: 'default' },
+          { id: 'apogee', text: 'Apogee (407,000 km)', position: [-28, 2, 22], style: 'default' },
         ],
       },
       {
         id: 'ch5-inverse-cube',
         title: 'The Inverse Cube Law',
-        content: "Tidal force goes as 1/r³. When Moon is 14% closer at perigee, tides are ~48% stronger!",
+        content: "Gravity falls as 1/r². But TIDAL force falls as 1/r³ — that extra power of r is why 14% closer means 48% stronger!",
         duration: 8,
         camera: { position: [40, 20, 40], target: [0, 0, 0], duration: 2 },
         showTidalBulge: true,
         tidalExaggeration: 60000,
+        showOrbits: true,
         timeSpeed: 0,
       },
       {
