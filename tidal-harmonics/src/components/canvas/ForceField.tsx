@@ -17,6 +17,11 @@ export function ForceField() {
   const { moonRaw } = useCelestialPositions();
   const { scale } = useScene();
   const tutorialActive = useTutorialStore((s) => s.isActive);
+  const getCurrentStep = useTutorialStore((s) => s.getCurrentStep);
+
+  // Show explanation panel only at step ch1-differential, or when not in tutorial
+  const currentStep = getCurrentStep();
+  const showExplanation = !tutorialActive || currentStep?.step.id === 'ch1-differential';
 
   const arrows = useMemo(() => {
     const earthR = scale.EARTH_RADIUS;
@@ -110,8 +115,8 @@ export function ForceField() {
 
   return (
     <group>
-      {/* Explanation panel - hidden during tutorial since narration covers this */}
-      {!tutorialActive && (
+      {/* Explanation panel - only shown at ch1-differential step or outside tutorial */}
+      {showExplanation && (
         <Html
           position={[scale.EARTH_RADIUS * 5.5, scale.EARTH_RADIUS * 3, 0]}
           center
