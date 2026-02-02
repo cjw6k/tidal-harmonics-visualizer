@@ -51,9 +51,10 @@ const tidalFragmentShader = `
   void main() {
     vec3 baseColor = texture2D(map, vUv).rgb;
 
-    // Subtle color tint on bulges (optional)
+    // Color tint on bulges - more visible for pedagogical effect
     float bulgeIntensity = abs(vTidalDisplacement) * tidalIntensity;
-    vec3 bulgeColor = mix(baseColor, vec3(0.3, 0.5, 1.0), bulgeIntensity * 0.2);
+    // Amplify the tint so bulge areas show subtle blue highlight
+    vec3 bulgeColor = mix(baseColor, vec3(0.3, 0.5, 1.0), clamp(bulgeIntensity * 3.0, 0.0, 0.4));
 
     gl_FragColor = vec4(bulgeColor, 1.0);
   }
@@ -94,10 +95,12 @@ export function TidalEarth() {
     uniforms.moonDirection.value.set(moon[0], moon[1], moon[2]).normalize();
     uniforms.sunDirection.value.set(sun[0], sun[1], sun[2]).normalize();
 
-    // Physical tidal amplitude: 0.53m / Earth radius ≈ 8.3e-8
-    // Apply exaggeration factor
-    const physicalAmplitude = 0.53 / 6_371_000; // meters / Earth radius in meters
-    uniforms.tidalAmplitude.value = physicalAmplitude * tidalExaggeration;
+    // Pedagogical tidal amplitude for visible effect
+    // Physical amplitude (0.53m / 6,371km = 8.3e-8) is invisible even at 50,000×
+    // Instead, use a visual amplitude calibrated to tutorial exaggeration levels:
+    // At 50,000× exaggeration → 12% bulge (clearly visible)
+    const pedagogicalAmplitude = 0.12 / 50_000; // 2.4e-6
+    uniforms.tidalAmplitude.value = pedagogicalAmplitude * tidalExaggeration;
 
     // Earth rotation
     if (meshRef.current && playing) {
