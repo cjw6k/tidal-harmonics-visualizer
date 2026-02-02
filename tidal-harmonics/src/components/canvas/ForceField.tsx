@@ -109,7 +109,7 @@ export function ForceField() {
     <group>
       {/* Explanation panel */}
       <Html
-        position={[scale.EARTH_RADIUS * 4, scale.EARTH_RADIUS * 2.5, 0]}
+        position={[scale.EARTH_RADIUS * 5.5, scale.EARTH_RADIUS * 3, 0]}
         center
         zIndexRange={[1, 10]}
         style={{
@@ -117,7 +117,7 @@ export function ForceField() {
           padding: '12px 16px',
           borderRadius: '8px',
           fontSize: '12px',
-          maxWidth: '220px',
+          maxWidth: '320px',
           border: '1px solid rgba(100, 116, 139, 0.3)',
           pointerEvents: 'none',
         }}
@@ -125,13 +125,15 @@ export function ForceField() {
         <div style={{ color: 'white', fontWeight: 'bold', marginBottom: '8px' }}>
           Tidal Forces
         </div>
-        <div style={{ color: '#ef4444', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '16px' }}>→</span>
-          <span>Stretched outward (bulge)</span>
-        </div>
-        <div style={{ color: '#3b82f6', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '16px' }}>←</span>
-          <span>Compressed inward</span>
+        <div style={{ display: 'flex', gap: '16px', marginBottom: '8px' }}>
+          <div style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontSize: '16px' }}>→</span>
+            <span>Stretched (bulge)</span>
+          </div>
+          <div style={{ color: '#3b82f6', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontSize: '16px' }}>←</span>
+            <span>Compressed</span>
+          </div>
         </div>
         <div style={{ color: '#94a3b8', fontSize: '11px', lineHeight: '1.4' }}>
           The Moon pulls the near side more than Earth's center, and the center more than the far side. This creates TWO bulges.
