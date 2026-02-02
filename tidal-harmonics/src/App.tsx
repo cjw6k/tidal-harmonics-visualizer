@@ -1,10 +1,8 @@
 import { Scene } from '@/components/canvas/Scene';
 import { ControlPanel } from '@/components/ui/ControlPanel';
 import { HarmonicsPanel } from '@/components/harmonics/HarmonicsPanel';
-import { KeyboardShortcutsHelp } from '@/components/ui/KeyboardShortcutsHelp';
-import { AboutPanel } from '@/components/ui/AboutPanel';
+import { BottomLeftButtons } from '@/components/ui/BottomLeftButtons';
 import { WelcomeModal } from '@/components/ui/WelcomeModal';
-import { TidalFactsWidget } from '@/components/ui/TidalFactsWidget';
 import { InstallPrompt } from '@/components/ui/InstallPrompt';
 import { OfflineIndicator } from '@/components/ui/OfflineIndicator';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
@@ -40,10 +38,8 @@ function App() {
       <ChapterNavigation />
       <TutorialOverlay />
       <TutorialController />
-      <KeyboardShortcutsHelp />
-      <AboutPanel />
+      <BottomLeftButtons />
       <WelcomeModal />
-      <TidalFactsWidget />
       <InstallPrompt />
       <OfflineIndicator />
       <div className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10">

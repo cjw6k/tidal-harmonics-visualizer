@@ -17,16 +17,7 @@ export function KeyboardShortcutsHelp() {
   }, []);
 
   if (!isOpen) {
-    return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-12 left-4 z-40 px-2 py-1 bg-slate-800/80 backdrop-blur-sm
-          text-slate-400 text-[11px] rounded hover:bg-slate-700 transition-colors"
-        title="Keyboard shortcuts (Ctrl+H)"
-      >
-        ⌨️ Shortcuts
-      </button>
-    );
+    return null; // Button rendered by BottomLeftButtons
   }
 
   return (

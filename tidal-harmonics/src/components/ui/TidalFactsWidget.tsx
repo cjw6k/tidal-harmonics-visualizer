@@ -160,11 +160,11 @@ export function TidalFactsWidget() {
 
   return (
     <div
-      className="fixed bottom-4 right-4 z-30 max-w-xs"
+      className="w-full"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="bg-slate-900/95 backdrop-blur-sm rounded-lg p-3 border border-slate-700 shadow-lg">
+      <div className="bg-slate-800/80 backdrop-blur-sm rounded-lg p-3">
         <div className="flex items-start gap-2">
           <span className="text-xl">{currentFact.icon}</span>
           <div className="flex-1">
