@@ -345,7 +345,7 @@ test.describe('Tutorial Animation Capture', () => {
   test('capture single step (dev/debug)', async ({ page }) => {
     // Use this test for debugging a specific step
     const CHAPTER = 0; // Chapter 1
-    const STEP = 1; // Step 2 (Zooming In) - debug blank screen
+    const STEP = 2; // Step 3 (The Tidal Bulge)
 
     // Capture all console messages to debug infinite loop
     page.on('console', msg => {
