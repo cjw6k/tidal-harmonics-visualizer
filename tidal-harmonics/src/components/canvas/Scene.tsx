@@ -32,12 +32,12 @@ function TimeUpdater() {
   useFrame((_, delta) => {
     if (!playing) return;
 
-    // During Playwright tests with tutorial active, throttle epoch updates to 25 fps
+    // During Playwright tests with tutorial active, throttle epoch updates to 10 fps
     // to prevent render loop caused by rapid state updates overwhelming React's reconciler.
     // This issue only occurs in Playwright's headless/headed mode, not in regular browsers.
     if (tutorialActive && isPlaywrightTest()) {
       const now = performance.now();
-      if (now - lastTick.current < 40) { // 25 fps = 40ms
+      if (now - lastTick.current < 100) { // 10 fps = 100ms
         return;
       }
       lastTick.current = now;

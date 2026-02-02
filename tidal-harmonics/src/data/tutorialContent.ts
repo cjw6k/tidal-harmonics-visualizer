@@ -11,7 +11,7 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
         title: 'The Eternal Dance',
         content: "Watch the Moon orbit Earth. Its gravity reaches across 384,000 km to pull on our oceans.",
         duration: 6,
-        camera: { position: [80, 50, 80], target: [0, 0, 0], duration: 2 },
+        camera: { position: [50, 30, 50], target: [0, 0, 0], duration: 2 },
         showTidalBulge: false,
         showForceVectors: false,
         showOrbits: true,

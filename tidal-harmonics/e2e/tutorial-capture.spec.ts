@@ -333,10 +333,13 @@ test.describe('Tutorial Animation Capture', () => {
     // Wait for scene to initialize
     await waitForSceneReady(page);
 
-    // Enable Playwright test mode after page load (for TimeUpdater throttling)
+    // Enable Playwright test mode BEFORE tutorial starts (critical for throttling)
     await page.evaluate(() => {
       (window as Window & { __PLAYWRIGHT_TEST_MODE__?: boolean }).__PLAYWRIGHT_TEST_MODE__ = true;
     });
+
+    // Extra stabilization time for WebGL context
+    await page.waitForTimeout(1000);
 
     // Expose store for programmatic navigation (will be set up in app)
     // The app should expose window.__TUTORIAL_STORE__ = useTutorialStore
@@ -345,7 +348,7 @@ test.describe('Tutorial Animation Capture', () => {
   test('capture single step (dev/debug)', async ({ page }) => {
     // Use this test for debugging a specific step
     const CHAPTER = 0; // Chapter 1
-    const STEP = 4; // Step 5 (Differential Gravity)
+    const STEP = 0; // Step 1 (The Eternal Dance)
 
     // Capture all console messages to debug infinite loop
     page.on('console', msg => {
