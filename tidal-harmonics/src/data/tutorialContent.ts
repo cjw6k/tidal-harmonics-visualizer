@@ -346,11 +346,15 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
       {
         id: 'ch6-tropic',
         title: 'Tropic Tides',
-        content: "Maximum declination means maximum diurnal inequality. Some places get just ONE tide per day!",
+        content: "When the Moon reaches maximum declination (near the tropics), the bulge tilts most steeply. One side of Earth barely touches the bulge while the other plunges through. Result: some coasts see only ONE tide per day. P1 (solar diurnal) joins K1 and O1 in creating these 'tropic tides.'",
         duration: 8,
-        camera: { position: [35, 25, 35], target: [0, 0, 0], duration: 1.5 },
+        camera: { position: [35, 35, 35], target: [0, 0, 0], duration: 1.5 },
+        showTidalBulge: true,
+        tidalExaggeration: 60000,
         highlightConstituents: ['K1', 'O1', 'P1'],
-        timeSpeed: 0,
+        emphasizedConstituent: 'P1',
+        showPhasorDiagram: true,
+        timeSpeed: 7200,
       },
       {
         id: 'ch6-k2',
