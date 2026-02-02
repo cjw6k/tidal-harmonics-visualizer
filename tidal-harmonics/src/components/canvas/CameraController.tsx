@@ -1,39 +1,57 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { Vector3, PerspectiveCamera } from 'three';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
-import { useCameraStore } from '@/stores/cameraStore';
+import { useCameraStore, CAMERA_PRESET_CONFIGS } from '@/stores/cameraStore';
+import { useCelestialPositions } from '@/hooks/useCelestialPositions';
 
 export function CameraController() {
   const controlsRef = useRef<OrbitControlsImpl>(null);
   const { camera } = useThree();
   const preset = useCameraStore((s) => s.preset);
-  const presets = useCameraStore((s) => s.presets);
   const isTransitioning = useCameraStore((s) => s.isTransitioning);
   const setTransitioning = useCameraStore((s) => s.setTransitioning);
 
-  const targetPreset = presets[preset];
+  const { earth, moon, sun } = useCelestialPositions();
+  const presetConfig = CAMERA_PRESET_CONFIGS[preset];
+
+  // Compute actual target position based on which body we're viewing
+  const targetBodyPosition = useMemo(() => {
+    switch (preset) {
+      case 'moon':
+        return new Vector3(...moon);
+      case 'sun':
+        return new Vector3(...sun);
+      case 'earth':
+      case 'overview':
+      default:
+        return new Vector3(...earth);
+    }
+  }, [preset, earth, moon, sun]);
+
+  // Camera position = body position + offset
+  const targetCameraPosition = useMemo(() => {
+    const offset = new Vector3(...presetConfig.offset);
+    return targetBodyPosition.clone().add(offset);
+  }, [targetBodyPosition, presetConfig.offset]);
 
   useEffect(() => {
-    if (targetPreset?.fov !== undefined && camera instanceof PerspectiveCamera) {
-      camera.fov = targetPreset.fov;
+    if (presetConfig?.fov !== undefined && camera instanceof PerspectiveCamera) {
+      camera.fov = presetConfig.fov;
       camera.updateProjectionMatrix();
     }
-  }, [camera, targetPreset]);
+  }, [camera, presetConfig]);
 
   useFrame(() => {
     if (!controlsRef.current) return;
 
     if (isTransitioning) {
-      const targetPosition = new Vector3(...targetPreset.position);
-      const targetTarget = new Vector3(...targetPreset.target);
+      camera.position.lerp(targetCameraPosition, 0.05);
+      controlsRef.current.target.lerp(targetBodyPosition, 0.05);
 
-      camera.position.lerp(targetPosition, 0.05);
-      controlsRef.current.target.lerp(targetTarget, 0.05);
-
-      const positionDistance = camera.position.distanceTo(targetPosition);
-      const targetDistance = controlsRef.current.target.distanceTo(targetTarget);
+      const positionDistance = camera.position.distanceTo(targetCameraPosition);
+      const targetDistance = controlsRef.current.target.distanceTo(targetBodyPosition);
 
       if (positionDistance < 0.1 && targetDistance < 0.1) {
         setTransitioning(false);
