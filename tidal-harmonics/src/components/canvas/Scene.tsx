@@ -69,10 +69,11 @@ function TutorialCameraController() {
 }
 
 function CelestialHighlights() {
-  const { moon } = useCelestialPositions();
+  const { moon, sun } = useCelestialPositions();
   const { scale } = useScene();
   const highlightMoon = useSceneStore((s) => s.highlightMoon);
   const highlightEarth = useSceneStore((s) => s.highlightEarth);
+  const highlightSun = useSceneStore((s) => s.highlightSun);
   const pulseEffect = useSceneStore((s) => s.pulseEffect);
 
   return (
@@ -88,6 +89,12 @@ function CelestialHighlights() {
         radius={scale.EARTH_RADIUS}
         color="#22d3ee"
         visible={highlightEarth || pulseEffect}
+      />
+      <PulsingGlow
+        position={sun}
+        radius={scale.SUN_RADIUS}
+        color="#fbbf24"
+        visible={highlightSun}
       />
     </>
   );
