@@ -130,10 +130,11 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
         title: 'The Lunar Month',
         content: "Watch the Moon orbit. Every ~14 days, alignment shifts between spring and neap.",
         duration: 12,
-        camera: { position: [0, 100, 70], target: [0, 0, 0], duration: 2 },
+        camera: { position: [0, 55, 45], target: [0, 0, 0], duration: 2 },
         showTidalBulge: true,
         tidalExaggeration: 50000,
         showOrbits: true,
+        highlightMoon: true,
         timeSpeed: 518400, // 6 days/sec
       },
       {
