@@ -11,10 +11,11 @@ interface ForceArrow {
   label: string;
   color: string;
   type: 'stretch' | 'compress';
+  source: 'moon' | 'sun';
 }
 
 export function ForceField() {
-  const { moonRaw } = useCelestialPositions();
+  const { moonRaw, sunRaw } = useCelestialPositions();
   const { scale } = useScene();
   const tutorialActive = useTutorialStore((s) => s.isActive);
   const getCurrentStep = useTutorialStore((s) => s.getCurrentStep);
@@ -23,95 +24,142 @@ export function ForceField() {
   const currentStep = getCurrentStep();
   const showExplanation = !tutorialActive || currentStep?.step.id === 'ch1-differential';
 
-  const arrows = useMemo(() => {
+  // Show Sun forces in chapter 2 (spring/neap) or outside tutorial
+  const showSunForces = !tutorialActive || currentStep?.chapter.id === 'ch2-sun';
+
+  const { moonArrows, sunArrows, sunMoonAngle } = useMemo(() => {
     const earthR = scale.EARTH_RADIUS;
-    const arrowLength = earthR * 1.2;
+    const moonArrowLength = earthR * 1.2;
+    const sunArrowLength = moonArrowLength * 0.46; // Sun's tidal force is 46% of Moon's
 
     // Direction to Moon (normalized)
     const toMoon = new Vector3(moonRaw.x, moonRaw.y, moonRaw.z).normalize();
+    // Direction to Sun (normalized)
+    const toSun = new Vector3(sunRaw.x, sunRaw.y, sunRaw.z).normalize();
 
-    // Perpendicular directions (for compression zones)
+    // Calculate angle between Sun and Moon directions
+    const angle = Math.acos(Math.abs(toMoon.dot(toSun))) * (180 / Math.PI);
+
+    // Perpendicular directions for Moon (for compression zones)
     const up = new Vector3(0, 1, 0);
-    const perp1 = new Vector3().crossVectors(toMoon, up).normalize();
-    if (perp1.length() < 0.1) {
-      perp1.crossVectors(toMoon, new Vector3(1, 0, 0)).normalize();
+    const moonPerp1 = new Vector3().crossVectors(toMoon, up).normalize();
+    if (moonPerp1.length() < 0.1) {
+      moonPerp1.crossVectors(toMoon, new Vector3(1, 0, 0)).normalize();
     }
-    const perp2 = new Vector3().crossVectors(toMoon, perp1).normalize();
+    const moonPerp2 = new Vector3().crossVectors(toMoon, moonPerp1).normalize();
 
-    const result: ForceArrow[] = [];
+    // Perpendicular directions for Sun
+    const sunPerp1 = new Vector3().crossVectors(toSun, up).normalize();
+    if (sunPerp1.length() < 0.1) {
+      sunPerp1.crossVectors(toSun, new Vector3(1, 0, 0)).normalize();
+    }
+    const sunPerp2 = new Vector3().crossVectors(toSun, sunPerp1).normalize();
 
-    // === NEAR SIDE (facing Moon) - STRETCH OUTWARD ===
-    const nearPos = toMoon.clone().multiplyScalar(earthR);
-    const nearEnd = toMoon.clone().multiplyScalar(earthR + arrowLength);
-    result.push({
-      start: [nearPos.x, nearPos.y, nearPos.z],
-      end: [nearEnd.x, nearEnd.y, nearEnd.z],
-      label: 'Pulled toward Moon',
-      color: '#ef4444', // red
+    const moonResult: ForceArrow[] = [];
+    const sunResult: ForceArrow[] = [];
+
+    // === MOON FORCES (red/blue) ===
+    // Near side stretch
+    const moonNearPos = toMoon.clone().multiplyScalar(earthR);
+    const moonNearEnd = toMoon.clone().multiplyScalar(earthR + moonArrowLength);
+    moonResult.push({
+      start: [moonNearPos.x, moonNearPos.y, moonNearPos.z],
+      end: [moonNearEnd.x, moonNearEnd.y, moonNearEnd.z],
+      label: 'Moon pull',
+      color: '#ef4444',
       type: 'stretch',
+      source: 'moon',
     });
 
-    // === FAR SIDE (opposite Moon) - STRETCH OUTWARD (away from Moon) ===
-    const farPos = toMoon.clone().multiplyScalar(-earthR);
-    const farEnd = toMoon.clone().multiplyScalar(-earthR - arrowLength);
-    result.push({
-      start: [farPos.x, farPos.y, farPos.z],
-      end: [farEnd.x, farEnd.y, farEnd.z],
-      label: 'Pulled less, bulges out',
-      color: '#ef4444', // red
+    // Far side stretch
+    const moonFarPos = toMoon.clone().multiplyScalar(-earthR);
+    const moonFarEnd = toMoon.clone().multiplyScalar(-earthR - moonArrowLength);
+    moonResult.push({
+      start: [moonFarPos.x, moonFarPos.y, moonFarPos.z],
+      end: [moonFarEnd.x, moonFarEnd.y, moonFarEnd.z],
+      label: '',
+      color: '#ef4444',
       type: 'stretch',
+      source: 'moon',
     });
 
-    // === PERPENDICULAR ZONES - COMPRESSION (arrows point toward center) ===
-    // Only label one arrow - the visual pattern is self-explanatory
-    const compressLength = earthR * 0.8;
-
-    // Top (labeled)
-    const topPos = perp2.clone().multiplyScalar(earthR);
-    const topEnd = perp2.clone().multiplyScalar(earthR - compressLength);
-    result.push({
-      start: [topPos.x, topPos.y, topPos.z],
-      end: [topEnd.x, topEnd.y, topEnd.z],
-      label: 'Compressed',
-      color: '#3b82f6', // blue
-      type: 'compress',
-    });
-
-    // Bottom (no label - arrow speaks for itself)
-    const botPos = perp2.clone().multiplyScalar(-earthR);
-    const botEnd = perp2.clone().multiplyScalar(-earthR + compressLength);
-    result.push({
-      start: [botPos.x, botPos.y, botPos.z],
-      end: [botEnd.x, botEnd.y, botEnd.z],
+    // Moon compression (simplified - just top/bottom)
+    const moonCompressLength = earthR * 0.8;
+    const moonTopPos = moonPerp2.clone().multiplyScalar(earthR);
+    const moonTopEnd = moonPerp2.clone().multiplyScalar(earthR - moonCompressLength);
+    moonResult.push({
+      start: [moonTopPos.x, moonTopPos.y, moonTopPos.z],
+      end: [moonTopEnd.x, moonTopEnd.y, moonTopEnd.z],
       label: '',
-      color: '#3b82f6', // blue
+      color: '#3b82f6',
       type: 'compress',
+      source: 'moon',
     });
 
-    // Side 1 (no label)
-    const side1Pos = perp1.clone().multiplyScalar(earthR);
-    const side1End = perp1.clone().multiplyScalar(earthR - compressLength);
-    result.push({
-      start: [side1Pos.x, side1Pos.y, side1Pos.z],
-      end: [side1End.x, side1End.y, side1End.z],
+    const moonBotPos = moonPerp2.clone().multiplyScalar(-earthR);
+    const moonBotEnd = moonPerp2.clone().multiplyScalar(-earthR + moonCompressLength);
+    moonResult.push({
+      start: [moonBotPos.x, moonBotPos.y, moonBotPos.z],
+      end: [moonBotEnd.x, moonBotEnd.y, moonBotEnd.z],
       label: '',
-      color: '#3b82f6', // blue
+      color: '#3b82f6',
       type: 'compress',
+      source: 'moon',
     });
 
-    // Side 2 (no label)
-    const side2Pos = perp1.clone().multiplyScalar(-earthR);
-    const side2End = perp1.clone().multiplyScalar(-earthR + compressLength);
-    result.push({
-      start: [side2Pos.x, side2Pos.y, side2Pos.z],
-      end: [side2End.x, side2End.y, side2End.z],
+    // === SUN FORCES (orange/yellow, 46% size) ===
+    // Near side stretch
+    const sunNearPos = toSun.clone().multiplyScalar(earthR);
+    const sunNearEnd = toSun.clone().multiplyScalar(earthR + sunArrowLength);
+    sunResult.push({
+      start: [sunNearPos.x, sunNearPos.y, sunNearPos.z],
+      end: [sunNearEnd.x, sunNearEnd.y, sunNearEnd.z],
+      label: 'Sun pull',
+      color: '#f97316',
+      type: 'stretch',
+      source: 'sun',
+    });
+
+    // Far side stretch
+    const sunFarPos = toSun.clone().multiplyScalar(-earthR);
+    const sunFarEnd = toSun.clone().multiplyScalar(-earthR - sunArrowLength);
+    sunResult.push({
+      start: [sunFarPos.x, sunFarPos.y, sunFarPos.z],
+      end: [sunFarEnd.x, sunFarEnd.y, sunFarEnd.z],
       label: '',
-      color: '#3b82f6', // blue
-      type: 'compress',
+      color: '#f97316',
+      type: 'stretch',
+      source: 'sun',
     });
 
-    return result;
-  }, [moonRaw, scale]);
+    // Sun compression
+    const sunCompressLength = moonCompressLength * 0.46;
+    const sunTopPos = sunPerp2.clone().multiplyScalar(earthR);
+    const sunTopEnd = sunPerp2.clone().multiplyScalar(earthR - sunCompressLength);
+    sunResult.push({
+      start: [sunTopPos.x, sunTopPos.y, sunTopPos.z],
+      end: [sunTopEnd.x, sunTopEnd.y, sunTopEnd.z],
+      label: '',
+      color: '#fbbf24',
+      type: 'compress',
+      source: 'sun',
+    });
+
+    const sunBotPos = sunPerp2.clone().multiplyScalar(-earthR);
+    const sunBotEnd = sunPerp2.clone().multiplyScalar(-earthR + sunCompressLength);
+    sunResult.push({
+      start: [sunBotPos.x, sunBotPos.y, sunBotPos.z],
+      end: [sunBotEnd.x, sunBotEnd.y, sunBotEnd.z],
+      label: '',
+      color: '#fbbf24',
+      type: 'compress',
+      source: 'sun',
+    });
+
+    return { moonArrows: moonResult, sunArrows: sunResult, sunMoonAngle: angle };
+  }, [moonRaw, sunRaw, scale]);
+
+  const allArrows = showSunForces ? [...moonArrows, ...sunArrows] : moonArrows;
 
   return (
     <group>
@@ -150,8 +198,90 @@ export function ForceField() {
         </Html>
       )}
 
+      {/* Alignment indicator - shows Sun-Earth-Moon angle (top-right corner) */}
+      {showSunForces && (
+        <Html
+          position={[0, 0, 0]}
+          style={{
+            position: 'fixed',
+            top: '80px',
+            right: '380px',
+            pointerEvents: 'none',
+          }}
+          zIndexRange={[1, 10]}
+        >
+          <div
+            style={{
+              background: 'rgba(15, 23, 42, 0.95)',
+              padding: '12px',
+              borderRadius: '8px',
+              border: '1px solid rgba(100, 116, 139, 0.3)',
+              width: '120px',
+            }}
+          >
+            <div style={{ color: 'white', fontSize: '10px', fontWeight: 'bold', marginBottom: '8px', textAlign: 'center' }}>
+              Top View
+            </div>
+            <svg viewBox="0 0 100 100" width="96" height="96">
+              {/* Earth at center */}
+              <circle cx="50" cy="50" r="12" fill="#3b82f6" />
+              <text x="50" y="54" textAnchor="middle" fill="white" fontSize="8">E</text>
+
+              {/* Moon direction (from moonRaw, projected to 2D) */}
+              <line
+                x1="50"
+                y1="50"
+                x2={50 + (moonRaw.x / Math.sqrt(moonRaw.x * moonRaw.x + moonRaw.z * moonRaw.z || 1)) * 35}
+                y2={50 - (moonRaw.z / Math.sqrt(moonRaw.x * moonRaw.x + moonRaw.z * moonRaw.z || 1)) * 35}
+                stroke="#94a3b8"
+                strokeWidth="2"
+              />
+              <circle
+                cx={50 + (moonRaw.x / Math.sqrt(moonRaw.x * moonRaw.x + moonRaw.z * moonRaw.z || 1)) * 35}
+                cy={50 - (moonRaw.z / Math.sqrt(moonRaw.x * moonRaw.x + moonRaw.z * moonRaw.z || 1)) * 35}
+                r="6"
+                fill="#94a3b8"
+              />
+              <text
+                x={50 + (moonRaw.x / Math.sqrt(moonRaw.x * moonRaw.x + moonRaw.z * moonRaw.z || 1)) * 35}
+                y={54 - (moonRaw.z / Math.sqrt(moonRaw.x * moonRaw.x + moonRaw.z * moonRaw.z || 1)) * 35}
+                textAnchor="middle"
+                fill="white"
+                fontSize="6"
+              >
+                M
+              </text>
+
+              {/* Sun direction */}
+              <line
+                x1="50"
+                y1="50"
+                x2={50 + (sunRaw.x / Math.sqrt(sunRaw.x * sunRaw.x + sunRaw.z * sunRaw.z || 1)) * 40}
+                y2={50 - (sunRaw.z / Math.sqrt(sunRaw.x * sunRaw.x + sunRaw.z * sunRaw.z || 1)) * 40}
+                stroke="#f97316"
+                strokeWidth="1.5"
+                strokeDasharray="3,2"
+              />
+              <circle
+                cx={50 + (sunRaw.x / Math.sqrt(sunRaw.x * sunRaw.x + sunRaw.z * sunRaw.z || 1)) * 40}
+                cy={50 - (sunRaw.z / Math.sqrt(sunRaw.x * sunRaw.x + sunRaw.z * sunRaw.z || 1)) * 40}
+                r="5"
+                fill="#f97316"
+              />
+            </svg>
+            <div style={{ color: '#94a3b8', fontSize: '9px', textAlign: 'center', marginTop: '4px' }}>
+              Angle: {sunMoonAngle.toFixed(0)}°
+              <br />
+              <span style={{ color: sunMoonAngle < 30 || sunMoonAngle > 150 ? '#22c55e' : sunMoonAngle > 60 && sunMoonAngle < 120 ? '#f97316' : '#94a3b8' }}>
+                {sunMoonAngle < 30 || sunMoonAngle > 150 ? 'SPRING' : sunMoonAngle > 60 && sunMoonAngle < 120 ? 'NEAP' : ''}
+              </span>
+            </div>
+          </div>
+        </Html>
+      )}
+
       {/* Force arrows */}
-      {arrows.map((arrow, i) => {
+      {allArrows.map((arrow, i) => {
         const dir = new Vector3(
           arrow.end[0] - arrow.start[0],
           arrow.end[1] - arrow.start[1],
