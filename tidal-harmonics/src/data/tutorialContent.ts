@@ -290,10 +290,12 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
       {
         id: 'ch5-n2',
         title: 'N2: The Elliptic Constituent',
-        content: "N2 captures this distance variation. It modulates M2 with a ~27.6 day period.",
+        content: "N2 is M2's sideband — a slightly different frequency that beats against it. Their interference creates amplitude modulation with a 27.6-day period, exactly matching perigee-to-perigee.",
         duration: 8,
         camera: { position: [35, 18, 35], target: [0, 0, 0], duration: 1.5 },
         highlightConstituents: ['M2', 'N2'],
+        emphasizedConstituent: 'N2',
+        showPhasorDiagram: true,
         timeSpeed: 172800,
       },
       {
