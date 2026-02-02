@@ -569,9 +569,10 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
       {
         id: 'ch10-full',
         title: '37 Constituents',
-        content: "NOAA uses 37 major constituents. Click any in the phasor diagram to learn more!",
-        duration: 8,
+        content: "We've explored ~10 constituents. NOAA uses 37 'major' ones for operational predictions—and there are hundreds more. Yet the principle remains: each is a sine wave with known frequency. Add them up. Nature is complex, but finite and predictable.",
+        duration: 0, // Manual advance - pivotal revelation
         camera: { position: [45, 28, 45], target: [0, 0, 0], duration: 1.5 },
+        showPhasorDiagram: true,
         highlightConstituents: ['M2', 'S2', 'N2', 'K1', 'O1', 'K2', 'P1', 'Q1', 'M4', 'Mf', 'Mm'],
         timeSpeed: 7200,
       },
