@@ -115,11 +115,15 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
         title: 'Spring Tides',
         content: "Maximum tidal range! 'Spring' means to leap up — nothing to do with the season.",
         duration: 6,
-        camera: { position: [50, 20, 10], target: [0, 0, 0], duration: 1.5 },
+        camera: { position: [40, 30, 30], target: [0, 0, 0], duration: 1.5 },
         showTidalBulge: true,
         tidalExaggeration: 100000,
         timeSpeed: 0,
         pulseEffect: true,
+        highlightSun: true,
+        annotations: [
+          { id: 'max', text: 'MAXIMUM RANGE', position: [0, 3, 0], style: 'highlight' },
+        ],
       },
       {
         id: 'ch2-watch-cycle',

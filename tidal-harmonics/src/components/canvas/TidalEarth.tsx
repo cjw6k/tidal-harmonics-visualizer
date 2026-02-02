@@ -74,6 +74,7 @@ export function TidalEarth() {
   const { moon, sun } = useCelestialPositions();
   const { scale } = useScene();
   const tidalExaggeration = useSceneStore((s) => s.tidalExaggeration);
+  const pulseEffect = useSceneStore((s) => s.pulseEffect);
   const playing = useTimeStore((s) => s.playing);
   const speed = useTimeStore((s) => s.speed);
 
@@ -90,7 +91,7 @@ export function TidalEarth() {
     [texture]
   );
 
-  useFrame((_, delta) => {
+  useFrame(({ clock }, delta) => {
     // Update moon/sun directions (normalized)
     uniforms.moonDirection.value.set(moon[0], moon[1], moon[2]).normalize();
     uniforms.sunDirection.value.set(sun[0], sun[1], sun[2]).normalize();
@@ -100,7 +101,20 @@ export function TidalEarth() {
     // Instead, use a visual amplitude calibrated to tutorial exaggeration levels:
     // At 50,000× exaggeration → 12% bulge (clearly visible)
     const pedagogicalAmplitude = 0.12 / 50_000; // 2.4e-6
-    uniforms.tidalAmplitude.value = pedagogicalAmplitude * tidalExaggeration;
+    let amplitude = pedagogicalAmplitude * tidalExaggeration;
+
+    // Pulse effect: breathe the tidal bulge to emphasize maximum tidal range
+    if (pulseEffect) {
+      // Oscillate between 70% and 130% of base amplitude at ~1Hz for dramatic effect
+      const pulse = Math.sin(clock.elapsedTime * 2) * 0.30 + 1.0;
+      amplitude *= pulse;
+      // Also pulse the color intensity more dramatically
+      uniforms.tidalIntensity.value = 1.0 + Math.sin(clock.elapsedTime * 2) * 0.5;
+    } else {
+      uniforms.tidalIntensity.value = 1.0;
+    }
+
+    uniforms.tidalAmplitude.value = amplitude;
 
     // Earth rotation
     if (meshRef.current && playing) {
