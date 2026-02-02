@@ -333,10 +333,14 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
       {
         id: 'ch6-inequality',
         title: 'Diurnal Inequality',
-        content: "When the Moon is far north or south, the two daily high tides become unequal.",
+        content: "WHY unequal? The bulge tilts with the Moon. As Earth rotates, you pass through DIFFERENT slices of the bulge—one thicker, one thinner. O1 captures this lunar asymmetry, beating with K1 to modulate the inequality over the month.",
         duration: 8,
-        camera: { position: [30, 20, 30], target: [0, 0, 0], duration: 1.5 },
+        camera: { position: [35, 25, 35], target: [0, 0, 0], duration: 1.5 },
+        showTidalBulge: true,
+        tidalExaggeration: 60000,
         highlightConstituents: ['K1', 'O1'],
+        emphasizedConstituent: 'O1',
+        showPhasorDiagram: true,
         timeSpeed: 7200,
       },
       {
