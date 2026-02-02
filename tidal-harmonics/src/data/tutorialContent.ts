@@ -527,11 +527,15 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
       {
         id: 'ch9-formula',
         title: 'The Prediction',
-        content: "Sum all constituents: height = Σ Aᵢ cos(ωᵢt + φᵢ). Simple math, remarkably accurate!",
-        duration: 7,
+        content: "height = Σ Aᵢ cos(ωᵢt + φᵢ) — that's it. The frequencies (ω) come from astronomy: eternal, predictable. The amplitudes (A) and phases (φ) come from measurement at each location. Measure once, predict forever. Watch the phasor sum trace out the tide curve in real time.",
+        duration: 0, // Manual advance - this is THE capstone
         camera: { position: [40, 22, 40], target: [0, 0, 0], duration: 1 },
+        showTidalBulge: true,
+        tidalExaggeration: 50000,
+        showPhasorDiagram: true,
         highlightConstituents: ['M2', 'S2', 'K1', 'O1', 'N2', 'K2', 'P1', 'Q1'],
         timeSpeed: 10800,
+        interactive: true,
       },
       {
         id: 'ch9-kelvin',
