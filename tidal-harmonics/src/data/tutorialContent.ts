@@ -199,6 +199,7 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
         camera: { position: [30, 15, 30], target: [0, 0, 0], duration: 1.5 },
         highlightConstituents: ['M2', 'S2'],
         timeSpeed: 7200,
+        showPhasorDiagram: true,
       },
       {
         id: 'ch3-m2',

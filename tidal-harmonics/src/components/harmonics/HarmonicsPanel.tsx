@@ -7,6 +7,7 @@ const MAX_RECENT_TOOLS = 6;
 const PANEL_MINIMIZED_KEY = 'tidal-harmonics-panel-minimized';
 const FAVORITE_TOOLS_KEY = 'tidal-harmonics-favorite-tools';
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
+import { useTutorialStore } from '@/stores/tutorialStore';
 import { StationSelector } from './StationSelector';
 import { ConstituentToggles } from './ConstituentToggles';
 import { PhasorDiagram } from './PhasorDiagram';
@@ -278,6 +279,15 @@ export function HarmonicsPanel() {
   const showTideCurve = useHarmonicsStore((s) => s.showTideCurve);
   const togglePhasorDiagram = useHarmonicsStore((s) => s.togglePhasorDiagram);
   const toggleTideCurve = useHarmonicsStore((s) => s.toggleTideCurve);
+
+  // Check if tutorial is highlighting the phasor diagram
+  const tutorialIsActive = useTutorialStore((s) => s.isActive);
+  const tutorialProgress = useTutorialStore((s) => s.progress);
+  const highlightPhasorDiagram = useMemo(() => {
+    if (!tutorialIsActive) return false;
+    const currentStep = useTutorialStore.getState().getCurrentStep();
+    return currentStep?.step?.id === 'ch3-phasor';
+  }, [tutorialIsActive, tutorialProgress]);
 
   const [selectedConstituent, setSelectedConstituent] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>('charts');
@@ -862,7 +872,12 @@ export function HarmonicsPanel() {
         </button>
 
         {/* Still show active visualizations when minimized */}
-        {showPhasorDiagram && <PhasorDiagram onConstituentClick={setSelectedConstituent} />}
+        {showPhasorDiagram && highlightPhasorDiagram && (
+          <div className="fixed bottom-[180px] right-4 z-50 animate-in fade-in slide-in-from-right-4 duration-300">
+            <PhasorDiagram onConstituentClick={setSelectedConstituent} highlighted={true} />
+          </div>
+        )}
+        {showPhasorDiagram && !highlightPhasorDiagram && <PhasorDiagram onConstituentClick={setSelectedConstituent} highlighted={false} />}
         {showTideCurve && <TideCurve />}
 
         <Suspense fallback={<LoadingFallback />}>
@@ -1147,7 +1162,14 @@ export function HarmonicsPanel() {
       </div>
 
       {/* Core visualizations (not lazy) */}
-      {showPhasorDiagram && <PhasorDiagram onConstituentClick={setSelectedConstituent} />}
+      {/* When highlighted (tutorial mode), render phasor diagram in prominent floating position */}
+      {showPhasorDiagram && highlightPhasorDiagram && (
+        <div className="fixed bottom-[180px] right-4 z-50 animate-in fade-in slide-in-from-right-4 duration-300">
+          <PhasorDiagram onConstituentClick={setSelectedConstituent} highlighted={true} />
+        </div>
+      )}
+      {/* Normal position when not highlighted */}
+      {showPhasorDiagram && !highlightPhasorDiagram && <PhasorDiagram onConstituentClick={setSelectedConstituent} highlighted={false} />}
       {showTideCurve && <TideCurve />}
 
       {/* Lazy-loaded toggle panels */}

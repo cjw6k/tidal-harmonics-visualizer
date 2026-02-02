@@ -16,6 +16,7 @@ interface SceneSnapshot {
   highlightSun: boolean;
   highlightEarth: boolean;
   pulseEffect: boolean;
+  showPhasorDiagram: boolean;
 }
 
 /**
@@ -52,6 +53,7 @@ export function useTutorialEffects() {
         highlightSun: scene.highlightSun,
         highlightEarth: scene.highlightEarth,
         pulseEffect: scene.pulseEffect,
+        showPhasorDiagram: harmonics.showPhasorDiagram,
       };
     }
 
@@ -86,6 +88,11 @@ export function useTutorialEffects() {
 
       // Restore harmonics
       useHarmonicsStore.getState().setAllConstituentsVisible(orig.visibleConstituents);
+
+      // Restore phasor diagram visibility
+      if (useHarmonicsStore.getState().showPhasorDiagram !== orig.showPhasorDiagram) {
+        useHarmonicsStore.getState().togglePhasorDiagram();
+      }
 
       originalSettings.current = null;
     }
@@ -159,5 +166,12 @@ export function useTutorialEffects() {
     sceneActions.setHighlightSun(step.highlightSun ?? false);
     sceneActions.setHighlightEarth(step.highlightEarth ?? false);
     sceneActions.setPulseEffect(step.pulseEffect ?? false);
+
+    // Apply phasor diagram visibility
+    if (step.showPhasorDiagram !== undefined) {
+      if (harmonicsActions.showPhasorDiagram !== step.showPhasorDiagram) {
+        harmonicsActions.togglePhasorDiagram();
+      }
+    }
   }, [isActive, progress.chapterIndex, progress.stepIndex]);
 }

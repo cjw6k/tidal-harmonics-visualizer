@@ -22,9 +22,10 @@ const FAMILY_COLORS: Record<string, string> = {
 
 interface PhasorDiagramProps {
   onConstituentClick?: (symbol: string) => void;
+  highlighted?: boolean;
 }
 
-export function PhasorDiagram({ onConstituentClick }: PhasorDiagramProps) {
+export function PhasorDiagram({ onConstituentClick, highlighted = false }: PhasorDiagramProps) {
   const epoch = useTimeStore((s) => s.epoch);
   const station = useHarmonicsStore((s) => s.selectedStation);
   const visibleConstituents = useHarmonicsStore((s) => s.visibleConstituents);
@@ -81,8 +82,14 @@ export function PhasorDiagram({ onConstituentClick }: PhasorDiagramProps) {
   }
 
   return (
-    <div className="bg-slate-900 rounded-lg p-2">
-      <h3 className="text-xs text-slate-400 mb-1 px-2">Phasor Diagram</h3>
+    <div className={`bg-slate-900 rounded-lg p-2 transition-all duration-300 ${
+      highlighted
+        ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-slate-900 shadow-[0_0_20px_rgba(59,130,246,0.5)] animate-pulse'
+        : ''
+    }`}>
+      <h3 className={`text-xs mb-1 px-2 ${highlighted ? 'text-blue-300 font-semibold' : 'text-slate-400'}`}>
+        {highlighted ? '👁️ Phasor Diagram' : 'Phasor Diagram'}
+      </h3>
       <svg width={300} height={300} className="block">
         {/* Background grid circles */}
         {[25, 50, 75, 100, 125].map((r) => (

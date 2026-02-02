@@ -35,6 +35,7 @@ export interface TutorialStep {
   highlightSun?: boolean;
   pulseEffect?: boolean; // Pulse the tidal bulge for emphasis
   epoch?: number; // Set simulation time to specific epoch (Unix timestamp ms)
+  showPhasorDiagram?: boolean; // Show/hide the phasor diagram panel
 }
 
 export interface TutorialChapter {
