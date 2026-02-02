@@ -30,8 +30,14 @@ export function KeyboardShortcutsHelp() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-slate-900 rounded-2xl shadow-2xl border border-slate-700 max-w-md w-full mx-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      onClick={() => setIsOpen(false)}
+    >
+      <div
+        className="bg-slate-900 rounded-2xl shadow-2xl border border-slate-700 max-w-md w-full mx-4"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="px-6 py-4 border-b border-slate-700 flex justify-between items-center">
           <h2 className="text-lg font-bold text-white">Keyboard Shortcuts</h2>
           <button
