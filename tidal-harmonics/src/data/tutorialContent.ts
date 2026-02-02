@@ -271,6 +271,10 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
         camera: { position: [80, 40, 80], target: [0, 0, 0], duration: 2 },
         showOrbits: true,
         timeSpeed: 259200, // 3 days/sec
+        annotations: [
+          { id: 'perigee', text: 'Perigee (356,000 km)', position: [25, 2, -20], style: 'info' },
+          { id: 'apogee', text: 'Apogee (407,000 km)', position: [-28, 2, 22], style: 'info' },
+        ],
       },
       {
         id: 'ch5-inverse-cube',
