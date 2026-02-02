@@ -513,11 +513,16 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
       {
         id: 'ch9-constants',
         title: 'Harmonic Constants',
-        content: "Scientists measure years of data to extract each location's unique amplitudes and phases.",
-        duration: 6,
+        content: "How do scientists extract these constants? Harmonic analysis — essentially least-squares fitting at known astronomical frequencies. Feed in years of tide gauge data, out come amplitudes and phases for each constituent. It's Fourier analysis with prior knowledge: we know the frequencies, we just need each location's response coefficients.",
+        duration: 0, // Manual advance - conceptually important
         camera: { position: [40, 22, 40], target: [0, 0, 0], duration: 1 },
+        showTidalBulge: true,
+        tidalExaggeration: 50000,
+        showPhasorDiagram: true,
         highlightConstituents: ['M2', 'S2', 'K1', 'O1', 'N2', 'K2'],
+        emphasizedConstituent: 'M2',
         timeSpeed: 3600,
+        interactive: true,
       },
       {
         id: 'ch9-formula',
