@@ -451,10 +451,14 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
       {
         id: 'ch8-mf',
         title: 'Mf: The Fortnightly',
-        content: "Mf has a ~13.7 day period. It slightly raises mean sea level during spring tides.",
+        content: "The Moon crosses Earth's equatorial plane twice each month. At these crossings, both hemispheres feel equal tidal pulls. Between crossings, one hemisphere experiences slightly stronger forces. This north-south oscillation creates Mf — a ~13.7 day modulation of mean sea level.",
         duration: 7,
         camera: { position: [50, 30, 50], target: [0, 0, 0], duration: 1.5 },
-        highlightConstituents: ['Mf', 'Mm'],
+        showTidalBulge: true,
+        tidalExaggeration: 50000,
+        showPhasorDiagram: true,
+        highlightConstituents: ['Mf', 'M2'],
+        emphasizedConstituent: 'Mf',
         timeSpeed: 604800,
       },
       {
