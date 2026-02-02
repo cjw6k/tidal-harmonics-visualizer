@@ -167,10 +167,14 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
         title: 'Reality is Messy',
         content: "Real tides are complex. Elliptical orbits, tilted axes, continental shelves — many factors combine.",
         duration: 6,
-        camera: { position: [45, 25, 45], target: [0, 0, 0], duration: 2 },
+        camera: { position: [50, 35, 50], target: [0, 0, 0], duration: 2 },
         showTidalBulge: true,
-        tidalExaggeration: 40000,
-        timeSpeed: 86400,
+        tidalExaggeration: 55000,
+        showForceVectors: true,
+        showOrbits: true,
+        highlightMoon: true,
+        highlightSun: true,
+        timeSpeed: 172800, // 2 days/sec - show complexity in motion
       },
       {
         id: 'ch3-fourier',
