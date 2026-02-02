@@ -1,9 +1,13 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo } from 'react';
 import { format } from 'date-fns';
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
 import { useTimeStore } from '@/stores/timeStore';
 import { predictTideSeries, findExtremes } from '@/lib/harmonics';
 
+/**
+ * PrintReport - renders hidden content that appears only when printing.
+ * The print button is in ExportMenu.tsx.
+ */
 export function PrintReport() {
   const station = useHarmonicsStore((s) => s.selectedStation);
   const epoch = useTimeStore((s) => s.epoch);
@@ -37,30 +41,10 @@ export function PrintReport() {
     };
   }, [station, epoch]);
 
-  const handlePrint = useCallback(() => {
-    window.print();
-  }, []);
-
   if (!station) return null;
 
   return (
     <>
-      <button
-        onClick={handlePrint}
-        className="p-2 rounded border bg-slate-700 border-slate-600 text-slate-400 hover:text-cyan-400 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400"
-        title="Print tide report"
-        aria-label="Print tide report"
-      >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-          />
-        </svg>
-      </button>
-
       {/* Print-only content */}
       <div className="hidden print:block print-report">
         <header className="print-header">
