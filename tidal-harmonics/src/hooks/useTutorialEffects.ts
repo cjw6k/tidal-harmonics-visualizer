@@ -129,6 +129,11 @@ export function useTutorialEffects() {
       sceneActions.setShowOrbits(step.showOrbits);
     }
 
+    // Apply epoch if specified (set before time speed to ensure correct position)
+    if (step.epoch !== undefined) {
+      timeActions.setDate(new Date(step.epoch));
+    }
+
     // Apply time speed (0 means pause)
     if (step.timeSpeed !== undefined) {
       if (step.timeSpeed === 0) {

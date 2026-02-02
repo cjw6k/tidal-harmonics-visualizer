@@ -34,6 +34,7 @@ export interface TutorialStep {
   highlightEarth?: boolean;
   highlightSun?: boolean;
   pulseEffect?: boolean; // Pulse the tidal bulge for emphasis
+  epoch?: number; // Set simulation time to specific epoch (Unix timestamp ms)
 }
 
 export interface TutorialChapter {
