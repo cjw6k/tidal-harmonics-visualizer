@@ -160,7 +160,7 @@ export function TidalFactsWidget() {
 
   return (
     <div
-      className="fixed bottom-32 left-4 z-30 max-w-xs"
+      className="fixed bottom-4 right-4 z-30 max-w-xs"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
