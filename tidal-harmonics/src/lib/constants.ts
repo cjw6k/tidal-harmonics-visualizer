@@ -51,9 +51,6 @@ export const TEXTURE_URLS = {
   moon: {
     surface2k: `${BASE}textures/moon/moon_2k.jpg`,
   },
-  sun: {
-    surface2k: `${BASE}textures/sun/sun_2k.jpg`,
-  },
 } as const;
 
 // Julian Date constants

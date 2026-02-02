@@ -1,10 +1,9 @@
 import { useRef, useMemo } from 'react';
-import { useFrame, useLoader } from '@react-three/fiber';
-import { TextureLoader, AdditiveBlending, BackSide } from 'three';
+import { useFrame } from '@react-three/fiber';
+import { AdditiveBlending, BackSide } from 'three';
 import type { ShaderMaterial } from 'three';
 import { useScene } from '@/hooks/useScene';
 import { useCelestialPositions } from '@/hooks/useCelestialPositions';
-import { TEXTURE_URLS } from '@/lib/constants';
 
 // Simplex noise for surface turbulence
 const noiseFunction = `
@@ -99,7 +98,6 @@ const sunVertexShader = `
 `;
 
 const sunFragmentShader = `
-  uniform sampler2D map;
   uniform float time;
 
   varying vec2 vUv;
@@ -109,8 +107,7 @@ const sunFragmentShader = `
   ${noiseFunction}
 
   void main() {
-    // Base texture
-    vec3 texColor = texture2D(map, vUv).rgb;
+    // Fully procedural - no texture needed
 
     // Animated surface turbulence - multiple layers for complexity
     vec3 noisePos = vPosition * 2.0 + vec3(time * 0.05, time * 0.03, time * 0.04);
@@ -165,8 +162,8 @@ const sunFragmentShader = `
     // Apply subtle edge variation and pulse
     surfaceColor *= edgeFactor * deepPulse;
 
-    // Blend with original texture for photorealistic detail
-    vec3 finalColor = mix(surfaceColor, texColor * 1.3, 0.25);
+    // Final surface color (fully procedural)
+    vec3 finalColor = surfaceColor;
 
     // Final intensity boost - make it HOT
     finalColor *= 1.5 * pulse;
@@ -260,15 +257,13 @@ const coronaFragmentShader = `
 export function Sun() {
   const { scale } = useScene();
   const { sun } = useCelestialPositions();
-  const texture = useLoader(TextureLoader, TEXTURE_URLS.sun.surface2k);
   const materialRef = useRef<ShaderMaterial>(null);
 
   const uniforms = useMemo(
     () => ({
-      map: { value: texture },
       time: { value: 0 },
     }),
-    [texture]
+    []
   );
 
   // Multiple corona layers for soft falloff - increased intensity for dramatic effect
