@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useTimeStore } from '@/stores/timeStore';
 import { useHarmonicsStore } from '@/stores/harmonicsStore';
+import { useTutorialStore } from '@/stores/tutorialStore';
 import { predictTide } from '@/lib/harmonics';
 
 /**
@@ -33,7 +34,8 @@ function estimateCurrentSpeed(rate: number, tidalRange: number): number {
 }
 
 export function TidalCurrentIndicator() {
-  const epoch = useTimeStore((s) => s.epoch);
+  const tutorialActive = useTutorialStore((s) => s.isActive);
+  const epoch = useTimeStore((s) => tutorialActive ? 0 : s.epoch);
   const station = useHarmonicsStore((s) => s.selectedStation);
 
   const { rate, direction, currentSpeed, phase } = useMemo(() => {
@@ -72,6 +74,9 @@ export function TidalCurrentIndicator() {
       phase: phaseDesc,
     };
   }, [epoch, station]);
+
+  // Hide during tutorial to reduce visual clutter
+  if (tutorialActive) return null;
 
   if (!station) return null;
 
