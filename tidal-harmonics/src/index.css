@@ -121,10 +121,15 @@ button:active:not(:disabled),
   z-index: 1 !important;
 }
 
-/* Custom scrollbar for panels - subtle styling */
+/* Custom scrollbar for panels - show on hover only */
 .scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: rgba(100, 116, 139, 0.3) transparent;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.2s ease;
+}
+
+.scrollbar-thin:hover {
+  scrollbar-color: rgba(100, 116, 139, 0.4) transparent;
 }
 
 .scrollbar-thin::-webkit-scrollbar {
@@ -136,12 +141,17 @@ button:active:not(:disabled),
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background-color: rgba(100, 116, 139, 0.3);
+  background-color: transparent;
   border-radius: 2px;
+  transition: background-color 0.2s ease;
+}
+
+.scrollbar-thin:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 116, 139, 0.4);
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(100, 116, 139, 0.5);
+  background-color: rgba(100, 116, 139, 0.6);
 }
 
 /* Animations */
