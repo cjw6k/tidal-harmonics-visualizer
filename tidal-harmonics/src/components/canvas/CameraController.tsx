@@ -23,20 +23,25 @@ export function CameraController() {
   }, [camera, targetPreset]);
 
   useFrame(() => {
-    if (!controlsRef.current || !isTransitioning) return;
+    if (!controlsRef.current) return;
 
-    const targetPosition = new Vector3(...targetPreset.position);
-    const targetTarget = new Vector3(...targetPreset.target);
+    if (isTransitioning) {
+      const targetPosition = new Vector3(...targetPreset.position);
+      const targetTarget = new Vector3(...targetPreset.target);
 
-    camera.position.lerp(targetPosition, 0.05);
-    controlsRef.current.target.lerp(targetTarget, 0.05);
+      camera.position.lerp(targetPosition, 0.05);
+      controlsRef.current.target.lerp(targetTarget, 0.05);
 
-    const positionDistance = camera.position.distanceTo(targetPosition);
-    const targetDistance = controlsRef.current.target.distanceTo(targetTarget);
+      const positionDistance = camera.position.distanceTo(targetPosition);
+      const targetDistance = controlsRef.current.target.distanceTo(targetTarget);
 
-    if (positionDistance < 0.1 && targetDistance < 0.1) {
-      setTransitioning(false);
+      if (positionDistance < 0.1 && targetDistance < 0.1) {
+        setTransitioning(false);
+      }
     }
+
+    // Always update controls to keep them in sync
+    controlsRef.current.update();
   });
 
   return (
