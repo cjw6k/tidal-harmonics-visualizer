@@ -321,10 +321,13 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
       {
         id: 'ch6-tilt-intro',
         title: 'Tilted Orbits',
-        content: "The Moon and Sun don't stay over the equator. Their north-south movement affects tides.",
-        duration: 7,
+        content: "Neither the Moon nor Sun stays over the equator—they bob north and south. This 'declination' breaks the symmetry of each day's two tides, creating K1: a DIURNAL (once-daily) constituent.",
+        duration: 8,
         camera: { position: [60, 35, 60], target: [0, 0, 0], duration: 2 },
         showOrbits: true,
+        highlightConstituents: ['K1'],
+        emphasizedConstituent: 'K1',
+        showPhasorDiagram: true,
         timeSpeed: 172800,
       },
       {
