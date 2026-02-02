@@ -379,11 +379,14 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
       {
         id: 'ch7-distortion',
         title: 'Wave Distortion',
-        content: "In shallow water, tides are no longer simple sine waves. Friction and depth distort them.",
-        duration: 7,
+        content: "In the deep ocean, M2 propagates as a clean sinusoid. But as the tidal wave enters shallow water—continental shelves, bays, estuaries—the crest travels faster than the trough (more water depth = higher speed). The wave 'steepens': rises quickly, falls slowly. Engineers call this harmonic distortion. Fourier decomposition reveals new frequencies that didn't exist in the deep ocean.",
+        duration: 8,
         camera: { position: [40, 22, 40], target: [0, 0, 0], duration: 2 },
         showTidalBulge: true,
-        tidalExaggeration: 40000,
+        tidalExaggeration: 60000,
+        highlightConstituents: ['M2'],
+        emphasizedConstituent: 'M2',
+        showPhasorDiagram: true,
         timeSpeed: 7200,
       },
       {
