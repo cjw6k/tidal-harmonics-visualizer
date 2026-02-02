@@ -7,7 +7,7 @@ import { WelcomeModal } from '@/components/ui/WelcomeModal';
 import { TidalFactsWidget } from '@/components/ui/TidalFactsWidget';
 import { InstallPrompt } from '@/components/ui/InstallPrompt';
 import { OfflineIndicator } from '@/components/ui/OfflineIndicator';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { TopBarCluster } from '@/components/ui/TopBarCluster';
 import { TutorialOverlay } from '@/components/tutorial/TutorialOverlay';
 import { TutorialOverlayEffects } from '@/components/tutorial/TutorialOverlayEffects';
 import { TutorialButton } from '@/components/tutorial/TutorialButton';
@@ -46,9 +46,7 @@ function App() {
       <TidalFactsWidget />
       <InstallPrompt />
       <OfflineIndicator />
-      <div className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10">
-        <ThemeToggle />
-      </div>
+      <TopBarCluster />
     </div>
   );
 }
