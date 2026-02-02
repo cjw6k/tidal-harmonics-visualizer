@@ -405,10 +405,14 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
       {
         id: 'ch7-asymmetry',
         title: 'Flood vs. Ebb',
-        content: "Shallow water constituents can make flood tides rush in faster than ebb tides drain out.",
-        duration: 7,
+        content: "Here's where M4 changes everything. M4 has twice M2's frequency, so it cycles 4 times for every 2 M2 cycles. The PHASE relationship determines the asymmetry: when M4 peaks align with M2's rising slope, it steepens the flood (faster rise). When M4 troughs align with M2's falling slope, it stretches the ebb (slower fall). Result: 'fast flood, slow ebb'—or the reverse, depending on local bathymetry. MS4 (from M2+S2 interaction) adds spring/neap modulation. This asymmetry is why some harbors fill twice as fast as they drain.",
+        duration: 8,
         camera: { position: [35, 18, 35], target: [0, 0, 0], duration: 1 },
+        showTidalBulge: true,
+        tidalExaggeration: 60000,
         highlightConstituents: ['M2', 'M4', 'MS4'],
+        emphasizedConstituent: 'M4',
+        showPhasorDiagram: true,
         timeSpeed: 7200,
       },
       {
