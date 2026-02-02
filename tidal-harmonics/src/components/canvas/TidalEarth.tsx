@@ -1,6 +1,6 @@
 import { useRef, useMemo } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
-import { TextureLoader, Vector3, Texture } from 'three';
+import { TextureLoader, Vector3, Texture, Quaternion } from 'three';
 import type { Mesh } from 'three';
 import { useCelestialPositions } from '@/hooks/useCelestialPositions';
 import { useScene } from '@/hooks/useScene';
@@ -92,9 +92,28 @@ export function TidalEarth() {
   );
 
   useFrame(({ clock }, delta) => {
-    // Update moon/sun directions (normalized)
-    uniforms.moonDirection.value.set(moon[0], moon[1], moon[2]).normalize();
-    uniforms.sunDirection.value.set(sun[0], sun[1], sun[2]).normalize();
+    // Earth rotation (do this first so we can use the rotation to transform directions)
+    if (meshRef.current && playing) {
+      meshRef.current.rotation.y += ROTATION_SPEEDS.EARTH * delta * speed;
+    }
+
+    // Transform moon/sun directions from world space to object space
+    // This ensures the tidal bulge always points toward the Moon regardless of Earth's rotation
+    const moonDir = new Vector3(moon[0], moon[1], moon[2]).normalize();
+    const sunDir = new Vector3(sun[0], sun[1], sun[2]).normalize();
+
+    if (meshRef.current) {
+      // Get inverse of mesh rotation to transform world -> object space
+      const inverseQuat = new Quaternion();
+      meshRef.current.getWorldQuaternion(inverseQuat);
+      inverseQuat.invert();
+
+      moonDir.applyQuaternion(inverseQuat);
+      sunDir.applyQuaternion(inverseQuat);
+    }
+
+    uniforms.moonDirection.value.copy(moonDir);
+    uniforms.sunDirection.value.copy(sunDir);
 
     // Pedagogical tidal amplitude for visible effect
     // Physical amplitude (0.53m / 6,371km = 8.3e-8) is invisible even at 50,000×
@@ -115,11 +134,6 @@ export function TidalEarth() {
     }
 
     uniforms.tidalAmplitude.value = amplitude;
-
-    // Earth rotation
-    if (meshRef.current && playing) {
-      meshRef.current.rotation.y += ROTATION_SPEEDS.EARTH * delta * speed;
-    }
   });
 
   return (
