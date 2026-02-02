@@ -179,13 +179,17 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
       {
         id: 'ch3-fourier',
         title: 'The Key Insight',
-        content: "Any complex wave can be decomposed into simple sine waves. Each has its own frequency and amplitude.",
-        duration: 7,
-        camera: { position: [35, 18, 35], target: [0, 0, 0], duration: 1.5 },
+        content: "Any complex periodic signal can be decomposed into simple sine waves. This is Fourier analysis — the same principle behind FFT, audio compression, and signal processing.",
+        duration: 8,
+        camera: { position: [30, 20, 30], target: [0, 0, 0], duration: 1.5 },
         showTidalBulge: true,
-        tidalExaggeration: 35000,
+        tidalExaggeration: 45000,
         timeSpeed: 3600,
         highlightConstituents: ['M2'],
+        pulseEffect: true,
+        annotations: [
+          { id: 'complex', text: 'Complex periodic motion', position: [3.5, 2, 0], style: 'highlight' },
+        ],
       },
       {
         id: 'ch3-phasor',
