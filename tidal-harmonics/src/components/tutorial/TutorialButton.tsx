@@ -29,7 +29,7 @@ export function TutorialButton() {
   return (
     <button
       onClick={startTutorial}
-      className="fixed bottom-4 left-4 z-40 px-3 py-1.5
+      className="fixed bottom-12 left-4 z-40 px-3 py-1.5
         bg-slate-700/80 text-slate-300 rounded-lg
         hover:bg-slate-600 hover:text-white
         shadow-md transition-all text-xs font-medium

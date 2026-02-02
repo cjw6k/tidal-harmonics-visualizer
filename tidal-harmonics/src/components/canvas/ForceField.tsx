@@ -24,8 +24,8 @@ export function ForceField() {
   const currentStep = getCurrentStep();
   const showExplanation = !tutorialActive || currentStep?.step.id === 'ch1-differential';
 
-  // Show Sun forces in chapter 2 (spring/neap) or outside tutorial
-  const showSunForces = !tutorialActive || currentStep?.chapter.id === 'ch2-sun';
+  // Show Sun forces in chapter 2 (spring/neap), ch3-complex, or outside tutorial
+  const showSunForces = !tutorialActive || currentStep?.chapter.id === 'ch2-sun' || currentStep?.step.id === 'ch3-complex';
 
   const { moonArrows, sunArrows, sunMoonAngle } = useMemo(() => {
     const earthR = scale.EARTH_RADIUS;
@@ -205,7 +205,8 @@ export function ForceField() {
           style={{
             position: 'fixed',
             top: '80px',
-            right: '380px',
+            left: '50%',
+            transform: 'translateX(-50%)',
             pointerEvents: 'none',
           }}
           zIndexRange={[1, 10]}
