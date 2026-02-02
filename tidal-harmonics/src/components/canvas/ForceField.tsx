@@ -56,9 +56,10 @@ export function ForceField() {
     });
 
     // === PERPENDICULAR ZONES - COMPRESSION (arrows point toward center) ===
+    // Only label one arrow - the visual pattern is self-explanatory
     const compressLength = earthR * 0.8;
 
-    // Top
+    // Top (labeled)
     const topPos = perp2.clone().multiplyScalar(earthR);
     const topEnd = perp2.clone().multiplyScalar(earthR - compressLength);
     result.push({
@@ -69,35 +70,35 @@ export function ForceField() {
       type: 'compress',
     });
 
-    // Bottom
+    // Bottom (no label - arrow speaks for itself)
     const botPos = perp2.clone().multiplyScalar(-earthR);
     const botEnd = perp2.clone().multiplyScalar(-earthR + compressLength);
     result.push({
       start: [botPos.x, botPos.y, botPos.z],
       end: [botEnd.x, botEnd.y, botEnd.z],
-      label: 'Compressed',
+      label: '',
       color: '#3b82f6', // blue
       type: 'compress',
     });
 
-    // Side 1
+    // Side 1 (no label)
     const side1Pos = perp1.clone().multiplyScalar(earthR);
     const side1End = perp1.clone().multiplyScalar(earthR - compressLength);
     result.push({
       start: [side1Pos.x, side1Pos.y, side1Pos.z],
       end: [side1End.x, side1End.y, side1End.z],
-      label: 'Compressed',
+      label: '',
       color: '#3b82f6', // blue
       type: 'compress',
     });
 
-    // Side 2
+    // Side 2 (no label)
     const side2Pos = perp1.clone().multiplyScalar(-earthR);
     const side2End = perp1.clone().multiplyScalar(-earthR + compressLength);
     result.push({
       start: [side2Pos.x, side2Pos.y, side2Pos.z],
       end: [side2End.x, side2End.y, side2End.z],
-      label: 'Compressed',
+      label: '',
       color: '#3b82f6', // blue
       type: 'compress',
     });
@@ -178,23 +179,25 @@ export function ForceField() {
               color={arrow.color}
               lineWidth={4}
             />
-            {/* Label */}
-            <Html
-              position={arrow.end}
-              center
-              zIndexRange={[1, 10]}
-              style={{
-                color: arrow.color,
-                fontSize: '10px',
-                fontWeight: 'bold',
-                textShadow: '0 0 4px black, 0 0 4px black',
-                whiteSpace: 'nowrap',
-                pointerEvents: 'none',
-                transform: 'translateY(-12px)',
-              }}
-            >
-              {arrow.label}
-            </Html>
+            {/* Label (only if non-empty) */}
+            {arrow.label && (
+              <Html
+                position={arrow.end}
+                center
+                zIndexRange={[1, 10]}
+                style={{
+                  color: arrow.color,
+                  fontSize: '10px',
+                  fontWeight: 'bold',
+                  textShadow: '0 0 4px black, 0 0 4px black',
+                  whiteSpace: 'nowrap',
+                  pointerEvents: 'none',
+                  transform: 'translateY(-12px)',
+                }}
+              >
+                {arrow.label}
+              </Html>
+            )}
           </group>
         );
       })}
