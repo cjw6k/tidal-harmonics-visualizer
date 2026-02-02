@@ -551,11 +551,13 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
       {
         id: 'ch9-doodson',
         title: 'Doodson Numbers',
-        content: "Arthur Doodson created a numbering system for constituents. Each number encodes the astronomical origin.",
-        duration: 7,
+        content: "Arthur Doodson created a 6-digit encoding for every constituent. Each digit is a coefficient for a fundamental astronomical frequency: lunar day, lunar month, solar year, lunar perigee, nodal cycle, and perihelion. M2 is 255.555 — just '2' in the first position means 'two lunar days.' S2 is 273.555. The formula? A hash function mapping celestial mechanics to constituent identity. Doodson catalogued 400 constituents this way. The phasor diagram shows a few; NOAA uses 37 for operational predictions.",
+        duration: 0, // Manual advance - conceptually dense
         camera: { position: [40, 22, 40], target: [0, 0, 0], duration: 1 },
+        showPhasorDiagram: true,
         highlightConstituents: ['M2', 'S2', 'K1', 'O1'],
-        timeSpeed: 7200,
+        timeSpeed: 3600,
+        interactive: true,
       },
     ],
   },
