@@ -464,11 +464,16 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
       {
         id: 'ch8-seasonal',
         title: 'Ssa & Sa: Seasonal Tides',
-        content: "Ssa (6 months) and Sa (1 year) capture seasonal variations — both gravitational and thermal.",
+        content: "Earth's elliptical orbit brings us 3% closer to the Sun in January than July — changing solar tidal force annually (Sa). The Sun's declination crossing the equator twice yearly creates Ssa. These long cycles also capture thermal expansion and seasonal currents.",
         duration: 8,
         camera: { position: [70, 40, 70], target: [0, 0, 0], duration: 2 },
-        highlightConstituents: ['Ssa', 'Sa'],
-        timeSpeed: 2592000, // 30 days/sec
+        showTidalBulge: true,
+        tidalExaggeration: 50000,
+        showPhasorDiagram: true,
+        highlightConstituents: ['Ssa', 'Sa', 'M2'],
+        emphasizedConstituent: 'Ssa',
+        showOrbits: true,
+        timeSpeed: 2592000, // 30 days/sec - watch seasons unfold
       },
       {
         id: 'ch8-climate',
