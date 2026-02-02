@@ -85,7 +85,7 @@ export function PhasorDiagram({ onConstituentClick, highlighted = false }: Phaso
   return (
     <div className={`bg-slate-900 rounded-lg p-2 transition-all duration-300 ${
       highlighted
-        ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-slate-900 shadow-[0_0_20px_rgba(59,130,246,0.5)] animate-pulse'
+        ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-slate-900 animate-highlight-glow'
         : ''
     }`}>
       <h3 className={`text-xs mb-1 px-2 ${highlighted ? 'text-blue-300 font-semibold' : 'text-slate-400'}`}>
