@@ -21,7 +21,6 @@ export function TutorialOverlay() {
 
   const current = getCurrentStep();
   const stepDuration = current?.step.duration ?? 8; // Default 8 seconds
-  const isInteractive = current?.step.interactive ?? false;
 
   // Handle auto-advance
   const startTimer = useCallback(() => {
