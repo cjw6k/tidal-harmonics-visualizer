@@ -290,8 +290,10 @@ export function HarmonicsPanel() {
     // Highlight phasor diagram for steps that focus on it
     // Chapter 3: Harmonic analysis introduction
     // Chapter 4: Major constituents (S2, K1/O1, Symphony)
+    // Chapter 5: N2 sideband and King Tides (constructive interference)
     return stepId === 'ch3-phasor' || stepId === 'ch3-m2' ||
-           stepId === 'ch4-s2' || stepId === 'ch4-diurnal' || stepId === 'ch4-together';
+           stepId === 'ch4-s2' || stepId === 'ch4-diurnal' || stepId === 'ch4-together' ||
+           stepId === 'ch5-n2' || stepId === 'ch5-king-tides';
   }, [tutorialIsActive, tutorialProgress]);
 
   const [selectedConstituent, setSelectedConstituent] = useState<string | null>(null);
