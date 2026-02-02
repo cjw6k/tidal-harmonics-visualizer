@@ -25,19 +25,16 @@ export function TutorialOverlay() {
 
   // Handle auto-advance
   const startTimer = useCallback(() => {
-    console.log('[TutorialOverlay] startTimer called');
     // Get fresh current step inside callback to avoid stale closure
     const currentStep = getCurrentStep();
     const duration = currentStep?.step.duration ?? 8;
     const interactive = currentStep?.step.interactive ?? false;
 
     if (!autoAdvance || !currentStep || interactive || duration === 0) {
-      console.log('[TutorialOverlay] Timer skipped - conditions not met');
       setTimeRemaining(0);
       return;
     }
 
-    console.log('[TutorialOverlay] Starting timer with duration:', duration);
     startTimeRef.current = Date.now();
     setTimeRemaining(duration);
 
@@ -58,7 +55,6 @@ export function TutorialOverlay() {
   // Reset timer when step changes
   // Note: startTimer intentionally excluded from deps to avoid re-render loops
   useEffect(() => {
-    console.log('[TutorialOverlay] Timer effect triggered - isActive:', isActive, 'state:', state, 'step:', progress.chapterIndex, progress.stepIndex);
     if (isActive && state !== 'complete') {
       startTimer();
     }

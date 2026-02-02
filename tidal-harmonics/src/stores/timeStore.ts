@@ -8,6 +8,7 @@ interface TimeState {
   pause: () => void;
   toggle: () => void;
   setSpeed: (speed: number) => void;
+  setSpeedAndPlay: (speed: number) => void;
   setDate: (date: Date) => void;
   resetToNow: () => void;
   tick: (deltaMs: number) => void;
@@ -23,6 +24,9 @@ export const useTimeStore = create<TimeState>((set) => ({
   toggle: () => set((state) => ({ playing: !state.playing })),
 
   setSpeed: (speed) => set({ speed }),
+
+  // Batched update: set speed and start playing in one update
+  setSpeedAndPlay: (speed) => set({ speed, playing: true }),
 
   setDate: (date) => set({ epoch: date.getTime() }),
 

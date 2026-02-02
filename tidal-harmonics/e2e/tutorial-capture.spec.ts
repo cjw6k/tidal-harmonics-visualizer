@@ -333,6 +333,11 @@ test.describe('Tutorial Animation Capture', () => {
     // Wait for scene to initialize
     await waitForSceneReady(page);
 
+    // Enable Playwright test mode after page load (for TimeUpdater throttling)
+    await page.evaluate(() => {
+      (window as Window & { __PLAYWRIGHT_TEST_MODE__?: boolean }).__PLAYWRIGHT_TEST_MODE__ = true;
+    });
+
     // Expose store for programmatic navigation (will be set up in app)
     // The app should expose window.__TUTORIAL_STORE__ = useTutorialStore
   });

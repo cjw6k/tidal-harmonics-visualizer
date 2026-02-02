@@ -59,7 +59,6 @@ export function useTutorialEffects() {
     if (!isActive && originalSettings.current) {
       const orig = originalSettings.current;
       const scene = useSceneStore.getState();
-      const time = useTimeStore.getState();
 
       // Restore scene settings
       if (scene.showTidalBulge !== orig.showTidalBulge) {
@@ -94,8 +93,6 @@ export function useTutorialEffects() {
 
   // Apply step-specific settings when step changes
   useEffect(() => {
-    console.log('[useTutorialEffects] Effect triggered, isActive:', isActive, 'progress:', progress.chapterIndex, progress.stepIndex);
-
     if (!isActive) {
       appliedStep.current = null;
       return;
@@ -103,10 +100,8 @@ export function useTutorialEffects() {
 
     const stepId = `${progress.chapterIndex}-${progress.stepIndex}`;
     if (stepId === appliedStep.current) {
-      console.log('[useTutorialEffects] Skipping - already applied:', stepId);
       return; // Already applied
     }
-    console.log('[useTutorialEffects] Applying step:', stepId);
     appliedStep.current = stepId;
 
     const current = useTutorialStore.getState().getCurrentStep();
@@ -136,14 +131,12 @@ export function useTutorialEffects() {
 
     // Apply time speed (0 means pause)
     if (step.timeSpeed !== undefined) {
-      console.log('[useTutorialEffects] Setting time speed:', step.timeSpeed);
       if (step.timeSpeed === 0) {
         timeActions.pause();
       } else {
-        timeActions.setSpeed(step.timeSpeed);
-        timeActions.play();
+        // Use batched action to set speed and play in single update
+        timeActions.setSpeedAndPlay(step.timeSpeed);
       }
-      console.log('[useTutorialEffects] Time speed applied');
     }
 
     // Apply tidal exaggeration
