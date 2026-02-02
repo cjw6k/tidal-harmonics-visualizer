@@ -17,7 +17,7 @@ export function AnnotationLayer() {
           key={annotation.id}
           position={annotation.position}
           center
-          distanceFactor={10}
+          distanceFactor={6}
           occlude={false}
           style={{
             pointerEvents: 'none',
@@ -25,7 +25,7 @@ export function AnnotationLayer() {
           }}
         >
           <div
-            className={`px-3 py-1.5 rounded-lg text-sm whitespace-nowrap
+            className={`px-3 py-2 rounded-lg text-base whitespace-nowrap
               ${
                 annotation.style === 'highlight'
                   ? 'bg-blue-600 text-white font-medium'
