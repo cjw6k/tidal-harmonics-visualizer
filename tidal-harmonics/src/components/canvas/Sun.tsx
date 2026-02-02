@@ -1,7 +1,7 @@
 import { useRef, useMemo } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
-import { TextureLoader, Vector3, AdditiveBlending, BackSide } from 'three';
-import type { ShaderMaterial, Mesh } from 'three';
+import { TextureLoader, AdditiveBlending, BackSide } from 'three';
+import type { ShaderMaterial } from 'three';
 import { useScene } from '@/hooks/useScene';
 import { useCelestialPositions } from '@/hooks/useCelestialPositions';
 import { TEXTURE_URLS } from '@/lib/constants';
@@ -112,41 +112,68 @@ const sunFragmentShader = `
     // Base texture
     vec3 texColor = texture2D(map, vUv).rgb;
 
-    // Animated surface turbulence
+    // Animated surface turbulence - multiple layers for complexity
     vec3 noisePos = vPosition * 2.0 + vec3(time * 0.05, time * 0.03, time * 0.04);
     float turbulence = fbm(noisePos) * 0.5 + 0.5;
+
+    // Flowing plasma currents
+    vec3 plasmaPos = vPosition * 3.0 + vec3(time * 0.08, time * 0.06, time * 0.07);
+    float plasma = abs(snoise(plasmaPos)) * 0.7;
+    float plasmaFlow = snoise(plasmaPos * 0.5 + time * 0.03);
 
     // Sunspots - darker patches that drift slowly
     vec3 spotPos = vPosition * 1.5 + vec3(time * 0.01, time * 0.008, time * 0.012);
     float spots = smoothstep(0.55, 0.65, fbm(spotPos));
 
-    // Granulation - small bright cells
+    // Granulation - small bright cells with subtle animation
     vec3 granulePos = vPosition * 8.0 + vec3(time * 0.1, time * 0.08, time * 0.12);
-    float granules = snoise(granulePos) * 0.1 + 0.95;
+    float granules = snoise(granulePos) * 0.15 + 0.92;
 
-    // Limb darkening - edges are dimmer
-    vec3 viewDir = normalize(cameraPosition - vPosition);
-    float limb = dot(vNormal, viewDir);
-    float limbDarkening = pow(limb, 0.4);
+    // Surface eruptions - bright flashes
+    vec3 eruptPos = vPosition * 4.0 + vec3(time * 0.2);
+    float eruptions = pow(max(0.0, snoise(eruptPos)), 4.0) * 0.4;
 
-    // Combine effects
-    vec3 baseColor = vec3(1.0, 0.85, 0.4); // Warm yellow-orange
-    vec3 hotColor = vec3(1.0, 0.95, 0.8);  // Brighter white-yellow
-    vec3 coolColor = vec3(0.9, 0.5, 0.2);  // Darker orange-red for spots
+    // Subtle limb variation based on normal (not view-dependent to avoid dark arc)
+    // Use the normal's z component for subtle edge effect
+    float edgeFactor = abs(vNormal.z) * 0.3 + 0.7; // Subtle variation, never goes dark
 
-    // Mix based on turbulence and spots
-    vec3 surfaceColor = mix(baseColor, hotColor, turbulence * 0.3);
-    surfaceColor = mix(surfaceColor, coolColor, spots * 0.6);
+    // Pulsing core energy
+    float pulse = sin(time * 0.4) * 0.08 + 1.0;
+    float deepPulse = sin(time * 0.15 + length(vPosition) * 2.0) * 0.05 + 1.0;
+
+    // Rich color palette
+    vec3 whiteHot = vec3(1.0, 0.98, 0.95);      // Core white
+    vec3 solarYellow = vec3(1.0, 0.92, 0.5);   // Primary yellow
+    vec3 plasmaOrange = vec3(1.0, 0.7, 0.3);   // Active plasma
+    vec3 deepOrange = vec3(0.95, 0.55, 0.2);   // Warm base
+    vec3 spotRed = vec3(0.7, 0.35, 0.15);      // Sunspot color
+    vec3 eruptionWhite = vec3(1.0, 0.95, 0.85); // Eruption flash
+
+    // Build up the surface color
+    vec3 surfaceColor = mix(solarYellow, whiteHot, turbulence * 0.4 * pulse);
+    surfaceColor = mix(surfaceColor, plasmaOrange, plasma * 0.35);
+    surfaceColor = mix(surfaceColor, deepOrange, (1.0 - turbulence) * 0.2);
+    surfaceColor = mix(surfaceColor, spotRed, spots * 0.7);
+    surfaceColor = mix(surfaceColor, eruptionWhite, eruptions);
+
+    // Apply granulation
     surfaceColor *= granules;
 
-    // Apply limb darkening
-    surfaceColor *= limbDarkening;
+    // Plasma flow color shift
+    surfaceColor = mix(surfaceColor, plasmaOrange, abs(plasmaFlow) * 0.15);
 
-    // Blend with original texture for detail
-    vec3 finalColor = mix(surfaceColor, texColor * 1.2, 0.3);
+    // Apply subtle edge variation and pulse
+    surfaceColor *= edgeFactor * deepPulse;
 
-    // Boost brightness
-    finalColor *= 1.3;
+    // Blend with original texture for photorealistic detail
+    vec3 finalColor = mix(surfaceColor, texColor * 1.3, 0.25);
+
+    // Final intensity boost - make it HOT
+    finalColor *= 1.5 * pulse;
+
+    // Add subtle bloom effect by boosting bright areas
+    float brightness = dot(finalColor, vec3(0.299, 0.587, 0.114));
+    finalColor += finalColor * smoothstep(0.7, 1.0, brightness) * 0.3;
 
     gl_FragColor = vec4(finalColor, 1.0);
   }
@@ -154,36 +181,79 @@ const sunFragmentShader = `
 
 const coronaVertexShader = `
   varying vec3 vNormal;
+  varying vec3 vLocalPos;
+  varying float vRim;
 
   void main() {
-    vNormal = normalize(normalMatrix * normal);
+    vNormal = normal; // Keep in local space for noise
+    vLocalPos = position;
+
+    // Calculate rim in view space for correct edge detection
+    vec3 viewNormal = normalize(normalMatrix * normal);
+    vec3 viewPos = (modelViewMatrix * vec4(position, 1.0)).xyz;
+    vec3 viewDir = normalize(-viewPos); // In view space, camera is at origin
+
+    // For BackSide, normal points inward, so we want 1 - abs(dot)
+    // This gives us edge glow regardless of which side we're on
+    vRim = 1.0 - abs(dot(viewNormal, viewDir));
+
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
 `;
 
 const coronaFragmentShader = `
   uniform float time;
+  uniform float layerScale;
+  uniform float layerIntensity;
+
   varying vec3 vNormal;
+  varying vec3 vLocalPos;
+  varying float vRim;
 
   ${noiseFunction}
 
   void main() {
-    // View-dependent glow (brighter at edges)
-    vec3 viewDir = normalize(cameraPosition);
-    float rim = 1.0 - max(dot(vNormal, viewDir), 0.0);
-    rim = pow(rim, 2.0);
+    float rim = vRim;
 
-    // Animated corona wisps
-    float wisp = snoise(vNormal * 3.0 + time * 0.1) * 0.3 + 0.7;
+    // Softer falloff with exponential decay
+    float softRim = pow(rim, 1.2) * exp(-rim * 0.3);
 
-    // Corona color gradient
-    vec3 innerColor = vec3(1.0, 0.9, 0.6);
-    vec3 outerColor = vec3(1.0, 0.5, 0.2);
-    vec3 coronaColor = mix(innerColor, outerColor, rim);
+    // Animated flowing plasma wisps at multiple frequencies
+    float slowWisp = snoise(vNormal * 2.0 + vec3(time * 0.05, time * 0.03, time * 0.04)) * 0.4 + 0.6;
+    float fastWisp = snoise(vNormal * 5.0 + vec3(time * 0.15, time * 0.12, time * 0.1)) * 0.2 + 0.8;
+    float wisp = slowWisp * fastWisp;
 
-    float alpha = rim * wisp * 0.4;
+    // Flowing prominences - tendrils that reach outward
+    vec3 prominencePos = vNormal * 1.5 + vec3(time * 0.02);
+    float prominence = pow(max(0.0, snoise(prominencePos * 2.0)), 2.0) * 0.5;
 
-    gl_FragColor = vec4(coronaColor, alpha);
+    // Pulsing effect
+    float pulse = sin(time * 0.5) * 0.1 + 1.0;
+
+    // Dynamic color gradient - shifts between hot colors
+    float colorShift = sin(time * 0.3 + rim * 3.0) * 0.5 + 0.5;
+    vec3 hotWhite = vec3(1.0, 0.98, 0.95);
+    vec3 solarYellow = vec3(1.0, 0.9, 0.5);
+    vec3 plasmaOrange = vec3(1.0, 0.6, 0.2);
+    vec3 deepRed = vec3(0.9, 0.3, 0.1);
+
+    // Inner corona is white-hot, outer fades through yellow to orange
+    vec3 coronaColor = mix(hotWhite, solarYellow, rim * 0.5);
+    coronaColor = mix(coronaColor, plasmaOrange, rim * rim);
+    coronaColor = mix(coronaColor, deepRed, prominence);
+
+    // Add color shift for phantasmagorical effect
+    coronaColor = mix(coronaColor, solarYellow, colorShift * 0.2);
+
+    // Combine effects with softer alpha falloff - boosted for visibility
+    float alpha = softRim * wisp * layerIntensity * pulse * 1.5;
+    alpha += prominence * 0.5 * layerIntensity;
+
+    // Smooth outer edge fade - gentler for more visible glow
+    alpha *= smoothstep(0.0, 0.15, rim) * smoothstep(1.0, 0.4, rim);
+
+    // Boost brightness for phantasmagorical effect
+    gl_FragColor = vec4(coronaColor * 1.5, alpha);
   }
 `;
 
@@ -192,7 +262,6 @@ export function Sun() {
   const { sun } = useCelestialPositions();
   const texture = useLoader(TextureLoader, TEXTURE_URLS.sun.surface2k);
   const materialRef = useRef<ShaderMaterial>(null);
-  const coronaMaterialRef = useRef<ShaderMaterial>(null);
 
   const uniforms = useMemo(
     () => ({
@@ -202,20 +271,41 @@ export function Sun() {
     [texture]
   );
 
-  const coronaUniforms = useMemo(
-    () => ({
-      time: { value: 0 },
-    }),
+  // Multiple corona layers for soft falloff - increased intensity for dramatic effect
+  const coronaLayers = useMemo(
+    () => [
+      { scale: 1.06, intensity: 0.9 },  // Tight inner glow
+      { scale: 1.12, intensity: 0.7 },  // Inner corona
+      { scale: 1.22, intensity: 0.5 },  // Mid corona
+      { scale: 1.35, intensity: 0.35 }, // Outer corona
+      { scale: 1.55, intensity: 0.2 },  // Far corona
+      { scale: 1.8, intensity: 0.1 },   // Distant halo
+    ],
     []
   );
+
+  const coronaUniformsArray = useMemo(
+    () =>
+      coronaLayers.map((layer) => ({
+        time: { value: 0 },
+        layerScale: { value: layer.scale },
+        layerIntensity: { value: layer.intensity },
+      })),
+    [coronaLayers]
+  );
+
+  const coronaMaterialRefs = useRef<(ShaderMaterial | null)[]>([]);
 
   useFrame(({ clock }) => {
     if (materialRef.current) {
       materialRef.current.uniforms.time.value = clock.elapsedTime;
     }
-    if (coronaMaterialRef.current) {
-      coronaMaterialRef.current.uniforms.time.value = clock.elapsedTime;
-    }
+    // Update all corona layers
+    coronaMaterialRefs.current.forEach((mat) => {
+      if (mat) {
+        mat.uniforms.time.value = clock.elapsedTime;
+      }
+    });
   });
 
   return (
@@ -231,20 +321,24 @@ export function Sun() {
         />
       </mesh>
 
-      {/* Corona glow - slightly larger sphere rendered from inside */}
-      <mesh>
-        <sphereGeometry args={[scale.SUN_RADIUS * 1.15, 32, 32]} />
-        <shaderMaterial
-          ref={coronaMaterialRef}
-          uniforms={coronaUniforms}
-          vertexShader={coronaVertexShader}
-          fragmentShader={coronaFragmentShader}
-          transparent
-          blending={AdditiveBlending}
-          side={BackSide}
-          depthWrite={false}
-        />
-      </mesh>
+      {/* Multi-layer corona for soft ethereal glow */}
+      {coronaLayers.map((layer, i) => (
+        <mesh key={i}>
+          <sphereGeometry args={[scale.SUN_RADIUS * layer.scale, 48, 48]} />
+          <shaderMaterial
+            ref={(el) => {
+              coronaMaterialRefs.current[i] = el;
+            }}
+            uniforms={coronaUniformsArray[i]}
+            vertexShader={coronaVertexShader}
+            fragmentShader={coronaFragmentShader}
+            transparent
+            blending={AdditiveBlending}
+            side={BackSide}
+            depthWrite={false}
+          />
+        </mesh>
+      ))}
     </group>
   );
 }
