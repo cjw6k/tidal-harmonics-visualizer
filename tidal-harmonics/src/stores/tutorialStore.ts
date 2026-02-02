@@ -2,10 +2,29 @@ import { create } from 'zustand';
 import type { TutorialState, TutorialProgress } from '@/types/tutorial';
 import { TUTORIAL_CHAPTERS, getStep } from '@/data/tutorialContent';
 
+const TUTORIAL_COMPLETED_KEY = 'tidal-harmonics-tutorial-completed';
+
+function getStoredCompletion(): boolean {
+  try {
+    return localStorage.getItem(TUTORIAL_COMPLETED_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function setStoredCompletion(completed: boolean): void {
+  try {
+    localStorage.setItem(TUTORIAL_COMPLETED_KEY, completed ? 'true' : 'false');
+  } catch {
+    // Ignore localStorage errors
+  }
+}
+
 interface TutorialStoreState {
   // State machine
   state: TutorialState;
   isActive: boolean;
+  hasCompletedTutorial: boolean;
 
   // Progress
   progress: TutorialProgress;
@@ -28,6 +47,7 @@ interface TutorialStoreState {
 export const useTutorialStore = create<TutorialStoreState>((set, get) => ({
   state: 'idle',
   isActive: false,
+  hasCompletedTutorial: getStoredCompletion(),
   progress: {
     chapterIndex: 0,
     stepIndex: 0,
@@ -89,8 +109,12 @@ export const useTutorialStore = create<TutorialStoreState>((set, get) => ({
         completedChapters.push(chapter.id);
       }
 
+      // Mark tutorial as completed and persist
+      setStoredCompletion(true);
+
       set({
         state: 'complete',
+        hasCompletedTutorial: true,
         progress: {
           ...progress,
           completedChapters,
