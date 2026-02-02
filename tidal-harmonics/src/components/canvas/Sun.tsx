@@ -292,12 +292,12 @@ export function Sun() {
   const coronaMaterialRefs = useRef<(ShaderMaterial | null)[]>([]);
 
   useFrame(({ clock }) => {
-    if (materialRef.current) {
+    if (materialRef.current?.uniforms.time) {
       materialRef.current.uniforms.time.value = clock.elapsedTime;
     }
     // Update all corona layers
     coronaMaterialRefs.current.forEach((mat) => {
-      if (mat) {
+      if (mat?.uniforms.time) {
         mat.uniforms.time.value = clock.elapsedTime;
       }
     });
@@ -317,23 +317,27 @@ export function Sun() {
       </mesh>
 
       {/* Multi-layer corona for soft ethereal glow */}
-      {coronaLayers.map((layer, i) => (
-        <mesh key={i}>
-          <sphereGeometry args={[scale.SUN_RADIUS * layer.scale, 48, 48]} />
-          <shaderMaterial
-            ref={(el) => {
-              coronaMaterialRefs.current[i] = el;
-            }}
-            uniforms={coronaUniformsArray[i]}
-            vertexShader={coronaVertexShader}
-            fragmentShader={coronaFragmentShader}
-            transparent
-            blending={AdditiveBlending}
-            side={BackSide}
-            depthWrite={false}
-          />
-        </mesh>
-      ))}
+      {coronaLayers.map((layer, i) => {
+        const layerUniforms = coronaUniformsArray[i];
+        if (!layerUniforms) return null;
+        return (
+          <mesh key={i}>
+            <sphereGeometry args={[scale.SUN_RADIUS * layer.scale, 48, 48]} />
+            <shaderMaterial
+              ref={(el) => {
+                coronaMaterialRefs.current[i] = el;
+              }}
+              uniforms={layerUniforms}
+              vertexShader={coronaVertexShader}
+              fragmentShader={coronaFragmentShader}
+              transparent
+              blending={AdditiveBlending}
+              side={BackSide}
+              depthWrite={false}
+            />
+          </mesh>
+        );
+      })}
     </group>
   );
 }
