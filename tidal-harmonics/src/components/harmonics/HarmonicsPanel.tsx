@@ -288,7 +288,10 @@ export function HarmonicsPanel() {
     const currentStep = useTutorialStore.getState().getCurrentStep();
     const stepId = currentStep?.step?.id;
     // Highlight phasor diagram for steps that focus on it
-    return stepId === 'ch3-phasor' || stepId === 'ch3-m2';
+    // Chapter 3: Harmonic analysis introduction
+    // Chapter 4: Major constituents (S2, K1/O1, Symphony)
+    return stepId === 'ch3-phasor' || stepId === 'ch3-m2' ||
+           stepId === 'ch4-s2' || stepId === 'ch4-diurnal' || stepId === 'ch4-together';
   }, [tutorialIsActive, tutorialProgress]);
 
   const [selectedConstituent, setSelectedConstituent] = useState<string | null>(null);

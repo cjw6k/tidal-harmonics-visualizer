@@ -240,6 +240,8 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
         duration: 7,
         camera: { position: [30, 18, 30], target: [0, 0, 0], duration: 1 },
         highlightConstituents: ['K1', 'O1'],
+        emphasizedConstituent: 'K1',
+        showPhasorDiagram: true,
         timeSpeed: 7200,
       },
       {
