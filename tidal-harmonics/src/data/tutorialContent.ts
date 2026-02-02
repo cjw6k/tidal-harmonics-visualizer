@@ -438,11 +438,15 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
       {
         id: 'ch8-intro',
         title: 'Beyond Daily Cycles',
-        content: "Some tidal constituents have periods of weeks, months, even years.",
-        duration: 6,
+        content: "The Moon's orbit changes slowly — its distance, tilt, and orientation all vary over weeks to years. These gradual shifts create long-period tides that modulate the daily rhythm.",
+        duration: 8,
         camera: { position: [60, 35, 60], target: [0, 0, 0], duration: 2 },
+        showTidalBulge: true,
+        tidalExaggeration: 50000,
+        showPhasorDiagram: true,
+        highlightConstituents: ['Mf', 'Mm', 'Ssa'],
         showOrbits: true,
-        timeSpeed: 604800, // 1 week/sec
+        timeSpeed: 604800, // 1 week/sec - watch orbital changes unfold
       },
       {
         id: 'ch8-mf',
