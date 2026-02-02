@@ -29,6 +29,7 @@ export function PhasorDiagram({ onConstituentClick, highlighted = false }: Phaso
   const epoch = useTimeStore((s) => s.epoch);
   const station = useHarmonicsStore((s) => s.selectedStation);
   const visibleConstituents = useHarmonicsStore((s) => s.visibleConstituents);
+  const emphasizedConstituent = useHarmonicsStore((s) => s.emphasizedConstituent);
 
   const { phasors, resultant } = useMemo(() => {
     if (!station) return { phasors: [], resultant: { x: 0, y: 0 } };
@@ -117,35 +118,69 @@ export function PhasorDiagram({ onConstituentClick, highlighted = false }: Phaso
           N
         </text>
 
+        {/* Glow filter for emphasized constituent */}
+        <defs>
+          <filter id="emphasis-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
         {/* Phasor vectors */}
-        {phasors.map((p) => (
-          <g
-            key={p.symbol}
-            className={onConstituentClick ? 'cursor-pointer' : ''}
-            onClick={() => onConstituentClick?.(p.symbol)}
-          >
-            <line
-              x1={cx}
-              y1={cy}
-              x2={cx + p.x}
-              y2={cy + p.y}
-              stroke={p.color}
-              strokeWidth={2}
-              opacity={0.8}
-            />
-            <circle cx={cx + p.x} cy={cy + p.y} r={4} fill={p.color} />
-            <text
-              x={cx + p.x * 1.15}
-              y={cy + p.y * 1.15}
-              fill={p.color}
-              fontSize={9}
-              textAnchor="middle"
-              className={onConstituentClick ? 'hover:fill-white transition-colors' : ''}
+        {phasors.map((p) => {
+          const isEmphasized = p.symbol === emphasizedConstituent;
+          return (
+            <g
+              key={p.symbol}
+              className={onConstituentClick ? 'cursor-pointer' : ''}
+              onClick={() => onConstituentClick?.(p.symbol)}
+              filter={isEmphasized ? 'url(#emphasis-glow)' : undefined}
             >
-              {p.symbol}
-            </text>
-          </g>
-        ))}
+              <line
+                x1={cx}
+                y1={cy}
+                x2={cx + p.x}
+                y2={cy + p.y}
+                stroke={p.color}
+                strokeWidth={isEmphasized ? 4 : 2}
+                opacity={isEmphasized ? 1 : 0.8}
+              />
+              <circle
+                cx={cx + p.x}
+                cy={cy + p.y}
+                r={isEmphasized ? 8 : 4}
+                fill={p.color}
+                className={isEmphasized ? 'animate-pulse' : ''}
+              />
+              <text
+                x={cx + p.x * 1.15}
+                y={cy + p.y * 1.15}
+                fill={p.color}
+                fontSize={isEmphasized ? 12 : 9}
+                fontWeight={isEmphasized ? 'bold' : 'normal'}
+                textAnchor="middle"
+                className={onConstituentClick ? 'hover:fill-white transition-colors' : ''}
+              >
+                {p.symbol}
+              </text>
+              {/* Amplitude label for emphasized constituent */}
+              {isEmphasized && (
+                <text
+                  x={cx + p.x * 1.15}
+                  y={cy + p.y * 1.15 + 12}
+                  fill="#94a3b8"
+                  fontSize={8}
+                  textAnchor="middle"
+                >
+                  {p.amplitude.toFixed(2)}m
+                </text>
+              )}
+            </g>
+          );
+        })}
 
         {/* Resultant vector */}
         <line

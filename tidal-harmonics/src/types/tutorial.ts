@@ -24,6 +24,7 @@ export interface TutorialStep {
   annotations?: Annotation[];
   interactive?: boolean;
   highlightConstituents?: string[];
+  emphasizedConstituent?: string; // Visually emphasize this constituent in phasor diagram (larger, glowing)
   showForceVectors?: boolean;
   showTidalBulge?: boolean;
   tidalExaggeration?: number;

@@ -286,7 +286,9 @@ export function HarmonicsPanel() {
   const highlightPhasorDiagram = useMemo(() => {
     if (!tutorialIsActive) return false;
     const currentStep = useTutorialStore.getState().getCurrentStep();
-    return currentStep?.step?.id === 'ch3-phasor';
+    const stepId = currentStep?.step?.id;
+    // Highlight phasor diagram for steps that focus on it
+    return stepId === 'ch3-phasor' || stepId === 'ch3-m2';
   }, [tutorialIsActive, tutorialProgress]);
 
   const [selectedConstituent, setSelectedConstituent] = useState<string | null>(null);

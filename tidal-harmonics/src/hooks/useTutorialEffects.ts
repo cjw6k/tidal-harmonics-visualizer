@@ -12,6 +12,7 @@ interface SceneSnapshot {
   playing: boolean;
   speed: number;
   visibleConstituents: string[];
+  emphasizedConstituent: string | null;
   highlightMoon: boolean;
   highlightSun: boolean;
   highlightEarth: boolean;
@@ -49,6 +50,7 @@ export function useTutorialEffects() {
         playing: time.playing,
         speed: time.speed,
         visibleConstituents: [...harmonics.visibleConstituents],
+        emphasizedConstituent: harmonics.emphasizedConstituent,
         highlightMoon: scene.highlightMoon,
         highlightSun: scene.highlightSun,
         highlightEarth: scene.highlightEarth,
@@ -88,6 +90,7 @@ export function useTutorialEffects() {
 
       // Restore harmonics
       useHarmonicsStore.getState().setAllConstituentsVisible(orig.visibleConstituents);
+      useHarmonicsStore.getState().setEmphasizedConstituent(orig.emphasizedConstituent);
 
       // Restore phasor diagram visibility
       if (useHarmonicsStore.getState().showPhasorDiagram !== orig.showPhasorDiagram) {
@@ -160,6 +163,9 @@ export function useTutorialEffects() {
     if (step.highlightConstituents) {
       harmonicsActions.setAllConstituentsVisible(step.highlightConstituents);
     }
+
+    // Apply emphasized constituent (for visual emphasis in phasor diagram)
+    harmonicsActions.setEmphasizedConstituent(step.emphasizedConstituent ?? null);
 
     // Apply highlight effects
     sceneActions.setHighlightMoon(step.highlightMoon ?? false);

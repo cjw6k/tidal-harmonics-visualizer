@@ -31,6 +31,7 @@ interface HarmonicsState {
   stations: TideStation[];
   selectedStation: TideStation | null;
   visibleConstituents: string[];
+  emphasizedConstituent: string | null; // Visually emphasize this constituent in phasor diagram
   chartHoursRange: number;
   showPhasorDiagram: boolean;
   showTideCurve: boolean;
@@ -40,6 +41,7 @@ interface HarmonicsState {
   selectStation: (id: string) => void;
   toggleConstituent: (symbol: string) => void;
   setAllConstituentsVisible: (symbols: string[]) => void;
+  setEmphasizedConstituent: (symbol: string | null) => void;
   setChartHoursRange: (hours: number) => void;
   togglePhasorDiagram: () => void;
   toggleTideCurve: () => void;
@@ -53,6 +55,7 @@ export const useHarmonicsStore = create<HarmonicsState>((set, get) => ({
   stations: STATIONS,
   selectedStation: STATIONS[0] || null,
   visibleConstituents: [...MAJOR_CONSTITUENTS].slice(0, 6), // Default visible
+  emphasizedConstituent: null,
   chartHoursRange: 24,
   showPhasorDiagram: true,
   showTideCurve: true,
@@ -75,6 +78,10 @@ export const useHarmonicsStore = create<HarmonicsState>((set, get) => ({
 
   setAllConstituentsVisible: (symbols) => {
     set({ visibleConstituents: symbols });
+  },
+
+  setEmphasizedConstituent: (symbol) => {
+    set({ emphasizedConstituent: symbol });
   },
 
   setChartHoursRange: (hours) => {
