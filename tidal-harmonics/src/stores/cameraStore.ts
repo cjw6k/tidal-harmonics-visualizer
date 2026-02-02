@@ -26,9 +26,9 @@ const CAMERA_PRESETS: Record<CameraPreset, CameraTarget> = {
     fov: 45,
   },
   sun: {
-    position: [-180, 20, 0],
+    position: [-188, 10, 10],
     target: [-200, 0, 0],
-    fov: 50,
+    fov: 45,
   },
 };
 
