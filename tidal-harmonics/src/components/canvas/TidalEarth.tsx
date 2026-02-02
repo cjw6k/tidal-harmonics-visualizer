@@ -11,11 +11,13 @@ import { TEXTURE_URLS, ROTATION_SPEEDS } from '@/lib/constants';
 const tidalVertexShader = `
   uniform vec3 moonDirection;
   uniform vec3 sunDirection;
+  uniform vec3 sunLightDir;
   uniform float tidalAmplitude;
 
   varying float vTidalDisplacement;
   varying vec2 vUv;
   varying vec3 vNormal;
+  varying vec3 vWorldNormal;
 
   void main() {
     vUv = uv;
@@ -36,6 +38,9 @@ const tidalVertexShader = `
     // Apply displacement along normal
     vec3 newPosition = position * (1.0 + displacement);
 
+    // Transform normal to world space for lighting
+    vWorldNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);
+
     gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
   }
 `;
@@ -43,18 +48,27 @@ const tidalVertexShader = `
 const tidalFragmentShader = `
   uniform sampler2D map;
   uniform float tidalIntensity;
+  uniform vec3 sunLightDir;
 
   varying float vTidalDisplacement;
   varying vec2 vUv;
   varying vec3 vNormal;
+  varying vec3 vWorldNormal;
 
   void main() {
     vec3 baseColor = texture2D(map, vUv).rgb;
 
+    // Sun-based lighting (diffuse)
+    float diffuse = max(dot(normalize(vWorldNormal), normalize(sunLightDir)), 0.0);
+    // Add ambient so dark side isn't completely black
+    float lighting = 0.15 + diffuse * 0.85;
+
+    vec3 litColor = baseColor * lighting;
+
     // Color tint on bulges - more visible for pedagogical effect
     float bulgeIntensity = abs(vTidalDisplacement) * tidalIntensity;
     // Amplify the tint so bulge areas show subtle blue highlight
-    vec3 bulgeColor = mix(baseColor, vec3(0.3, 0.5, 1.0), clamp(bulgeIntensity * 3.0, 0.0, 0.4));
+    vec3 bulgeColor = mix(litColor, vec3(0.3, 0.5, 1.0), clamp(bulgeIntensity * 3.0, 0.0, 0.4));
 
     gl_FragColor = vec4(bulgeColor, 1.0);
   }
@@ -65,6 +79,7 @@ interface TidalUniforms {
   map: { value: Texture };
   moonDirection: { value: Vector3 };
   sunDirection: { value: Vector3 };
+  sunLightDir: { value: Vector3 };
   tidalAmplitude: { value: number };
   tidalIntensity: { value: number };
 }
@@ -85,6 +100,7 @@ export function TidalEarth() {
       map: { value: texture },
       moonDirection: { value: new Vector3() },
       sunDirection: { value: new Vector3() },
+      sunLightDir: { value: new Vector3() },
       tidalAmplitude: { value: 0.0 },
       tidalIntensity: { value: 1.0 },
     }),
@@ -114,6 +130,8 @@ export function TidalEarth() {
 
     uniforms.moonDirection.value.copy(moonDir);
     uniforms.sunDirection.value.copy(sunDir);
+    // Sun light direction in world space (not transformed) for lighting
+    uniforms.sunLightDir.value.set(sun[0], sun[1], sun[2]).normalize();
 
     // Pedagogical tidal amplitude for visible effect
     // Physical amplitude (0.53m / 6,371km = 8.3e-8) is invisible even at 50,000×
