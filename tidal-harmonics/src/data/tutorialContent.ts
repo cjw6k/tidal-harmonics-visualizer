@@ -579,9 +579,10 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
       {
         id: 'ch10-types',
         title: 'Tide Types',
-        content: "Semidiurnal (2 highs/day), Diurnal (1 high/day), or Mixed. Try Seattle vs Boston!",
-        duration: 0,
+        content: "The ratio of diurnal (K1+O1) to semidiurnal (M2+S2) amplitudes determines your tide type. Boston's Atlantic coast: semidiurnal dominance → 2 highs/day. Seattle's Pacific coast: strong diurnal influence → unequal highs (mixed). Gulf of Mexico: diurnal dominance → just 1 high/day. The phasor diagram shows WHY: basin geometry amplifies different constituents differently.",
+        duration: 0, // Manual advance - connects phasor amplitudes to real-world experience
         camera: { position: [40, 22, 40], target: [0, 0, 0], duration: 1.5 },
+        showPhasorDiagram: true,
         highlightConstituents: ['M2', 'S2', 'K1', 'O1'],
         timeSpeed: 7200,
         interactive: true,
