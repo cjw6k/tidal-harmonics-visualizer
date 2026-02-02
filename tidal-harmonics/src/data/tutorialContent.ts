@@ -100,9 +100,11 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
         title: 'When They Align',
         content: "At new and full Moon, Sun and Moon pull together. Their forces ADD up.",
         duration: 7,
-        camera: { position: [60, 25, 0], target: [0, 0, 0], duration: 2 },
+        camera: { position: [0, 150, 120], target: [0, 0, 0], duration: 2 },
         showTidalBulge: true,
         tidalExaggeration: 90000,
+        highlightSun: true,
+        showForceVectors: true,
         timeSpeed: 0,
         annotations: [
           { id: 'spring', text: 'SPRING TIDE', position: [0, 6, 0], style: 'highlight' },
