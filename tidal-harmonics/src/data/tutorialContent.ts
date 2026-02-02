@@ -540,11 +540,13 @@ export const TUTORIAL_CHAPTERS: TutorialChapter[] = [
       {
         id: 'ch9-kelvin',
         title: 'Lord Kelvin\'s Machine',
-        content: "In 1873, Lord Kelvin built a mechanical tide predictor. Gears mimicked constituent frequencies!",
-        duration: 8,
+        content: "In 1876, Lord Kelvin unveiled a mechanical tide predictor — a brass Fourier synthesizer. Each gear rotated at a constituent's angular velocity; pulleys and wires summed them physically. The machine cranked out a year of predictions in hours. Before digital computers, scientists built the algorithm in METAL. That formula Σ Aᵢcos(ωᵢt + φᵢ)? They implemented it with gears and string. Watch the phasor diagram — you're seeing software that once required precision clockwork.",
+        duration: 0, // Manual advance - pivotal revelation
         camera: { position: [45, 25, 45], target: [0, 0, 0], duration: 1.5 },
-        highlightConstituents: ['M2', 'S2', 'N2', 'K1', 'O1', 'K2'],
-        timeSpeed: 0,
+        showPhasorDiagram: true,
+        highlightConstituents: ['M2', 'S2', 'N2', 'K1', 'O1', 'K2', 'P1', 'Q1'],
+        timeSpeed: 3600,
+        interactive: true,
       },
       {
         id: 'ch9-doodson',
