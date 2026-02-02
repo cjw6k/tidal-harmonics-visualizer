@@ -3,6 +3,7 @@ import { Vector3 } from 'three';
 import { Line, Html } from '@react-three/drei';
 import { useCelestialPositions } from '@/hooks/useCelestialPositions';
 import { useScene } from '@/hooks/useScene';
+import { useTutorialStore } from '@/stores/tutorialStore';
 
 interface ForceArrow {
   start: [number, number, number];
@@ -15,6 +16,7 @@ interface ForceArrow {
 export function ForceField() {
   const { moonRaw } = useCelestialPositions();
   const { scale } = useScene();
+  const tutorialActive = useTutorialStore((s) => s.isActive);
 
   const arrows = useMemo(() => {
     const earthR = scale.EARTH_RADIUS;
@@ -108,38 +110,40 @@ export function ForceField() {
 
   return (
     <group>
-      {/* Explanation panel */}
-      <Html
-        position={[scale.EARTH_RADIUS * 5.5, scale.EARTH_RADIUS * 3, 0]}
-        center
-        zIndexRange={[1, 10]}
-        style={{
-          background: 'rgba(15, 23, 42, 0.95)',
-          padding: '12px 16px',
-          borderRadius: '8px',
-          fontSize: '12px',
-          maxWidth: '320px',
-          border: '1px solid rgba(100, 116, 139, 0.3)',
-          pointerEvents: 'none',
-        }}
-      >
-        <div style={{ color: 'white', fontWeight: 'bold', marginBottom: '8px' }}>
-          Tidal Forces
-        </div>
-        <div style={{ display: 'flex', gap: '16px', marginBottom: '8px' }}>
-          <div style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '16px' }}>→</span>
-            <span>Stretched (bulge)</span>
+      {/* Explanation panel - hidden during tutorial since narration covers this */}
+      {!tutorialActive && (
+        <Html
+          position={[scale.EARTH_RADIUS * 5.5, scale.EARTH_RADIUS * 3, 0]}
+          center
+          zIndexRange={[1, 10]}
+          style={{
+            background: 'rgba(15, 23, 42, 0.95)',
+            padding: '12px 16px',
+            borderRadius: '8px',
+            fontSize: '12px',
+            maxWidth: '320px',
+            border: '1px solid rgba(100, 116, 139, 0.3)',
+            pointerEvents: 'none',
+          }}
+        >
+          <div style={{ color: 'white', fontWeight: 'bold', marginBottom: '8px' }}>
+            Tidal Forces
           </div>
-          <div style={{ color: '#3b82f6', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '16px' }}>←</span>
-            <span>Compressed</span>
+          <div style={{ display: 'flex', gap: '16px', marginBottom: '8px' }}>
+            <div style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '16px' }}>→</span>
+              <span>Stretched (bulge)</span>
+            </div>
+            <div style={{ color: '#3b82f6', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '16px' }}>←</span>
+              <span>Compressed</span>
+            </div>
           </div>
-        </div>
-        <div style={{ color: '#94a3b8', fontSize: '11px', lineHeight: '1.4' }}>
-          The Moon pulls the near side more than Earth's center, and the center more than the far side. This creates TWO bulges.
-        </div>
-      </Html>
+          <div style={{ color: '#94a3b8', fontSize: '11px', lineHeight: '1.4' }}>
+            The Moon pulls the near side more than Earth's center, and the center more than the far side. This creates TWO bulges.
+          </div>
+        </Html>
+      )}
 
       {/* Force arrows */}
       {arrows.map((arrow, i) => {
